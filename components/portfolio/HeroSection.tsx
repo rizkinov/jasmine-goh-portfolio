@@ -35,7 +35,7 @@ export function HeroSection({
             filter: 'blur(0px)',
             transition: {
                 duration: 0.6,
-                ease: [0.22, 1, 0.36, 1] // Custom easing for smooth slide
+                ease: 'easeOut' as const
             }
         }
     };
@@ -52,7 +52,7 @@ export function HeroSection({
             filter: 'blur(0px)',
             transition: {
                 duration: 0.7,
-                ease: [0.22, 1, 0.36, 1]
+                ease: 'easeOut' as const
             }
         }
     };
@@ -114,7 +114,7 @@ export function HeroSection({
                 <motion.div
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
-                    transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: 1, duration: 0.8, ease: 'easeOut' as const }}
                     className="mt-12 h-px bg-gradient-to-r from-primary/50 via-primary to-transparent w-32 origin-left"
                 />
             </motion.div>
