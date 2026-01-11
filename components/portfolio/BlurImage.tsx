@@ -26,7 +26,7 @@ export function BlurImage({ alt, className = '', ...props }: BlurImageProps) {
                     opacity: isLoaded ? 0 : 1,
                     filter: isLoaded ? 'blur(0px)' : 'blur(20px)'
                 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.5, ease: 'easeOut' as const }}
             />
 
             {/* Actual image */}
@@ -36,7 +36,7 @@ export function BlurImage({ alt, className = '', ...props }: BlurImageProps) {
                     filter: isLoaded ? 'blur(0px)' : 'blur(20px)',
                     scale: isLoaded ? 1 : 1.1
                 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.5, ease: 'easeOut' as const }}
             >
                 <Image
                     alt={alt}

@@ -25,7 +25,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
             transition: {
                 duration: 0.5,
                 delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1]
+                ease: 'easeOut' as const
             }
         }
     };
@@ -40,7 +40,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
             <Link href={`/projects/${project.slug}`} className="block group">
                 <motion.article
                     whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.3, ease: 'easeOut' as const }}
                     className="relative overflow-hidden rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-colors duration-300"
                 >
                     {/* Image Container */}
@@ -49,7 +49,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                             <motion.div
                                 className="relative w-full h-full"
                                 whileHover={{ scale: 1.05 }}
-                                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                                transition={{ duration: 0.4, ease: 'easeOut' as const }}
                             >
                                 <Image
                                     src={project.cover_image_url}
