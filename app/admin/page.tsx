@@ -3,15 +3,35 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { AdminEditor } from '@/components/admin';
+import { AdminEditor, AdminLogin } from '@/components/admin';
 import { supabase } from '@/lib/supabase';
 import type { Project } from '@/types/database';
 
 export default function AdminPage() {
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+    // Check authentication on mount
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await fetch('/api/admin/verify');
+                setIsAuthenticated(response.ok);
+            } catch {
+                setIsAuthenticated(false);
+            }
+        };
+        checkAuth();
+    }, []);
+
+    // Handle logout
+    const handleLogout = async () => {
+        await fetch('/api/admin/logout', { method: 'POST' });
+        setIsAuthenticated(false);
+    };
 
     // Fetch projects from Supabase
     const fetchProjects = useCallback(async () => {
@@ -52,7 +72,8 @@ export default function AdminPage() {
         setSaveStatus('saving');
 
         try {
-            const { data, error } = await supabase
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data, error } = await (supabase as any)
                 .from('projects')
                 .update({ content_html: content })
                 .eq('id', selectedProject.id)
@@ -85,6 +106,20 @@ export default function AdminPage() {
         }
     };
 
+    // Show loading state while checking auth
+    if (isAuthenticated === null) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+            </div>
+        );
+    }
+
+    // Show login if not authenticated
+    if (!isAuthenticated) {
+        return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+    }
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
@@ -114,21 +149,30 @@ export default function AdminPage() {
                         </nav>
                     </div>
 
-                    {/* Save Status */}
-                    {saveStatus !== 'idle' && (
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={`px-3 py-1 rounded-full text-sm ${saveStatus === 'saving' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200' :
-                                saveStatus === 'saved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200' :
-                                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
-                                }`}
+                    <div className="flex items-center gap-4">
+                        {/* Save Status */}
+                        {saveStatus !== 'idle' && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className={`px-3 py-1 rounded-full text-sm ${saveStatus === 'saving' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200' :
+                                    saveStatus === 'saved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200' :
+                                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200'
+                                    }`}
+                            >
+                                {saveStatus === 'saving' ? 'Saving...' :
+                                    saveStatus === 'saved' ? '✓ Saved' :
+                                        '✕ Error saving'}
+                            </motion.div>
+                        )}
+
+                        <button
+                            onClick={handleLogout}
+                            className="text-sm text-muted-foreground hover:text-destructive transition-colors font-medium"
                         >
-                            {saveStatus === 'saving' ? 'Saving...' :
-                                saveStatus === 'saved' ? '✓ Saved' :
-                                    '✕ Error saving'}
-                        </motion.div>
-                    )}
+                            Log Out
+                        </button>
+                    </div>
                 </div>
             </header>
 

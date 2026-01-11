@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getMediaItems, deleteMedia, uploadImage, updateMediaAltText, type MediaItem } from '@/lib/media';
-import { ImageCropper } from '@/components/admin/ImageCropper';
+import { ImageCropper, AdminLogin } from '@/components/admin';
 
 export default function MediaPage() {
     const [media, setMedia] = useState<MediaItem[]>([]);
@@ -19,6 +19,25 @@ export default function MediaPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'date' | 'name' | 'size'>('date');
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+    // Check authentication
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await fetch('/api/admin/verify');
+                setIsAuthenticated(response.ok);
+            } catch {
+                setIsAuthenticated(false);
+            }
+        };
+        checkAuth();
+    }, []);
+
+    const handleLogout = async () => {
+        await fetch('/api/admin/logout', { method: 'POST' });
+        setIsAuthenticated(false);
+    };
 
     // Fetch media on mount
     const fetchMedia = useCallback(async () => {
@@ -154,6 +173,20 @@ export default function MediaPage() {
     // Total storage used
     const totalStorage = media.reduce((acc, m) => acc + m.size_bytes, 0);
 
+    // Show loading state while checking auth
+    if (isAuthenticated === null) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+            </div>
+        );
+    }
+
+    // Show login if not authenticated
+    if (!isAuthenticated) {
+        return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+    }
+
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
@@ -168,10 +201,18 @@ export default function MediaPage() {
                         </Link>
                         <h1 className="text-lg font-semibold">Media Library</h1>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{media.length} files</span>
-                        <span>•</span>
-                        <span>{formatSize(totalStorage)} used</span>
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                            <span>{media.length} files</span>
+                            <span>•</span>
+                            <span>{formatSize(totalStorage)} used</span>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="text-sm text-muted-foreground hover:text-destructive transition-colors font-medium"
+                        >
+                            Log Out
+                        </button>
                     </div>
                 </div>
             </header>
@@ -221,8 +262,8 @@ export default function MediaPage() {
                     <button
                         onClick={() => setView('grid')}
                         className={`px-3 py-1 rounded text-sm ${view === 'grid'
-                                ? 'bg-background shadow-sm'
-                                : 'text-muted-foreground'
+                            ? 'bg-background shadow-sm'
+                            : 'text-muted-foreground'
                             }`}
                     >
                         Grid
@@ -230,8 +271,8 @@ export default function MediaPage() {
                     <button
                         onClick={() => setView('list')}
                         className={`px-3 py-1 rounded text-sm ${view === 'list'
-                                ? 'bg-background shadow-sm'
-                                : 'text-muted-foreground'
+                            ? 'bg-background shadow-sm'
+                            : 'text-muted-foreground'
                             }`}
                     >
                         List
@@ -309,8 +350,8 @@ export default function MediaPage() {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 className={`group relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors ${selectedItems.has(item.id)
-                                        ? 'border-primary ring-2 ring-primary/20'
-                                        : 'border-transparent hover:border-primary/50'
+                                    ? 'border-primary ring-2 ring-primary/20'
+                                    : 'border-transparent hover:border-primary/50'
                                     }`}
                             >
                                 <Image
@@ -328,8 +369,8 @@ export default function MediaPage() {
                                         toggleSelection(item.id);
                                     }}
                                     className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedItems.has(item.id)
-                                            ? 'bg-primary border-primary text-primary-foreground'
-                                            : 'bg-white/80 border-white/50 opacity-0 group-hover:opacity-100'
+                                        ? 'bg-primary border-primary text-primary-foreground'
+                                        : 'bg-white/80 border-white/50 opacity-0 group-hover:opacity-100'
                                         }`}
                                 >
                                     {selectedItems.has(item.id) && '✓'}
@@ -403,8 +444,8 @@ export default function MediaPage() {
                                     <tr
                                         key={item.id}
                                         className={`border-b border-border transition-colors ${selectedItems.has(item.id)
-                                                ? 'bg-primary/5'
-                                                : 'hover:bg-muted/50'
+                                            ? 'bg-primary/5'
+                                            : 'hover:bg-muted/50'
                                             }`}
                                     >
                                         <td className="p-3">
