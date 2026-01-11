@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+import type { Database, Project, Profile } from '@/types/database';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -24,7 +24,7 @@ if (isSupabaseConfigured) {
 export { supabase };
 
 // Helper function to get all projects
-export async function getProjects() {
+export async function getProjects(): Promise<Project[]> {
     if (!supabase) {
         // Return empty array to trigger mock data fallback
         return [];
@@ -49,7 +49,7 @@ export async function getProjects() {
 }
 
 // Helper function to get a single project by slug
-export async function getProjectBySlug(slug: string) {
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
     if (!supabase) {
         // Return null to trigger mock data fallback
         return null;
@@ -75,7 +75,7 @@ export async function getProjectBySlug(slug: string) {
 }
 
 // Helper function to get profile
-export async function getProfile() {
+export async function getProfile(): Promise<Profile | null> {
     if (!supabase) {
         // Return null to trigger mock data fallback
         return null;
@@ -107,7 +107,8 @@ export async function updateProject(id: string, updates: Partial<Database['publi
     }
 
     try {
-        const { data, error } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
             .from('projects')
             .update(updates)
             .eq('id', id)
