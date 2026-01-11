@@ -83,7 +83,8 @@ export async function uploadImage(
         const dimensions = await getImageDimensions(file);
 
         // Insert into media table
-        const { data: mediaData, error: dbError } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: mediaData, error: dbError } = await (supabase as any)
             .from('media')
             .insert({
                 filename,
@@ -120,7 +121,8 @@ export async function getMediaItems(): Promise<MediaItem[]> {
     }
 
     try {
-        const { data, error } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
             .from('media')
             .select('*')
             .order('created_at', { ascending: false });
@@ -154,7 +156,8 @@ export async function deleteMedia(id: string, storagePath: string): Promise<bool
         }
 
         // Delete from database
-        const { error: dbError } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: dbError } = await (supabase as any)
             .from('media')
             .delete()
             .eq('id', id);
@@ -178,7 +181,8 @@ export async function updateMediaAltText(id: string, altText: string): Promise<b
     }
 
     try {
-        const { error } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabase as any)
             .from('media')
             .update({ alt_text: altText })
             .eq('id', id);
