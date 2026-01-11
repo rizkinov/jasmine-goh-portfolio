@@ -1,0 +1,196 @@
+import { supabase } from './supabase';
+
+export interface MediaItem {
+    id: string;
+    filename: string;
+    original_filename: string;
+    storage_path: string;
+    public_url: string;
+    mime_type: string;
+    size_bytes: number;
+    width: number | null;
+    height: number | null;
+    alt_text: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface UploadResult {
+    success: boolean;
+    media?: MediaItem;
+    error?: string;
+}
+
+// Generate a unique filename
+function generateFilename(originalName: string): string {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    const extension = originalName.split('.').pop()?.toLowerCase() || 'jpg';
+    return `${timestamp}-${random}.${extension}`;
+}
+
+// Get image dimensions from a blob
+async function getImageDimensions(blob: Blob): Promise<{ width: number; height: number }> {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            resolve({ width: img.naturalWidth, height: img.naturalHeight });
+            URL.revokeObjectURL(img.src);
+        };
+        img.onerror = () => {
+            resolve({ width: 0, height: 0 });
+            URL.revokeObjectURL(img.src);
+        };
+        img.src = URL.createObjectURL(blob);
+    });
+}
+
+// Upload image to Supabase Storage
+export async function uploadImage(
+    file: File | Blob,
+    originalFilename: string,
+    altText?: string
+): Promise<UploadResult> {
+    if (!supabase) {
+        return { success: false, error: 'Supabase is not configured' };
+    }
+
+    try {
+        const filename = generateFilename(originalFilename);
+        const storagePath = `uploads/${filename}`;
+
+        // Upload to storage
+        const { error: uploadError } = await supabase.storage
+            .from('media')
+            .upload(storagePath, file, {
+                contentType: file.type || 'image/jpeg',
+                cacheControl: '31536000', // 1 year cache
+            });
+
+        if (uploadError) {
+            console.error('Storage upload error:', uploadError);
+            return { success: false, error: uploadError.message };
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('media')
+            .getPublicUrl(storagePath);
+
+        const publicUrl = urlData.publicUrl;
+
+        // Get image dimensions
+        const dimensions = await getImageDimensions(file);
+
+        // Insert into media table
+        const { data: mediaData, error: dbError } = await supabase
+            .from('media')
+            .insert({
+                filename,
+                original_filename: originalFilename,
+                storage_path: storagePath,
+                public_url: publicUrl,
+                mime_type: file.type || 'image/jpeg',
+                size_bytes: file.size,
+                width: dimensions.width || null,
+                height: dimensions.height || null,
+                alt_text: altText || null,
+            })
+            .select()
+            .single();
+
+        if (dbError) {
+            console.error('Database insert error:', dbError);
+            // Try to clean up the uploaded file
+            await supabase.storage.from('media').remove([storagePath]);
+            return { success: false, error: dbError.message };
+        }
+
+        return { success: true, media: mediaData };
+    } catch (error) {
+        console.error('Upload error:', error);
+        return { success: false, error: 'Failed to upload image' };
+    }
+}
+
+// Get all media items
+export async function getMediaItems(): Promise<MediaItem[]> {
+    if (!supabase) {
+        return [];
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('media')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching media:', error);
+            return [];
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching media:', error);
+        return [];
+    }
+}
+
+// Delete a media item
+export async function deleteMedia(id: string, storagePath: string): Promise<boolean> {
+    if (!supabase) {
+        return false;
+    }
+
+    try {
+        // Delete from storage
+        const { error: storageError } = await supabase.storage
+            .from('media')
+            .remove([storagePath]);
+
+        if (storageError) {
+            console.error('Storage delete error:', storageError);
+        }
+
+        // Delete from database
+        const { error: dbError } = await supabase
+            .from('media')
+            .delete()
+            .eq('id', id);
+
+        if (dbError) {
+            console.error('Database delete error:', dbError);
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Delete error:', error);
+        return false;
+    }
+}
+
+// Update media alt text
+export async function updateMediaAltText(id: string, altText: string): Promise<boolean> {
+    if (!supabase) {
+        return false;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('media')
+            .update({ alt_text: altText })
+            .eq('id', id);
+
+        if (error) {
+            console.error('Update error:', error);
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Update error:', error);
+        return false;
+    }
+}
