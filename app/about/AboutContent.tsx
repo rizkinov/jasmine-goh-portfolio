@@ -39,7 +39,7 @@ export function AboutContent({ profile }: AboutContentProps) {
             filter: 'blur(0px)',
             transition: {
                 duration: 0.5,
-                ease: [0.22, 1, 0.36, 1]
+                ease: 'easeOut' as const
             }
         }
     };
