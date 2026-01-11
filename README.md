@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jasmine Goh Portfolio
+
+A modern portfolio website for Jasmine Goh, a UX/Product Designer, built with Next.js, Supabase, and TailwindCSS.
+
+## Features
+
+- **Dynamic Content**: Projects and profile information fetched from Supabase.
+- **Admin CMS**: Built-in admin dashboard to manage projects and media.
+- **Media Library**: efficient image management with crop, resize, and upload capabilities.
+- **Secure Authentication**: Custom admin authentication using bcrypt and JWT.
+- **Responsive Design**: Fully responsive UI with dark mode support.
+- **Animations**: Smooth page transitions and interactions using Framer Motion.
+
+## Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Styling**: [TailwindCSS](https://tailwindcss.com/)
+- **Components**: [Radix UI](https://www.radix-ui.com/) primitives
+- **Icons**: [Lucide React](https://lucide.dev/)
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/rizkinov/jasmine-goh-portfolio.git
+cd jasmine-goh-portfolio
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Environment Setup**
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Admin Authentication
+ADMIN_USERNAME=your_username
+ADMIN_PASSWORD_HASH=your_bcrypt_hash
+JWT_SECRET=your_random_secret_string
+```
+
+4. **Run the development server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Admin Access
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The admin dashboard is located at `/admin`.
+- **Login**: Accessed via the dashboard.
+- **Media**: Manage uploaded images at `/admin/media`.
+- **Projects**: Edit project content using the Tiptap editor.
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+This project is optimized for deployment on [Vercel](https://vercel.com/).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Important**: When deploying to Vercel, ensure you add the following Environment Variables in your project settings:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD_HASH`
+- `JWT_SECRET`
