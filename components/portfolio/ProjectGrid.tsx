@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRef } from 'react';
 import { ProjectCard } from './ProjectCard';
 import type { Project } from '@/types/database';
 
@@ -8,13 +9,26 @@ interface ProjectGridProps {
     projects: Project[];
 }
 
+// Check mobile once at module level (runs on client only)
+const getIsMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+};
+
 export function ProjectGrid({ projects }: ProjectGridProps) {
-    // Header animation with blur
+    // Capture mobile state once on first render - never changes to avoid re-render blink
+    const isMobileRef = useRef<boolean | null>(null);
+    if (isMobileRef.current === null) {
+        isMobileRef.current = getIsMobile();
+    }
+    const isMobile = isMobileRef.current;
+
+    // Header animation with blur - blur only on desktop
     const headerBlurVariants = {
         hidden: {
             opacity: 0,
             y: 40,
-            filter: 'blur(12px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(12px)',
         },
         visible: {
             opacity: 1,
@@ -112,10 +126,10 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
                 ))}
             </div>
 
-            {/* Empty state with blur */}
+            {/* Empty state with blur - blur only on desktop */}
             {projects.length === 0 && (
                 <motion.div
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
+                    initial={{ opacity: 0, filter: isMobile ? 'blur(0px)' : 'blur(10px)' }}
                     animate={{ opacity: 1, filter: 'blur(0px)' }}
                     transition={{ duration: 0.6 }}
                     className="text-center py-24"
@@ -131,10 +145,10 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
                 </motion.div>
             )}
 
-            {/* Bottom section decoration with blur */}
+            {/* Bottom section decoration with blur - blur only on desktop */}
             {projects.length > 0 && (
                 <motion.div
-                    initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                    initial={{ opacity: 0, y: 30, filter: isMobile ? 'blur(0px)' : 'blur(10px)' }}
                     whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.7, delay: 0.2 }}

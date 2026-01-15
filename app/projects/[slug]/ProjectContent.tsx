@@ -3,13 +3,27 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRef } from 'react';
 import type { Project } from '@/types/database';
 
 interface ProjectContentProps {
     project: Project;
 }
 
+// Check mobile once at module level (runs on client only)
+const getIsMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+};
+
 export function ProjectContent({ project }: ProjectContentProps) {
+    // Capture mobile state once on first render - never changes to avoid re-render blink
+    const isMobileRef = useRef<boolean | null>(null);
+    if (isMobileRef.current === null) {
+        isMobileRef.current = getIsMobile();
+    }
+    const isMobile = isMobileRef.current;
+
     // Container animation with stagger
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -22,12 +36,12 @@ export function ProjectContent({ project }: ProjectContentProps) {
         }
     };
 
-    // Blur fade up animation - signature effect
+    // Blur fade up animation - signature effect (blur only on desktop)
     const blurFadeUpVariants = {
         hidden: {
             opacity: 0,
             y: 40,
-            filter: 'blur(15px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(15px)',
         },
         visible: {
             opacity: 1,
@@ -40,12 +54,12 @@ export function ProjectContent({ project }: ProjectContentProps) {
         }
     };
 
-    // Word animation for title - OPTIMIZED: fewer elements than letter-by-letter
+    // Word animation for title - blur only on desktop
     const wordVariants = {
         hidden: {
             opacity: 0,
             y: 40,
-            filter: 'blur(10px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
         },
         visible: {
             opacity: 1,
@@ -72,12 +86,12 @@ export function ProjectContent({ project }: ProjectContentProps) {
         }
     };
 
-    // Image reveal with blur
+    // Image reveal with blur - blur only on desktop
     const imageVariants = {
         hidden: {
             opacity: 0,
             scale: 1.05,
-            filter: 'blur(20px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(20px)',
         },
         visible: {
             opacity: 1,
@@ -91,12 +105,12 @@ export function ProjectContent({ project }: ProjectContentProps) {
         }
     };
 
-    // Back button animation
+    // Back button animation - blur only on desktop
     const backButtonVariants = {
         hidden: {
             opacity: 0,
             x: -20,
-            filter: 'blur(8px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(8px)',
         },
         visible: {
             opacity: 1,

@@ -2,8 +2,22 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRef } from 'react';
+
+// Check mobile once at module level (runs on client only)
+const getIsMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+};
 
 export function Footer() {
+    // Capture mobile state once on first render - never changes to avoid re-render blink
+    const isMobileRef = useRef<boolean | null>(null);
+    if (isMobileRef.current === null) {
+        isMobileRef.current = getIsMobile();
+    }
+    const isMobile = isMobileRef.current;
+
     const currentYear = new Date().getFullYear();
 
     const socialLinks = [
@@ -23,12 +37,12 @@ export function Footer() {
         }
     };
 
-    // Item animation with blur effect
+    // Item animation with blur effect - blur only on desktop
     const itemVariants = {
         hidden: {
             opacity: 0,
             y: 30,
-            filter: 'blur(12px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(12px)',
         },
         visible: {
             opacity: 1,
@@ -41,12 +55,12 @@ export function Footer() {
         }
     };
 
-    // Background element blur animation
+    // Background element blur animation - blur only on desktop
     const bgElementVariants = {
         hidden: {
             opacity: 0,
             scale: 0.8,
-            filter: 'blur(20px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(20px)',
         },
         visible: {
             opacity: 1,
