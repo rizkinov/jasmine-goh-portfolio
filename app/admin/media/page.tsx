@@ -201,7 +201,7 @@ export default function MediaPage() {
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-6">
                         <Link
-                            href="/admin"
+                            href="/"
                             className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <svg
@@ -219,10 +219,30 @@ export default function MediaPage() {
                                 <path d="m12 19-7-7 7-7" />
                                 <path d="M19 12H5" />
                             </svg>
-                            <span className="text-sm tracking-wide">Back to Admin</span>
+                            <span className="text-sm tracking-wide">Back to site</span>
                         </Link>
                         <div className="h-6 w-px bg-border/50" />
-                        <h1 className="text-lg font-serif">Media Library</h1>
+                        <h1 className="text-lg font-serif">Admin Dashboard</h1>
+                        <nav className="flex items-center gap-2 ml-4">
+                            <Link
+                                href="/admin"
+                                className="px-4 py-2 text-sm rounded-full text-muted-foreground hover:bg-muted transition-colors tracking-wide"
+                            >
+                                Projects
+                            </Link>
+                            <Link
+                                href="/admin/media"
+                                className="px-4 py-2 text-sm rounded-full bg-primary/10 text-primary font-medium tracking-wide"
+                            >
+                                Media
+                            </Link>
+                            <Link
+                                href="/admin/profile"
+                                className="px-4 py-2 text-sm rounded-full text-muted-foreground hover:bg-muted transition-colors tracking-wide"
+                            >
+                                Profile
+                            </Link>
+                        </nav>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">

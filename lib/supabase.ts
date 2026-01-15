@@ -126,3 +126,34 @@ export async function updateProject(id: string, updates: Partial<Database['publi
         return null;
     }
 }
+
+// Helper function to update profile
+export async function updateProfile(id: string, updates: Partial<Database['public']['Tables']['profile']['Update']>): Promise<Profile | null> {
+    if (!supabase) {
+        console.error('Supabase is not configured. Cannot update profile.');
+        return null;
+    }
+
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
+            .from('profile')
+            .update({
+                ...updates,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error updating profile:', error);
+            return null;
+        }
+
+        return data;
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        return null;
+    }
+}

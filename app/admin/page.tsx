@@ -187,6 +187,12 @@ export default function AdminPage() {
                             >
                                 Media
                             </Link>
+                            <Link
+                                href="/admin/profile"
+                                className="px-4 py-2 text-sm rounded-full text-muted-foreground hover:bg-muted transition-colors tracking-wide"
+                            >
+                                Profile
+                            </Link>
                         </nav>
                     </div>
 
