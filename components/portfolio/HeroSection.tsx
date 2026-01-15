@@ -169,7 +169,7 @@ export function HeroSection({
                 <div className="mb-6 md:mb-12">
                     <h1 className="font-serif tracking-[-0.04em] leading-[0.85]">
                         {nameWords.map((word, index) => (
-                            <span key={index} className="block overflow-hidden">
+                            <span key={index} className="block">
                                 <motion.span
                                     variants={wordVariants}
                                     className="inline-flex text-6xl sm:text-7xl md:text-9xl lg:text-[10rem]"

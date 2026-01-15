@@ -123,10 +123,14 @@ export function AboutContent({ profile }: AboutContentProps) {
                 <div className="mb-10">
                     <h1 className="font-serif tracking-[-0.04em] leading-[0.9]">
                         {nameWords.map((word, index) => (
-                            <span key={index} className="block overflow-hidden">
+                            <span key={index} className="block">
                                 <motion.span
                                     variants={wordVariants}
-                                    className="inline-flex text-6xl sm:text-7xl md:text-8xl lg:text-9xl will-change-transform"
+                                    className="inline-flex text-6xl sm:text-7xl md:text-8xl lg:text-9xl"
+                                    style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                    }}
                                 >
                                     {word}
                                     {index === nameWords.length - 1 && (
