@@ -16,7 +16,8 @@ export function HeroSection({
     profileImageUrl
 }: HeroSectionProps) {
     // Detect if on mobile to disable blur (causes flickering on mobile Safari)
-    const [isMobile, setIsMobile] = useState(true); // Default to mobile for SSR safety
+    // Default to false (desktop with blur) - mobile will update after hydration
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
