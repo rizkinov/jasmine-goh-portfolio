@@ -393,7 +393,7 @@ export default function ProfilePage() {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            value={exp.company}
+                                                            value={exp.company ?? ''}
                                                             onChange={(e) => updateExperience(index, 'company', e.target.value)}
                                                             className="w-full px-3 py-2 bg-background border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
                                                             placeholder="Company Name - Role"
@@ -405,7 +405,7 @@ export default function ProfilePage() {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            value={exp.date}
+                                                            value={exp.date ?? ''}
                                                             onChange={(e) => updateExperience(index, 'date', e.target.value)}
                                                             className="w-full px-3 py-2 bg-background border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
                                                             placeholder="2020 - Present"
