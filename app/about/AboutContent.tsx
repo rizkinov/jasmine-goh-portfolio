@@ -2,13 +2,27 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRef } from 'react';
 import type { Profile } from '@/types/database';
 
 interface AboutContentProps {
     profile: Profile | null;
 }
 
+// Check mobile once (runs on client only)
+const getIsMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+};
+
 export function AboutContent({ profile }: AboutContentProps) {
+    // Capture mobile state once on first render - never changes to avoid re-render blink
+    const isMobileRef = useRef<boolean | null>(null);
+    if (isMobileRef.current === null) {
+        isMobileRef.current = getIsMobile();
+    }
+    const isMobile = isMobileRef.current;
+
     // Fallback data if profile is not loaded
     const name = profile?.name ?? "Jasmine Goh";
     const headline = profile?.headline ?? "A UX/Product Designer and a critical thinker who focuses on creating digital experiences.";
@@ -27,12 +41,12 @@ export function AboutContent({ profile }: AboutContentProps) {
         }
     };
 
-    // Blur fade up animation - signature effect
+    // Blur fade up animation - blur only on desktop
     const blurFadeUpVariants = {
         hidden: {
             opacity: 0,
             y: 40,
-            filter: 'blur(15px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(15px)',
         },
         visible: {
             opacity: 1,
@@ -45,12 +59,12 @@ export function AboutContent({ profile }: AboutContentProps) {
         }
     };
 
-    // Word animation for name - OPTIMIZED: fewer elements than letter-by-letter
+    // Word animation for name - blur only on desktop
     const wordVariants = {
         hidden: {
             opacity: 0,
             y: 50,
-            filter: 'blur(10px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
         },
         visible: {
             opacity: 1,
@@ -77,12 +91,12 @@ export function AboutContent({ profile }: AboutContentProps) {
         }
     };
 
-    // Card hover animation
+    // Card hover animation - blur only on desktop
     const cardVariants = {
         hidden: {
             opacity: 0,
             y: 30,
-            filter: 'blur(10px)',
+            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
         },
         visible: {
             opacity: 1,

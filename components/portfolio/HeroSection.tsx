@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useRef } from 'react';
 
 interface HeroSectionProps {
     name?: string;
@@ -10,23 +10,23 @@ interface HeroSectionProps {
     profileImageUrl?: string;
 }
 
+// Check mobile once at module level (runs on client only)
+const getIsMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+};
+
 export function HeroSection({
     name = "Jasmine Goh",
     headline = "A UX/Product Designer and a critical thinker who focuses on creating digital experiences.",
     profileImageUrl
 }: HeroSectionProps) {
-    // Detect if on mobile to disable blur (causes flickering on mobile Safari)
-    // Default to false (desktop with blur) - mobile will update after hydration
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+    // Capture mobile state once on first render - never changes to avoid re-render blink
+    const isMobileRef = useRef<boolean | null>(null);
+    if (isMobileRef.current === null) {
+        isMobileRef.current = getIsMobile();
+    }
+    const isMobile = isMobileRef.current;
 
     // Container with stagger for word animation
     const containerVariants = {
