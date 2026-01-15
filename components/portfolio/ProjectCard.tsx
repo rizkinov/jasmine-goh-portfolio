@@ -92,7 +92,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
                     className="relative"
                 >
                     {/* Image Container */}
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-muted mb-6">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-muted mb-6 border border-border/40 shadow-sm">
                         {project.cover_image_url ? (
                             <>
                                 <motion.div
