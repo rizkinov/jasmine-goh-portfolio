@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 interface HeroSectionProps {
     name?: string;
@@ -14,6 +15,18 @@ export function HeroSection({
     headline = "A UX/Product Designer and a critical thinker who focuses on creating digital experiences.",
     profileImageUrl
 }: HeroSectionProps) {
+    // Detect if on mobile to disable blur (causes flickering on mobile Safari)
+    const [isMobile, setIsMobile] = useState(true); // Default to mobile for SSR safety
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     // Container with stagger for word animation
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -26,15 +39,17 @@ export function HeroSection({
         }
     };
 
-    // Word animation - simplified for mobile stability (no blur filter)
+    // Word animation - blur only on desktop
     const wordVariants = {
         hidden: {
             opacity: 0,
             y: 50,
+            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
         },
         visible: {
             opacity: 1,
             y: 0,
+            filter: 'blur(0px)',
             transition: {
                 duration: 0.6,
                 ease: [0.33, 1, 0.68, 1] as const
@@ -42,15 +57,17 @@ export function HeroSection({
         }
     };
 
-    // Content fade up - simplified (no blur filter to prevent mobile flicker)
+    // Content fade up - blur only on desktop
     const fadeUpVariants = {
         hidden: {
             opacity: 0,
             y: 30,
+            filter: isMobile ? 'blur(0px)' : 'blur(8px)',
         },
         visible: {
             opacity: 1,
             y: 0,
+            filter: 'blur(0px)',
             transition: {
                 duration: 0.6,
                 ease: [0.33, 1, 0.68, 1] as const
@@ -72,15 +89,17 @@ export function HeroSection({
         }
     };
 
-    // Profile image animation - simplified (no blur to prevent mobile flicker)
+    // Profile image animation - blur only on desktop
     const imageVariants = {
         hidden: {
             opacity: 0,
             scale: 0.95,
+            filter: isMobile ? 'blur(0px)' : 'blur(15px)',
         },
         visible: {
             opacity: 1,
             scale: 1,
+            filter: 'blur(0px)',
             transition: {
                 duration: 1,
                 delay: 0.3,
@@ -103,6 +122,12 @@ export function HeroSection({
                     initial="hidden"
                     animate="visible"
                     className="absolute right-0 top-[35%] sm:top-[30%] md:top-0 w-[100vw] sm:w-[85vw] md:w-[60vw] lg:w-[55vw] max-w-[800px] h-[65vh] sm:h-[70vh] md:h-[90vh] pointer-events-none"
+                    style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)',
+                        WebkitTransform: 'translateZ(0)',
+                    }}
                 >
                     <Image
                         src={profileImageUrl}
@@ -120,6 +145,10 @@ export function HeroSection({
                 initial="hidden"
                 animate="visible"
                 className="relative z-10 max-w-5xl"
+                style={{
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                }}
             >
                 {/* Editorial label */}
                 <motion.div
@@ -143,7 +172,12 @@ export function HeroSection({
                                 <motion.span
                                     variants={wordVariants}
                                     className="inline-flex text-6xl sm:text-7xl md:text-9xl lg:text-[10rem]"
-                                    style={{ backfaceVisibility: 'hidden' }}
+                                    style={{
+                                        backfaceVisibility: 'hidden',
+                                        WebkitBackfaceVisibility: 'hidden',
+                                        transform: 'translateZ(0)',
+                                        WebkitTransform: 'translateZ(0)',
+                                    }}
                                 >
                                     {word}
                                     {index === nameWords.length - 1 && (
