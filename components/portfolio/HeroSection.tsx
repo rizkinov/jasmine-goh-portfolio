@@ -18,7 +18,7 @@ const getIsMobile = () => {
 
 export function HeroSection({
     name = "Jasmine Goh",
-    headline = "A UX/Product Designer and a critical thinker who focuses on creating digital experiences.",
+    headline = "Creating thoughtful digital experiences through user-centered design.",
     profileImageUrl
 }: HeroSectionProps) {
     // Capture mobile state once on first render - never changes to avoid re-render blink

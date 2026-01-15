@@ -30,7 +30,7 @@ export default async function HomePage() {
             <div className="pt-16">
                 <HeroSection
                     name={profile?.name ?? "Jasmine Goh"}
-                    headline={profile?.headline ?? "A UX/Product Designer and a critical thinker who focuses on creating digital experiences."}
+                    headline={profile?.headline ?? "Creating thoughtful digital experiences through user-centered design."}
                     profileImageUrl={profileImage?.public_url}
                 />
 
