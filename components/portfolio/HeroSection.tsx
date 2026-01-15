@@ -203,18 +203,14 @@ export function HeroSection({
                     {headline}
                 </motion.p>
 
-                {/* Role badge */}
+                {/* Location badge */}
                 <motion.div
                     variants={fadeUpVariants}
-                    className="mt-6 md:mt-12 flex flex-wrap items-center gap-2 md:gap-4"
+                    className="mt-6 md:mt-12 flex items-center gap-2 md:gap-3"
                 >
                     <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-xs md:text-sm font-medium tracking-wide text-foreground/80">
-                        UX/Product Designer
-                    </span>
-                    <span className="text-muted-foreground/30 hidden sm:inline">—</span>
                     <span className="text-xs md:text-sm text-muted-foreground tracking-wide">
-                        Kuala Lumpur, Malaysia
+                        Based in Kuala Lumpur, Malaysia
                     </span>
                 </motion.div>
             </motion.div>
