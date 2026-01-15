@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { AdminLogin } from '@/components/admin';
-import { supabase, updateProfile } from '@/lib/supabase';
 import type { Profile, Experience } from '@/types/database';
 
 // Check mobile once at module level
@@ -68,34 +67,21 @@ export default function ProfilePage() {
         setIsAuthenticated(false);
     };
 
-    // Fetch profile from Supabase
+    // Fetch profile via API route
     const fetchProfile = useCallback(async () => {
-        if (!supabase) {
-            console.error('Supabase is not configured');
-            setIsLoading(false);
-            return;
-        }
-
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data, error } = await (supabase as any)
-                .from('profile')
-                .select('*')
-                .single();
-
-            if (error) {
-                console.error('Error fetching profile:', error);
+            const response = await fetch('/api/admin/profile');
+            if (!response.ok) {
+                console.error('Error fetching profile');
                 return;
             }
 
-            if (data) {
-                const profileData = data as Profile;
-                setProfile(profileData);
-                setName(profileData.name || '');
-                setHeadline(profileData.headline || '');
-                setBio(profileData.bio || '');
-                setExperience(profileData.experience || []);
-            }
+            const profileData: Profile = await response.json();
+            setProfile(profileData);
+            setName(profileData.name || '');
+            setHeadline(profileData.headline || '');
+            setBio(profileData.bio || '');
+            setExperience(profileData.experience || []);
         } catch (error) {
             console.error('Error fetching profile:', error);
         } finally {
@@ -108,25 +94,34 @@ export default function ProfilePage() {
         fetchProfile();
     }, [fetchProfile]);
 
-    // Handle save
+    // Handle save via API route
     const handleSave = async () => {
         if (!profile) return;
 
         setSaveStatus('saving');
 
         try {
-            const result = await updateProfile(profile.id, {
-                name,
-                headline,
-                bio,
-                experience,
+            const response = await fetch('/api/admin/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: profile.id,
+                    name,
+                    headline,
+                    bio,
+                    experience,
+                }),
             });
 
-            if (result) {
+            if (response.ok) {
+                const result = await response.json();
                 setProfile(result);
                 setSaveStatus('saved');
                 setTimeout(() => setSaveStatus('idle'), 2000);
             } else {
+                console.error('Error saving profile');
                 setSaveStatus('error');
                 setTimeout(() => setSaveStatus('idle'), 3000);
             }

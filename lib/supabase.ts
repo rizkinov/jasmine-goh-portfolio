@@ -3,6 +3,7 @@ import type { Database, Project, Profile } from '@/types/database';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Check if Supabase is configured
 const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
@@ -14,14 +15,22 @@ if (!isSupabaseConfigured) {
     );
 }
 
-// Create Supabase client only if configured
+// Create Supabase client only if configured (anon key for public reads)
 let supabase: SupabaseClient<Database> | null = null;
 
 if (isSupabaseConfigured) {
     supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 }
 
-export { supabase };
+// Create service role client for admin operations (server-side only)
+// This bypasses RLS and should only be used in API routes
+let supabaseAdmin: SupabaseClient<Database> | null = null;
+
+if (supabaseUrl && supabaseServiceRoleKey) {
+    supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+}
+
+export { supabase, supabaseAdmin };
 
 // Helper function to get all projects
 export async function getProjects(): Promise<Project[]> {
@@ -99,16 +108,16 @@ export async function getProfile(): Promise<Profile | null> {
     }
 }
 
-// Helper function to update project
+// Helper function to update project (server-side only - uses admin client)
 export async function updateProject(id: string, updates: Partial<Database['public']['Tables']['projects']['Update']>) {
-    if (!supabase) {
-        console.error('Supabase is not configured. Cannot update project.');
+    if (!supabaseAdmin) {
+        console.error('Supabase admin client is not configured. Cannot update project.');
         return null;
     }
 
     try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabaseAdmin as any)
             .from('projects')
             .update(updates)
             .eq('id', id)
@@ -127,16 +136,16 @@ export async function updateProject(id: string, updates: Partial<Database['publi
     }
 }
 
-// Helper function to update profile
+// Helper function to update profile (server-side only - uses admin client)
 export async function updateProfile(id: string, updates: Partial<Database['public']['Tables']['profile']['Update']>): Promise<Profile | null> {
-    if (!supabase) {
-        console.error('Supabase is not configured. Cannot update profile.');
+    if (!supabaseAdmin) {
+        console.error('Supabase admin client is not configured. Cannot update profile.');
         return null;
     }
 
     try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabaseAdmin as any)
             .from('profile')
             .update({
                 ...updates,
