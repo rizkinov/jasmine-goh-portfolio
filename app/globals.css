@@ -8,6 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -47,74 +48,124 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* =============================================================================
+   WARM SOPHISTICATION THEME
+   A refined, editorial color palette with warm undertones
+   ============================================================================= */
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.646 0.222 41.116);
-  --primary-foreground: oklch(0.98 0.016 73.684);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.646 0.222 41.116);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Warm ivory background instead of pure white */
+  --background: oklch(0.985 0.008 85);
+  /* Rich warm charcoal for text */
+  --foreground: oklch(0.18 0.01 60);
+
+  /* Cards with subtle warmth */
+  --card: oklch(0.99 0.005 85);
+  --card-foreground: oklch(0.18 0.01 60);
+
+  --popover: oklch(0.99 0.005 85);
+  --popover-foreground: oklch(0.18 0.01 60);
+
+  /* Sophisticated terracotta - warm, earthy, memorable */
+  --primary: oklch(0.55 0.12 35);
+  --primary-foreground: oklch(0.98 0.01 85);
+
+  /* Muted sage for secondary elements */
+  --secondary: oklch(0.94 0.015 140);
+  --secondary-foreground: oklch(0.25 0.02 140);
+
+  /* Warm muted tones */
+  --muted: oklch(0.96 0.008 85);
+  --muted-foreground: oklch(0.45 0.02 60);
+
+  /* Warm accent */
+  --accent: oklch(0.94 0.02 50);
+  --accent-foreground: oklch(0.25 0.03 50);
+
+  --destructive: oklch(0.55 0.2 25);
+
+  /* Subtle warm borders */
+  --border: oklch(0.90 0.01 85);
+  --input: oklch(0.92 0.01 85);
+  --ring: oklch(0.55 0.12 35);
+
+  /* Chart colors - warm palette */
+  --chart-1: oklch(0.75 0.1 50);
+  --chart-2: oklch(0.65 0.12 35);
+  --chart-3: oklch(0.55 0.12 35);
+  --chart-4: oklch(0.45 0.1 35);
+  --chart-5: oklch(0.35 0.08 35);
+
+  --radius: 0.5rem;
+
+  /* Sidebar */
+  --sidebar: oklch(0.98 0.008 85);
+  --sidebar-foreground: oklch(0.18 0.01 60);
+  --sidebar-primary: oklch(0.55 0.12 35);
+  --sidebar-primary-foreground: oklch(0.98 0.01 85);
+  --sidebar-accent: oklch(0.94 0.02 50);
+  --sidebar-accent-foreground: oklch(0.25 0.03 50);
+  --sidebar-border: oklch(0.90 0.01 85);
+  --sidebar-ring: oklch(0.55 0.12 35);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.705 0.213 47.604);
-  --primary-foreground: oklch(0.98 0.016 73.684);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.705 0.213 47.604);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Deep warm charcoal background */
+  --background: oklch(0.14 0.01 60);
+  /* Warm off-white for text */
+  --foreground: oklch(0.94 0.01 85);
+
+  /* Cards with warmth */
+  --card: oklch(0.18 0.01 60);
+  --card-foreground: oklch(0.94 0.01 85);
+
+  --popover: oklch(0.18 0.01 60);
+  --popover-foreground: oklch(0.94 0.01 85);
+
+  /* Brighter terracotta for dark mode */
+  --primary: oklch(0.68 0.14 40);
+  --primary-foreground: oklch(0.14 0.01 60);
+
+  /* Dark sage secondary */
+  --secondary: oklch(0.25 0.02 140);
+  --secondary-foreground: oklch(0.94 0.01 85);
+
+  /* Dark muted tones */
+  --muted: oklch(0.22 0.01 60);
+  --muted-foreground: oklch(0.65 0.02 85);
+
+  /* Dark accent */
+  --accent: oklch(0.28 0.02 50);
+  --accent-foreground: oklch(0.94 0.01 85);
+
+  --destructive: oklch(0.65 0.18 25);
+
+  /* Subtle dark borders */
+  --border: oklch(0.94 0.01 85 / 12%);
+  --input: oklch(0.94 0.01 85 / 15%);
+  --ring: oklch(0.68 0.14 40);
+
+  /* Chart colors - warm palette (dark) */
+  --chart-1: oklch(0.75 0.1 50);
+  --chart-2: oklch(0.68 0.14 40);
+  --chart-3: oklch(0.55 0.12 35);
+  --chart-4: oklch(0.45 0.1 35);
+  --chart-5: oklch(0.35 0.08 35);
+
+  /* Sidebar (dark) */
+  --sidebar: oklch(0.16 0.01 60);
+  --sidebar-foreground: oklch(0.94 0.01 85);
+  --sidebar-primary: oklch(0.68 0.14 40);
+  --sidebar-primary-foreground: oklch(0.14 0.01 60);
+  --sidebar-accent: oklch(0.22 0.01 60);
+  --sidebar-accent-foreground: oklch(0.94 0.01 85);
+  --sidebar-border: oklch(0.94 0.01 85 / 12%);
+  --sidebar-ring: oklch(0.68 0.14 40);
 }
+
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
 
 @layer base {
   * {
@@ -125,17 +176,98 @@
   }
 }
 
-/* Prose styling for rich content */
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom selection styling - warm terracotta tint */
+::selection {
+  background: oklch(0.55 0.12 35 / 0.25);
+}
+
+/* =============================================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================================= */
+
+.font-serif {
+  font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
+}
+
+.font-sans {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Editorial heading styles */
+.heading-editorial {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Refined body text */
+.text-refined {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+}
+
+/* =============================================================================
+   VISUAL TEXTURE & EFFECTS
+   ============================================================================= */
+
+/* Subtle noise texture overlay for depth */
+.noise-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.dark .noise-texture::before {
+  opacity: 0.04;
+}
+
+/* Elegant gradient overlays */
+.gradient-warm {
+  background: linear-gradient(
+    135deg,
+    oklch(0.55 0.12 35 / 0.08) 0%,
+    transparent 50%,
+    oklch(0.65 0.08 50 / 0.05) 100%
+  );
+}
+
+.dark .gradient-warm {
+  background: linear-gradient(
+    135deg,
+    oklch(0.68 0.14 40 / 0.1) 0%,
+    transparent 50%,
+    oklch(0.5 0.08 50 / 0.08) 100%
+  );
+}
+
+/* =============================================================================
+   PROSE STYLING - Base
+   ============================================================================= */
+
 .prose h2 {
-  @apply text-foreground font-bold;
+  @apply text-foreground font-serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 
 .prose h3 {
-  @apply text-foreground font-semibold;
+  @apply text-foreground;
+  font-weight: 600;
 }
 
 .prose p {
   @apply text-muted-foreground;
+  line-height: 1.75;
 }
 
 .prose ul,
@@ -149,16 +281,294 @@
 
 .prose a {
   @apply text-primary hover:underline;
+  text-underline-offset: 4px;
 }
 
 .prose blockquote {
-  @apply border-l-4 border-primary/30 pl-4 italic text-muted-foreground;
+  @apply border-l-2 border-primary/40 pl-6 italic text-muted-foreground;
+  font-family: var(--font-serif), Georgia, serif;
 }
 
-/* TipTap Editor Styles */
+/* =============================================================================
+   PROJECT CONTENT - Editorial Prose Styling
+   Compatible with shadcn theme variables
+   Using pure CSS for maximum compatibility
+   ============================================================================= */
+
+.project-content {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+}
+
+/* Editorial Headings H1-H6 - Pure CSS for reliability */
+.project-content h1 {
+  display: block;
+  font-size: 3rem;
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
+.project-content h2 {
+  display: block;
+  font-size: 2.25rem;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--foreground);
+}
+
+.project-content h3 {
+  display: block;
+  font-size: 1.875rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+.project-content h4 {
+  display: block;
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+.project-content h5 {
+  display: block;
+  font-size: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--foreground);
+}
+
+.project-content h6 {
+  display: block;
+  font-size: 1rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+/* Responsive H1 */
+@media (min-width: 768px) {
+  .project-content h1 {
+    font-size: 3.75rem;
+  }
+  .project-content h2 {
+    font-size: 2.5rem;
+  }
+}
+
+/* Paragraphs */
+.project-content p {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.75;
+  color: var(--muted-foreground);
+}
+
+/* First paragraph after heading - no top margin */
+.project-content h1 + p,
+.project-content h2 + p,
+.project-content h3 + p,
+.project-content h4 + p,
+.project-content h5 + p,
+.project-content h6 + p {
+  margin-top: 0;
+}
+
+/* Lists */
+.project-content ul {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+  list-style-type: disc;
+  color: var(--muted-foreground);
+}
+
+.project-content ol {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+  list-style-type: decimal;
+  color: var(--muted-foreground);
+}
+
+.project-content li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+/* Strong/Bold */
+.project-content strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* Links */
+.project-content a {
+  color: var(--primary);
+  text-decoration: none;
+  text-underline-offset: 4px;
+  transition: color 0.2s ease;
+}
+
+.project-content a:hover {
+  text-decoration: underline;
+}
+
+/* Editorial Blockquote */
+.project-content blockquote {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid var(--primary);
+  border-radius: 0 0.75rem 0.75rem 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.25rem;
+  font-style: normal;
+  line-height: 1.6;
+  background: oklch(0.55 0.12 35 / 0.05);
+  color: var(--foreground);
+}
+
+.dark .project-content blockquote {
+  background: oklch(0.68 0.14 40 / 0.08);
+}
+
+/* Images */
+.project-content img {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+/* Horizontal Rule */
+.project-content hr {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* Code Inline */
+.project-content code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  background: var(--muted);
+  color: var(--primary);
+}
+
+/* Code Block */
+.project-content pre {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--muted);
+}
+
+.project-content pre code {
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  color: var(--foreground);
+}
+
+/* Tables */
+.project-content table {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.project-content th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--muted);
+  color: var(--foreground);
+  border-bottom: 2px solid var(--border);
+}
+
+.project-content td {
+  padding: 0.75rem 1rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.project-content tr:last-child td {
+  border-bottom: none;
+}
+
+.project-content tr:hover td {
+  background: oklch(0.55 0.12 35 / 0.03);
+}
+
+.dark .project-content tr:hover td {
+  background: oklch(0.68 0.14 40 / 0.05);
+}
+
+/* =============================================================================
+   TIPTAP EDITOR STYLES
+   Using pure CSS for consistency with project-content
+   ============================================================================= */
+
 .ProseMirror {
   outline: none;
   min-height: 400px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--foreground);
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
@@ -169,48 +579,552 @@
   height: 0;
 }
 
+/* Editorial Headings - H1 to H6 with serif font */
+.ProseMirror h1 {
+  display: block;
+  font-size: 3rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
 .ProseMirror h2 {
-  @apply text-2xl font-bold mt-8 mb-4;
+  display: block;
+  font-size: 2.25rem;
+  margin-top: 2rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--foreground);
 }
 
 .ProseMirror h3 {
-  @apply text-xl font-semibold mt-6 mb-3;
+  display: block;
+  font-size: 1.875rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--foreground);
 }
 
 .ProseMirror h4 {
-  @apply text-lg font-medium mt-4 mb-2;
+  display: block;
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+.ProseMirror h5 {
+  display: block;
+  font-size: 1.25rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--foreground);
+}
+
+.ProseMirror h6 {
+  display: block;
+  font-size: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+.ProseMirror p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .ProseMirror ul {
-  @apply list-disc ml-6 my-4;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: 1.5rem;
+  list-style-type: disc;
 }
 
 .ProseMirror ol {
-  @apply list-decimal ml-6 my-4;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: 1.5rem;
+  list-style-type: decimal;
 }
 
 .ProseMirror li {
-  @apply my-1;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
+/* Editorial Blockquote */
 .ProseMirror blockquote {
-  @apply border-l-4 border-primary/30 pl-4 my-4 italic;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid var(--primary);
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: 1.125rem;
+  background: oklch(0.55 0.12 35 / 0.05);
+  color: var(--foreground);
+}
+
+.dark .ProseMirror blockquote {
+  background: oklch(0.68 0.14 40 / 0.08);
 }
 
 .ProseMirror hr {
-  @apply my-8 border-border;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  border: none;
+  border-top: 1px solid var(--border);
 }
 
 .ProseMirror a {
-  @apply text-primary underline underline-offset-4;
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+/* Code Block with Syntax Highlighting */
+.ProseMirror pre {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--muted);
 }
 
-/* Selection styling */
-::selection {
-  background: oklch(0.646 0.222 41.116 / 0.3);
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--foreground);
+}
+
+.ProseMirror code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  background: var(--muted);
+  color: var(--primary);
+}
+
+/* Syntax Highlighting Colors */
+.ProseMirror pre .hljs-comment,
+.ProseMirror pre .hljs-quote {
+  color: oklch(0.55 0.02 60);
+  font-style: italic;
+}
+
+.ProseMirror pre .hljs-keyword,
+.ProseMirror pre .hljs-selector-tag {
+  color: oklch(0.55 0.15 280);
+}
+
+.ProseMirror pre .hljs-string,
+.ProseMirror pre .hljs-attr {
+  color: oklch(0.55 0.12 35);
+}
+
+.ProseMirror pre .hljs-number,
+.ProseMirror pre .hljs-literal {
+  color: oklch(0.55 0.15 140);
+}
+
+.ProseMirror pre .hljs-function,
+.ProseMirror pre .hljs-title {
+  color: oklch(0.55 0.15 240);
+}
+
+/* Table Styling - Editorial Data Display */
+.ProseMirror table {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.ProseMirror table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--muted);
+  color: var(--foreground);
+  border-bottom: 2px solid var(--border);
+}
+
+.ProseMirror table td {
+  padding: 0.75rem 1rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.ProseMirror table tr:last-child td {
+  border-bottom: none;
+}
+
+.ProseMirror table tr:hover td {
+  background: oklch(0.55 0.12 35 / 0.03);
+}
+
+.dark .ProseMirror table tr:hover td {
+  background: oklch(0.68 0.14 40 / 0.05);
+}
+
+/* Highlight mark */
+.ProseMirror mark {
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  background: oklch(0.55 0.12 35 / 0.2);
+}
+
+.dark .ProseMirror mark {
+  background: oklch(0.68 0.14 40 / 0.25);
+}
+
+/* =============================================================================
+   COMPONENT UTILITIES
+   ============================================================================= */
+
+/* Editorial number badge */
+.editorial-number {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+}
+
+/* Decorative line */
+.decorative-line {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0%,
+    oklch(0.55 0.12 35 / 0.3) 50%,
+    transparent 100%
+  );
+}
+
+.dark .decorative-line {
+  background: linear-gradient(
+    90deg,
+    var(--primary) 0%,
+    oklch(0.68 0.14 40 / 0.3) 50%,
+    transparent 100%
+  );
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+              box-shadow 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px oklch(0.18 0.01 60 / 0.15);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 20px 40px -15px oklch(0 0 0 / 0.4);
+}
+
+/* =============================================================================
+   ANIMATION UTILITIES
+   ============================================================================= */
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+.stagger-7 { animation-delay: 0.7s; }
+.stagger-8 { animation-delay: 0.8s; }
+
+/* Blur fade up animation - SIGNATURE EFFECT */
+@keyframes blurFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+.animate-blur-up {
+  animation: blurFadeUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+  filter: blur(12px);
+}
+
+/* Blur fade in animation */
+@keyframes blurFadeIn {
+  from {
+    opacity: 0;
+    filter: blur(20px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.animate-blur-in {
+  animation: blurFadeIn 1s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+  filter: blur(20px);
+}
+
+/* Blur scale animation */
+@keyframes blurScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(15px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+.animate-blur-scale {
+  animation: blurScale 0.9s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+  filter: blur(15px);
+}
+
+/* Fade up animation (no blur) */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+}
+
+/* Mask reveal animation */
+@keyframes maskReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-mask-reveal {
+  animation: maskReveal 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+}
+
+/* Letter reveal animation */
+@keyframes letterReveal {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+.animate-letter-reveal {
+  animation: letterReveal 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+}
+
+/* Slide from left with blur */
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0px);
+  }
+}
+
+.animate-slide-left {
+  animation: slideFromLeft 0.7s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  opacity: 0;
+}
+
+/* =============================================================================
+   ADMIN PAGE STYLES
+   ============================================================================= */
+
+.admin-header {
+  @apply border-b border-border bg-card/95 backdrop-blur-md sticky top-0 z-50;
+}
+
+.admin-sidebar {
+  @apply w-80 border-r border-border min-h-[calc(100vh-65px)] bg-muted/20 p-4;
+}
+
+.admin-card {
+  @apply bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-colors;
+}
+
+.admin-input {
+  @apply w-full px-4 py-2.5 bg-background border border-border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all;
+}
+
+.admin-button-primary {
+  @apply px-5 py-2.5 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors;
+}
+
+.admin-button-secondary {
+  @apply px-4 py-2 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors;
+}
+
+/* =============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================= */
+
+/* Slow bounce animation for scroll indicator - CSS-only, GPU optimized */
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 2.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* GPU acceleration hints for animated elements */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* =============================================================================
+   REDUCED MOTION PREFERENCES
+   Respects user's system preference for reduced animations
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable blur animations completely */
+  .animate-blur-up,
+  .animate-blur-in,
+  .animate-blur-scale,
+  .animate-letter-reveal,
+  .animate-slide-left {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Disable infinite scroll indicator */
+  .animate-bounce-slow {
+    animation: none !important;
+  }
+
+  /* Disable pulse animation */
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
+/* =============================================================================
+   OPTIMIZED BACKDROP BLUR
+   Reduced blur intensity for better scroll performance
+   ============================================================================= */
+
+/* Override heavy backdrop-blur-xl to lighter version */
+.backdrop-blur-optimized {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }

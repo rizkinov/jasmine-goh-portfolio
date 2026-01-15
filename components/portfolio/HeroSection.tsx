@@ -11,23 +11,24 @@ export function HeroSection({
     name = "Jasmine Goh",
     headline = "A UX/Product Designer and a critical thinker who focuses on creating digital experiences."
 }: HeroSectionProps) {
-    // Animation variants for the hero text
+    // Container with stagger for word animation
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.15,
+                staggerChildren: 0.15, // Word stagger timing
                 delayChildren: 0.2
             }
         }
     };
 
+    // Word animation with blur - OPTIMIZED: fewer elements than letter-by-letter
     const wordVariants = {
         hidden: {
             opacity: 0,
-            y: 40,
-            filter: 'blur(10px)'
+            y: 50,
+            filter: 'blur(10px)',
         },
         visible: {
             opacity: 1,
@@ -35,104 +36,156 @@ export function HeroSection({
             filter: 'blur(0px)',
             transition: {
                 duration: 0.6,
-                ease: 'easeOut' as const
+                ease: [0.33, 1, 0.68, 1] as const
             }
         }
     };
 
-    const lineVariants = {
+    // Content fade up with subtle blur
+    const fadeUpVariants = {
         hidden: {
             opacity: 0,
             y: 30,
-            filter: 'blur(8px)'
+            filter: 'blur(8px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
             transition: {
-                duration: 0.7,
-                ease: 'easeOut' as const
+                duration: 0.6,
+                ease: [0.33, 1, 0.68, 1] as const
             }
         }
     };
 
-    // Split name into words for staggered animation
+    // Line reveal
+    const lineVariants = {
+        hidden: { scaleX: 0, opacity: 0 },
+        visible: {
+            scaleX: 1,
+            opacity: 1,
+            transition: {
+                duration: 0.8,
+                delay: 0.6,
+                ease: [0.33, 1, 0.68, 1] as const
+            }
+        }
+    };
+
+    // Background element - opacity/scale only
+    const bgElementVariants = {
+        hidden: {
+            opacity: 0,
+            scale: 0.9,
+        },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            transition: {
+                duration: 1,
+                delay: 0.6,
+                ease: [0.33, 1, 0.68, 1] as const
+            }
+        }
+    };
+
     const nameWords = name.split(' ');
 
     return (
-        <section className="relative min-h-[70vh] flex flex-col justify-center px-6 md:px-12 lg:px-24 py-20">
-            {/* Background gradient accent */}
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-transparent to-transparent dark:from-orange-950/20 pointer-events-none" />
+        <section className="relative min-h-[90vh] flex flex-col justify-center px-6 md:px-12 lg:px-24 py-24 overflow-hidden">
+            {/* Subtle gradient background */}
+            <div className="absolute inset-0 gradient-warm pointer-events-none" />
+
+            {/* Decorative background initials */}
+            <div className="absolute top-1/4 right-8 lg:right-20 hidden lg:block pointer-events-none">
+                <motion.div
+                    variants={bgElementVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="text-[14rem] font-serif text-primary/[0.03] select-none leading-none"
+                >
+                    JG
+                </motion.div>
+            </div>
 
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="relative z-10 max-w-4xl"
+                className="relative z-10 max-w-5xl"
             >
-                {/* Greeting line */}
-                <motion.p
-                    variants={lineVariants}
-                    className="text-lg md:text-xl text-muted-foreground mb-4 tracking-wide"
+                {/* Editorial label */}
+                <motion.div
+                    variants={fadeUpVariants}
+                    className="flex items-center gap-4 mb-10"
                 >
-                    Hi, I'm
-                </motion.p>
+                    <span className="text-xs font-medium tracking-[0.25em] uppercase text-primary">
+                        Portfolio
+                    </span>
+                    <div className="h-px w-16 bg-primary/40" />
+                    <span className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
+                        2024
+                    </span>
+                </motion.div>
 
-                {/* Name with word-by-word animation */}
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8">
-                    {nameWords.map((word, index) => (
-                        <motion.span
-                            key={index}
-                            variants={wordVariants}
-                            className="inline-block mr-4 bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text"
-                            style={{
-                                // Subtle gradient text effect
-                                backgroundSize: '200% 100%'
-                            }}
-                        >
-                            {word}
-                        </motion.span>
-                    ))}
-                    <motion.span
-                        variants={wordVariants}
-                        className="inline-block text-primary"
-                    >
-                        .
-                    </motion.span>
-                </h1>
+                {/* Name - Large Editorial Serif with Word-by-Word Blur Animation */}
+                <div className="mb-12">
+                    <h1 className="font-serif tracking-[-0.04em] leading-[0.85]">
+                        {nameWords.map((word, index) => (
+                            <span key={index} className="block overflow-hidden">
+                                <motion.span
+                                    variants={wordVariants}
+                                    className="inline-flex text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] will-change-transform"
+                                >
+                                    {word}
+                                    {index === nameWords.length - 1 && (
+                                        <span className="text-primary">.</span>
+                                    )}
+                                </motion.span>
+                            </span>
+                        ))}
+                    </h1>
+                </div>
+
+                {/* Decorative gradient line */}
+                <motion.div
+                    variants={lineVariants}
+                    className="decorative-line w-32 mb-10 origin-left"
+                />
 
                 {/* Headline */}
                 <motion.p
-                    variants={lineVariants}
-                    className="text-xl md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed max-w-3xl font-light"
+                    variants={fadeUpVariants}
+                    className="text-lg md:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-2xl text-refined"
                 >
                     {headline}
                 </motion.p>
 
-                {/* Decorative elements */}
+                {/* Role badge */}
                 <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 1, duration: 0.8, ease: 'easeOut' as const }}
-                    className="mt-12 h-px bg-gradient-to-r from-primary/50 via-primary to-transparent w-32 origin-left"
-                />
+                    variants={fadeUpVariants}
+                    className="mt-12 flex items-center gap-4"
+                >
+                    <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+                    <span className="text-sm font-medium tracking-wide text-foreground/80">
+                        UX/Product Designer
+                    </span>
+                    <span className="text-muted-foreground/30">—</span>
+                    <span className="text-sm text-muted-foreground tracking-wide">
+                        Kuala Lumpur, Malaysia
+                    </span>
+                </motion.div>
             </motion.div>
 
-            {/* Scroll indicator */}
+            {/* Corner decorative circle */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 0.5 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1, duration: 0.6 }}
+                className="absolute bottom-8 right-8 lg:right-24 pointer-events-none"
             >
-                <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                    className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex justify-center pt-2"
-                >
-                    <motion.div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                </motion.div>
+                <div className="w-20 h-20 border border-primary/20 rounded-full" />
             </motion.div>
         </section>
     );

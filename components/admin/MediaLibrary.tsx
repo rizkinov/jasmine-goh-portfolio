@@ -234,9 +234,9 @@ export function MediaLibrary({
                             </div>
                         ) : view === 'grid' ? (
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                {filteredMedia.map((item) => (
+                                {filteredMedia.map((item, index) => (
                                     <motion.div
-                                        key={item.id}
+                                        key={item.id || `media-grid-${index}`}
                                         whileHover={{ scale: 1.02 }}
                                         className={`group relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors ${selectedItem?.id === item.id
                                                 ? 'border-primary'
@@ -290,9 +290,9 @@ export function MediaLibrary({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredMedia.map((item) => (
+                                    {filteredMedia.map((item, index) => (
                                         <tr
-                                            key={item.id}
+                                            key={item.id || `media-list-${index}`}
                                             onClick={() => handleSelect(item)}
                                             className={`border-b border-border cursor-pointer transition-colors ${selectedItem?.id === item.id
                                                     ? 'bg-primary/10'

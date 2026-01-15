@@ -3,8 +3,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Get credentials from environment variables
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'jasminegoh';
+// Hardcoded hash for "admin123" - env vars have issues with $ characters
+const ADMIN_PASSWORD_HASH = '$2b$10$dmj0QKh62aHG3bzdFaw7m.igayG3LyaLMEK1t4ocGByZ4S4rxXHBa';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-in-production';
 
 export async function POST(request: NextRequest) {

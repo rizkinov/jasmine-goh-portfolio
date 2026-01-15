@@ -176,8 +176,15 @@ export default function MediaPage() {
     // Show loading state while checking auth
     if (isAuthenticated === null) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <motion.div
+                    initial={{ opacity: 0, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, filter: 'blur(0px)' }}
+                    className="flex flex-col items-center gap-4"
+                >
+                    <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                    <span className="text-sm text-muted-foreground tracking-wide">Loading...</span>
+                </motion.div>
             </div>
         );
     }
@@ -190,26 +197,44 @@ export default function MediaPage() {
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
-            <header className="border-b border-border bg-card sticky top-0 z-40">
+            <header className="border-b border-border/50 bg-card/80 backdrop-blur-xl sticky top-0 z-40">
                 <div className="flex items-center justify-between px-6 py-4">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
                         <Link
                             href="/admin"
-                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            ← Back to Admin
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="group-hover:-translate-x-1 transition-transform"
+                            >
+                                <path d="m12 19-7-7 7-7" />
+                                <path d="M19 12H5" />
+                            </svg>
+                            <span className="text-sm tracking-wide">Back to Admin</span>
                         </Link>
-                        <h1 className="text-lg font-semibold">Media Library</h1>
+                        <div className="h-6 w-px bg-border/50" />
+                        <h1 className="text-lg font-serif">Media Library</h1>
                     </div>
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span>{media.length} files</span>
-                            <span>•</span>
-                            <span>{formatSize(totalStorage)} used</span>
+                            <span className="font-serif">{media.length}</span>
+                            <span className="text-xs tracking-wide">files</span>
+                            <span className="text-primary/30">|</span>
+                            <span className="font-serif">{formatSize(totalStorage)}</span>
+                            <span className="text-xs tracking-wide">used</span>
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="text-sm text-muted-foreground hover:text-destructive transition-colors font-medium"
+                            className="text-sm text-muted-foreground hover:text-destructive transition-colors font-medium tracking-wide"
                         >
                             Log Out
                         </button>
@@ -218,15 +243,17 @@ export default function MediaPage() {
             </header>
 
             {/* Toolbar */}
-            <div className="border-b border-border bg-card px-6 py-3 flex items-center gap-4 flex-wrap">
+            <div className="border-b border-border/50 bg-card/50 px-6 py-4 flex items-center gap-4 flex-wrap">
                 {/* Upload Button */}
-                <button
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    className="px-5 py-2.5 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium tracking-wide"
                 >
                     {isUploading ? 'Uploading...' : 'Upload Image'}
-                </button>
+                </motion.button>
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -242,7 +269,7 @@ export default function MediaPage() {
                         placeholder="Search media..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full max-w-xs px-4 py-2 bg-muted border border-border rounded-lg text-sm"
+                        className="w-full max-w-xs px-4 py-2.5 bg-muted/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
                     />
                 </div>
 
@@ -250,7 +277,7 @@ export default function MediaPage() {
                 <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'date' | 'name' | 'size')}
-                    className="px-3 py-2 bg-muted border border-border rounded-lg text-sm"
+                    className="px-4 py-2.5 bg-muted/50 border border-border/50 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                     <option value="date">Sort by Date</option>
                     <option value="name">Sort by Name</option>
@@ -258,21 +285,21 @@ export default function MediaPage() {
                 </select>
 
                 {/* View Toggle */}
-                <div className="flex bg-muted rounded-lg p-1">
+                <div className="flex bg-muted/50 rounded-full p-1 border border-border/50">
                     <button
                         onClick={() => setView('grid')}
-                        className={`px-3 py-1 rounded text-sm ${view === 'grid'
-                            ? 'bg-background shadow-sm'
-                            : 'text-muted-foreground'
+                        className={`px-4 py-1.5 rounded-full text-sm transition-all ${view === 'grid'
+                            ? 'bg-background shadow-sm font-medium'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         Grid
                     </button>
                     <button
                         onClick={() => setView('list')}
-                        className={`px-3 py-1 rounded text-sm ${view === 'list'
-                            ? 'bg-background shadow-sm'
-                            : 'text-muted-foreground'
+                        className={`px-4 py-1.5 rounded-full text-sm transition-all ${view === 'list'
+                            ? 'bg-background shadow-sm font-medium'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         List
@@ -283,36 +310,43 @@ export default function MediaPage() {
                 <button
                     onClick={fetchMedia}
                     disabled={isLoading}
-                    className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors tracking-wide"
                 >
-                    ↻ Refresh
+                    Refresh
                 </button>
             </div>
 
             {/* Bulk Actions */}
-            {selectedItems.size > 0 && (
-                <div className="border-b border-border bg-primary/5 px-6 py-3 flex items-center gap-4">
-                    <span className="text-sm font-medium">
-                        {selectedItems.size} selected
-                    </span>
-                    <button
-                        onClick={() =>
-                            handleDelete(
-                                media.filter((m) => selectedItems.has(m.id))
-                            )
-                        }
-                        className="px-3 py-1 text-sm text-red-500 hover:text-red-400"
+            <AnimatePresence>
+                {selectedItems.size > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="border-b border-border/50 bg-primary/5 px-6 py-3 flex items-center gap-4"
                     >
-                        Delete Selected
-                    </button>
-                    <button
-                        onClick={() => setSelectedItems(new Set())}
-                        className="px-3 py-1 text-sm text-muted-foreground hover:text-foreground"
-                    >
-                        Clear Selection
-                    </button>
-                </div>
-            )}
+                        <span className="text-sm font-medium">
+                            <span className="font-serif text-lg">{selectedItems.size}</span> selected
+                        </span>
+                        <button
+                            onClick={() =>
+                                handleDelete(
+                                    media.filter((m) => selectedItems.has(m.id))
+                                )
+                            }
+                            className="px-4 py-1.5 text-sm text-red-500 hover:text-red-400 font-medium tracking-wide"
+                        >
+                            Delete Selected
+                        </button>
+                        <button
+                            onClick={() => setSelectedItems(new Set())}
+                            className="px-4 py-1.5 text-sm text-muted-foreground hover:text-foreground tracking-wide"
+                        >
+                            Clear Selection
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Content */}
             <div className="p-6">
@@ -321,35 +355,41 @@ export default function MediaPage() {
                         {[...Array(12)].map((_, i) => (
                             <div
                                 key={i}
-                                className="aspect-square bg-muted rounded-lg animate-pulse"
+                                className="aspect-square bg-muted/50 rounded-xl animate-pulse"
                             />
                         ))}
                     </div>
                 ) : filteredMedia.length === 0 ? (
-                    <div className="text-center py-20 text-muted-foreground">
-                        <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <motion.div
+                        initial={{ opacity: 0, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        className="text-center py-24 text-muted-foreground"
+                    >
+                        <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6 border border-border/50">
                             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <p className="text-lg font-medium mb-2">No media found</p>
-                        <p className="text-sm mb-6">Upload images to get started</p>
-                        <button
+                        <p className="text-xl font-serif mb-3">No media found</p>
+                        <p className="text-sm mb-8">Upload images to get started</p>
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => fileInputRef.current?.click()}
-                            className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90"
+                            className="px-6 py-3 bg-primary text-primary-foreground text-sm rounded-full hover:bg-primary/90 font-medium tracking-wide"
                         >
                             Upload Your First Image
-                        </button>
-                    </div>
+                        </motion.button>
+                    </motion.div>
                 ) : view === 'grid' ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {filteredMedia.map((item) => (
+                        {filteredMedia.map((item, index) => (
                             <motion.div
                                 key={item.id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className={`group relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors ${selectedItems.has(item.id)
+                                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                transition={{ delay: index * 0.03, duration: 0.4 }}
+                                className={`group relative aspect-square rounded-xl overflow-hidden cursor-pointer border-2 transition-all ${selectedItems.has(item.id)
                                     ? 'border-primary ring-2 ring-primary/20'
                                     : 'border-transparent hover:border-primary/50'
                                     }`}
@@ -368,7 +408,7 @@ export default function MediaPage() {
                                         e.stopPropagation();
                                         toggleSelection(item.id);
                                     }}
-                                    className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedItems.has(item.id)
+                                    className={`absolute top-3 left-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selectedItems.has(item.id)
                                         ? 'bg-primary border-primary text-primary-foreground'
                                         : 'bg-white/80 border-white/50 opacity-0 group-hover:opacity-100'
                                         }`}
@@ -387,7 +427,7 @@ export default function MediaPage() {
                                                 e.stopPropagation();
                                                 copyUrl(item.public_url);
                                             }}
-                                            className="p-2 bg-white/90 rounded-lg text-xs"
+                                            className="p-2.5 bg-white/90 rounded-full text-xs hover:bg-white transition-colors"
                                             title="Copy URL"
                                         >
                                             📋
@@ -397,7 +437,7 @@ export default function MediaPage() {
                                                 e.stopPropagation();
                                                 handleDelete([item]);
                                             }}
-                                            className="p-2 bg-red-500 text-white rounded-lg text-xs"
+                                            className="p-2.5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
                                             title="Delete"
                                         >
                                             🗑
@@ -406,8 +446,8 @@ export default function MediaPage() {
                                 </div>
 
                                 {/* Info Footer */}
-                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <p className="text-white text-xs truncate">
+                                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <p className="text-white text-xs truncate font-medium">
                                         {item.original_filename}
                                     </p>
                                     <p className="text-white/70 text-xs">
@@ -418,11 +458,15 @@ export default function MediaPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-card rounded-lg border border-border overflow-hidden">
+                    <motion.div
+                        initial={{ opacity: 0, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        className="bg-card rounded-xl border border-border/50 overflow-hidden"
+                    >
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-border text-left bg-muted/30">
-                                    <th className="p-3 w-10">
+                                <tr className="border-b border-border/50 text-left bg-muted/30">
+                                    <th className="p-4 w-10">
                                         <input
                                             type="checkbox"
                                             checked={selectedItems.size === filteredMedia.length}
@@ -430,25 +474,25 @@ export default function MediaPage() {
                                             className="rounded"
                                         />
                                     </th>
-                                    <th className="p-3 w-16">Preview</th>
-                                    <th className="p-3 font-medium">Filename</th>
-                                    <th className="p-3 font-medium">Alt Text</th>
-                                    <th className="p-3 font-medium">Dimensions</th>
-                                    <th className="p-3 font-medium">Size</th>
-                                    <th className="p-3 font-medium">Date</th>
-                                    <th className="p-3 w-24">Actions</th>
+                                    <th className="p-4 w-16">Preview</th>
+                                    <th className="p-4 font-medium text-xs tracking-[0.1em] uppercase text-muted-foreground">Filename</th>
+                                    <th className="p-4 font-medium text-xs tracking-[0.1em] uppercase text-muted-foreground">Alt Text</th>
+                                    <th className="p-4 font-medium text-xs tracking-[0.1em] uppercase text-muted-foreground">Dimensions</th>
+                                    <th className="p-4 font-medium text-xs tracking-[0.1em] uppercase text-muted-foreground">Size</th>
+                                    <th className="p-4 font-medium text-xs tracking-[0.1em] uppercase text-muted-foreground">Date</th>
+                                    <th className="p-4 w-24">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredMedia.map((item) => (
                                     <tr
                                         key={item.id}
-                                        className={`border-b border-border transition-colors ${selectedItems.has(item.id)
+                                        className={`border-b border-border/30 transition-colors ${selectedItems.has(item.id)
                                             ? 'bg-primary/5'
-                                            : 'hover:bg-muted/50'
+                                            : 'hover:bg-muted/30'
                                             }`}
                                     >
-                                        <td className="p-3">
+                                        <td className="p-4">
                                             <input
                                                 type="checkbox"
                                                 checked={selectedItems.has(item.id)}
@@ -456,9 +500,9 @@ export default function MediaPage() {
                                                 className="rounded"
                                             />
                                         </td>
-                                        <td className="p-3">
+                                        <td className="p-4">
                                             <div
-                                                className="w-12 h-12 rounded overflow-hidden relative cursor-pointer"
+                                                className="w-12 h-12 rounded-lg overflow-hidden relative cursor-pointer border border-border/50"
                                                 onClick={() => setEditingItem(item)}
                                             >
                                                 <Image
@@ -469,37 +513,37 @@ export default function MediaPage() {
                                                 />
                                             </div>
                                         </td>
-                                        <td className="p-3">
-                                            <span className="truncate block max-w-[200px]">
+                                        <td className="p-4">
+                                            <span className="truncate block max-w-[200px] font-medium">
                                                 {item.original_filename}
                                             </span>
                                         </td>
-                                        <td className="p-3 text-muted-foreground">
+                                        <td className="p-4 text-muted-foreground">
                                             <span className="truncate block max-w-[150px]">
                                                 {item.alt_text || '—'}
                                             </span>
                                         </td>
-                                        <td className="p-3 text-muted-foreground">
+                                        <td className="p-4 text-muted-foreground font-serif">
                                             {item.width}×{item.height}
                                         </td>
-                                        <td className="p-3 text-muted-foreground">
+                                        <td className="p-4 text-muted-foreground font-serif">
                                             {formatSize(item.size_bytes)}
                                         </td>
-                                        <td className="p-3 text-muted-foreground">
+                                        <td className="p-4 text-muted-foreground">
                                             {formatDate(item.created_at)}
                                         </td>
-                                        <td className="p-3">
+                                        <td className="p-4">
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => copyUrl(item.public_url)}
-                                                    className="text-muted-foreground hover:text-foreground"
+                                                    className="text-muted-foreground hover:text-foreground transition-colors"
                                                     title="Copy URL"
                                                 >
                                                     📋
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete([item])}
-                                                    className="text-red-500 hover:text-red-400"
+                                                    className="text-red-500 hover:text-red-400 transition-colors"
                                                     title="Delete"
                                                 >
                                                     🗑
@@ -510,7 +554,7 @@ export default function MediaPage() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </motion.div>
                 )}
             </div>
 
@@ -521,31 +565,31 @@ export default function MediaPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+                        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
                         onClick={() => setEditingItem(null)}
                     >
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-card rounded-xl max-w-3xl w-full max-h-[85vh] overflow-auto"
+                            initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                            className="bg-card rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-auto border border-border/50"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Header */}
-                            <div className="border-b border-border px-6 py-4 flex items-center justify-between">
-                                <h3 className="text-lg font-semibold">Image Details</h3>
+                            <div className="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+                                <h3 className="text-lg font-serif">Image Details</h3>
                                 <button
                                     onClick={() => setEditingItem(null)}
-                                    className="text-muted-foreground hover:text-foreground"
+                                    className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                                 >
                                     ✕
                                 </button>
                             </div>
 
                             {/* Content */}
-                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Preview */}
-                                <div className="bg-muted/30 rounded-lg p-4 flex items-center justify-center">
+                                <div className="bg-muted/30 rounded-xl p-4 flex items-center justify-center border border-border/50">
                                     <div className="relative max-w-full max-h-[400px]">
                                         <Image
                                             src={editingItem.public_url}
@@ -558,9 +602,9 @@ export default function MediaPage() {
                                 </div>
 
                                 {/* Details */}
-                                <div className="space-y-4">
+                                <div className="space-y-5">
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">
+                                        <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
                                             Filename
                                         </label>
                                         <p className="text-sm text-muted-foreground">
@@ -568,44 +612,46 @@ export default function MediaPage() {
                                         </p>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">
-                                            Dimensions
-                                        </label>
-                                        <p className="text-sm text-muted-foreground">
-                                            {editingItem.width} × {editingItem.height} px
-                                        </p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
+                                                Dimensions
+                                            </label>
+                                            <p className="text-sm text-muted-foreground font-serif">
+                                                {editingItem.width} × {editingItem.height} px
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
+                                                Size
+                                            </label>
+                                            <p className="text-sm text-muted-foreground font-serif">
+                                                {formatSize(editingItem.size_bytes)}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
+                                                MIME Type
+                                            </label>
+                                            <p className="text-sm text-muted-foreground">
+                                                {editingItem.mime_type}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
+                                                Uploaded
+                                            </label>
+                                            <p className="text-sm text-muted-foreground">
+                                                {formatDate(editingItem.created_at)}
+                                            </p>
+                                        </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">
-                                            Size
-                                        </label>
-                                        <p className="text-sm text-muted-foreground">
-                                            {formatSize(editingItem.size_bytes)}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">
-                                            MIME Type
-                                        </label>
-                                        <p className="text-sm text-muted-foreground">
-                                            {editingItem.mime_type}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">
-                                            Uploaded
-                                        </label>
-                                        <p className="text-sm text-muted-foreground">
-                                            {formatDate(editingItem.created_at)}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">
+                                        <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
                                             Alt Text
                                         </label>
                                         <input
@@ -615,12 +661,12 @@ export default function MediaPage() {
                                                 handleAltTextUpdate(editingItem.id, e.target.value)
                                             }
                                             placeholder="Describe this image..."
-                                            className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm"
+                                            className="w-full px-4 py-2.5 bg-muted/50 border border-border/50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">
+                                        <label className="block text-xs font-medium tracking-[0.15em] uppercase text-primary mb-2">
                                             URL
                                         </label>
                                         <div className="flex gap-2">
@@ -628,24 +674,24 @@ export default function MediaPage() {
                                                 type="text"
                                                 value={editingItem.public_url}
                                                 readOnly
-                                                className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-muted-foreground"
+                                                className="flex-1 px-4 py-2.5 bg-muted/50 border border-border/50 rounded-lg text-sm text-muted-foreground"
                                             />
                                             <button
                                                 onClick={() => copyUrl(editingItem.public_url)}
-                                                className="px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90"
+                                                className="px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 font-medium tracking-wide"
                                             >
                                                 Copy
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="pt-4 flex gap-2">
+                                    <div className="pt-4 border-t border-border/50">
                                         <button
                                             onClick={() => {
                                                 handleDelete([editingItem]);
                                                 setEditingItem(null);
                                             }}
-                                            className="px-4 py-2 text-sm text-red-500 hover:text-red-400"
+                                            className="px-4 py-2 text-sm text-red-500 hover:text-red-400 font-medium tracking-wide"
                                         >
                                             Delete Image
                                         </button>
