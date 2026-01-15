@@ -174,6 +174,34 @@ export async function deleteMedia(id: string, storagePath: string): Promise<bool
     }
 }
 
+// Get media by original filename (case-insensitive partial match)
+export async function getMediaByFilename(searchTerm: string): Promise<MediaItem | null> {
+    if (!supabase) {
+        return null;
+    }
+
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
+            .from('media')
+            .select('*')
+            .ilike('original_filename', `%${searchTerm}%`)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        if (error) {
+            console.error('Error fetching media by filename:', error);
+            return null;
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching media by filename:', error);
+        return null;
+    }
+}
+
 // Update media alt text
 export async function updateMediaAltText(id: string, altText: string): Promise<boolean> {
     if (!supabase) {

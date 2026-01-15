@@ -6,6 +6,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 interface ImageCropperProps {
     imageSrc: string;
+    originalMimeType?: string; // Pass the original file's MIME type to preserve format
     onCropComplete: (croppedBlob: Blob) => void;
     onCancel: () => void;
     aspectRatios?: { label: string; value: number | undefined }[];
@@ -42,6 +43,7 @@ function centerAspectCrop(
 
 export function ImageCropper({
     imageSrc,
+    originalMimeType,
     onCropComplete,
     onCancel,
     aspectRatios = DEFAULT_ASPECT_RATIOS,
@@ -55,6 +57,16 @@ export function ImageCropper({
     const [useOriginalSize, setUseOriginalSize] = useState(true);
     const [quality, setQuality] = useState<number>(90);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Detect if image should preserve transparency (PNG, WebP, GIF)
+    const isPng = originalMimeType === 'image/png' ||
+                  imageSrc.startsWith('data:image/png') ||
+                  imageSrc.toLowerCase().includes('.png');
+    const isWebp = originalMimeType === 'image/webp' ||
+                   imageSrc.startsWith('data:image/webp') ||
+                   imageSrc.toLowerCase().includes('.webp');
+    const supportsTransparency = isPng || isWebp;
+    const outputMimeType = supportsTransparency ? 'image/png' : 'image/jpeg';
 
     const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
         const { width, height } = e.currentTarget;
@@ -116,6 +128,13 @@ export function ImageCropper({
         canvas.width = finalWidth;
         canvas.height = finalHeight;
 
+        // For PNG/transparency, don't fill background (keep transparent)
+        // For JPEG, fill with white background first
+        if (!supportsTransparency) {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, finalWidth, finalHeight);
+        }
+
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
@@ -132,13 +151,14 @@ export function ImageCropper({
         );
 
         return new Promise((resolve) => {
+            // PNG is lossless, so quality only applies to JPEG
             canvas.toBlob(
                 (blob) => resolve(blob),
-                'image/jpeg',
-                quality / 100
+                outputMimeType,
+                supportsTransparency ? undefined : quality / 100
             );
         });
-    }, [completedCrop, outputWidth, outputHeight, aspect, quality]);
+    }, [completedCrop, outputWidth, outputHeight, aspect, quality, outputMimeType, supportsTransparency]);
 
     const handleApplyCrop = async () => {
         setIsProcessing(true);
@@ -276,6 +296,9 @@ export function ImageCropper({
                             <div>
                                 <label className="block text-sm font-medium mb-2">
                                     Quality: {quality}%
+                                    {supportsTransparency && (
+                                        <span className="ml-2 text-xs text-muted-foreground">(PNG is lossless)</span>
+                                    )}
                                 </label>
                                 <input
                                     type="range"
@@ -285,11 +308,17 @@ export function ImageCropper({
                                     max={100}
                                     step={5}
                                     className="w-full"
+                                    disabled={supportsTransparency}
                                 />
                                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                     <span>Smaller file</span>
                                     <span>Better quality</span>
                                 </div>
+                                {supportsTransparency && (
+                                    <p className="text-xs text-green-600 mt-2">
+                                        ✓ Transparency will be preserved (PNG output)
+                                    </p>
+                                )}
                             </div>
 
                             {/* Presets */}

@@ -1,15 +1,18 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 interface HeroSectionProps {
     name?: string;
     headline?: string;
+    profileImageUrl?: string;
 }
 
 export function HeroSection({
     name = "Jasmine Goh",
-    headline = "A UX/Product Designer and a critical thinker who focuses on creating digital experiences."
+    headline = "A UX/Product Designer and a critical thinker who focuses on creating digital experiences.",
+    profileImageUrl
 }: HeroSectionProps) {
     // Container with stagger for word animation
     const containerVariants = {
@@ -73,18 +76,20 @@ export function HeroSection({
         }
     };
 
-    // Background element - opacity/scale only
-    const bgElementVariants = {
+    // Profile image animation
+    const imageVariants = {
         hidden: {
             opacity: 0,
             scale: 0.9,
+            filter: 'blur(20px)',
         },
         visible: {
             opacity: 1,
             scale: 1,
+            filter: 'blur(0px)',
             transition: {
-                duration: 1,
-                delay: 0.6,
+                duration: 1.2,
+                delay: 0.4,
                 ease: [0.33, 1, 0.68, 1] as const
             }
         }
@@ -97,17 +102,24 @@ export function HeroSection({
             {/* Subtle gradient background */}
             <div className="absolute inset-0 gradient-warm pointer-events-none" />
 
-            {/* Decorative background initials */}
-            <div className="absolute top-1/4 right-8 lg:right-20 hidden lg:block pointer-events-none">
+            {/* Profile Image - large, overlapping with name (transparent PNG) */}
+            {profileImageUrl && (
                 <motion.div
-                    variants={bgElementVariants}
+                    variants={imageVariants}
                     initial="hidden"
                     animate="visible"
-                    className="text-[14rem] font-serif text-primary/[0.03] select-none leading-none"
+                    className="absolute right-0 top-0 w-[90vw] sm:w-[75vw] md:w-[65vw] lg:w-[60vw] max-w-[900px] h-[95vh] pointer-events-none"
                 >
-                    JG
+                    <Image
+                        src={profileImageUrl}
+                        alt="Jasmine Goh"
+                        fill
+                        className="object-contain object-right-bottom"
+                        sizes="(max-width: 640px) 90vw, (max-width: 768px) 75vw, (max-width: 1024px) 65vw, 60vw"
+                        priority
+                    />
                 </motion.div>
-            </div>
+            )}
 
             <motion.div
                 variants={containerVariants}
@@ -178,15 +190,17 @@ export function HeroSection({
                 </motion.div>
             </motion.div>
 
-            {/* Corner decorative circle */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1, duration: 0.6 }}
-                className="absolute bottom-8 right-8 lg:right-24 pointer-events-none"
-            >
-                <div className="w-20 h-20 border border-primary/20 rounded-full" />
-            </motion.div>
+            {/* Corner decorative circle - only show if no profile image */}
+            {!profileImageUrl && (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 1, duration: 0.6 }}
+                    className="absolute bottom-8 right-8 lg:right-24 pointer-events-none"
+                >
+                    <div className="w-20 h-20 border border-primary/20 rounded-full" />
+                </motion.div>
+            )}
         </section>
     );
 }

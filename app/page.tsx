@@ -1,4 +1,5 @@
 import { getProjects, getProfile } from '@/lib/supabase';
+import { getMediaByFilename } from '@/lib/media';
 import { HeroSection, ProjectGrid, Navbar, Footer } from '@/components/portfolio';
 import type { Metadata } from 'next';
 
@@ -18,6 +19,9 @@ export default async function HomePage() {
     const profile = await getProfile();
     const projects = await getProjects();
 
+    // Fetch profile image from media library (transparent PNG)
+    const profileImage = await getMediaByFilename('jasmine-profile-transparent');
+
     return (
         <main className="min-h-screen bg-background">
             <Navbar />
@@ -27,6 +31,7 @@ export default async function HomePage() {
                 <HeroSection
                     name={profile?.name ?? "Jasmine Goh"}
                     headline={profile?.headline ?? "A UX/Product Designer and a critical thinker who focuses on creating digital experiences."}
+                    profileImageUrl={profileImage?.public_url}
                 />
 
                 <div id="work">

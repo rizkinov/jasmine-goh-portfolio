@@ -375,9 +375,10 @@ export function MediaLibrary({
             </motion.div>
 
             {/* Image Cropper Modal */}
-            {cropperImage && (
+            {cropperImage && pendingFile && (
                 <ImageCropper
                     imageSrc={cropperImage}
+                    originalMimeType={pendingFile.type}
                     onCropComplete={handleCropComplete}
                     onCancel={() => {
                         setCropperImage(null);
