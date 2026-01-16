@@ -2,21 +2,23 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 
 export function Navbar() {
-    // Navbar animation - optimized (no blur for fixed element)
+    const { shouldSkipAnimations } = useAnimationPreferences();
+
+    // Navbar animation - disabled when shouldSkipAnimations
     const navVariants = {
         hidden: {
-            opacity: 0,
-            y: -20,
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : -20,
         },
         visible: {
             opacity: 1,
             y: 0,
-            transition: {
-                duration: 0.5,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.5, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
