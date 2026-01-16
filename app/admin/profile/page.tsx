@@ -81,7 +81,12 @@ export default function ProfilePage() {
             setName(profileData.name || '');
             setHeadline(profileData.headline || '');
             setBio(profileData.bio || '');
-            setExperience(profileData.experience || []);
+            // Ensure each experience entry has a unique ID
+            const experienceWithIds = (profileData.experience || []).map((exp, idx) => ({
+                ...exp,
+                id: exp.id || `exp-${Date.now()}-${idx}`
+            }));
+            setExperience(experienceWithIds);
         } catch (error) {
             console.error('Error fetching profile:', error);
         } finally {
@@ -89,10 +94,12 @@ export default function ProfilePage() {
         }
     }, []);
 
-    // Fetch profile on mount
+    // Fetch profile only after authentication is confirmed
     useEffect(() => {
-        fetchProfile();
-    }, [fetchProfile]);
+        if (isAuthenticated) {
+            fetchProfile();
+        }
+    }, [isAuthenticated, fetchProfile]);
 
     // Handle save via API route
     const handleSave = async () => {
@@ -134,7 +141,7 @@ export default function ProfilePage() {
 
     // Add experience entry
     const addExperience = () => {
-        setExperience([...experience, { company: '', date: '' }]);
+        setExperience([...experience, { id: `exp-${Date.now()}`, company: '', date: '' }]);
     };
 
     // Remove experience entry
@@ -373,7 +380,7 @@ export default function ProfilePage() {
                                     <div className="space-y-4">
                                         {experience.map((exp, index) => (
                                             <motion.div
-                                                key={index}
+                                                key={exp.id || index}
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 className="flex items-start gap-4 p-4 bg-muted/30 rounded-xl border border-border/30"

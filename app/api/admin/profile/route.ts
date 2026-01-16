@@ -11,7 +11,8 @@ function verifyAuth(request: NextRequest): boolean {
         if (!token) return false;
         jwt.verify(token, JWT_SECRET);
         return true;
-    } catch {
+    } catch (error) {
+        console.error('Auth verification failed:', error);
         return false;
     }
 }

@@ -3,6 +3,7 @@
 // =============================================
 
 export interface Experience {
+  id?: string;  // Optional unique identifier for React keys
   company: string;
   date: string;
 }
