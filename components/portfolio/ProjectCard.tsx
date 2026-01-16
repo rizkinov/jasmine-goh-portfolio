@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 import type { Project } from '@/types/database';
 
 interface ProjectCardProps {
@@ -11,23 +12,23 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
+    const { shouldSkipAnimations } = useAnimationPreferences();
+
     // Format index as editorial number (01, 02, etc.)
     const editorialNumber = String(index + 1).padStart(2, '0');
 
-    // Card animation - OPTIMIZED: removed blur for scroll performance
+    // Card animation - disabled when shouldSkipAnimations
     const cardVariants = {
         hidden: {
-            opacity: 0,
-            y: 40,
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 40,
         },
         visible: {
             opacity: 1,
             y: 0,
-            transition: {
-                duration: 0.6,
-                delay: index * 0.08, // Faster stagger
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, delay: index * 0.08, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 

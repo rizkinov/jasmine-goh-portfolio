@@ -2,26 +2,15 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 import type { Profile } from '@/types/database';
 
 interface AboutContentProps {
     profile: Profile | null;
 }
 
-// Check mobile once (runs on client only)
-const getIsMobile = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768;
-};
-
 export function AboutContent({ profile }: AboutContentProps) {
-    // Capture mobile state once on first render - never changes to avoid re-render blink
-    const isMobileRef = useRef<boolean | null>(null);
-    if (isMobileRef.current === null) {
-        isMobileRef.current = getIsMobile();
-    }
-    const isMobile = isMobileRef.current;
+    const { shouldSkipAnimations } = useAnimationPreferences();
 
     // Fallback data if profile is not loaded
     const name = profile?.name ?? "Jasmine Goh";
@@ -29,83 +18,80 @@ export function AboutContent({ profile }: AboutContentProps) {
     const bio = profile?.bio ?? "I'm Jasmine, a UX/Product Designer based in Kuala Lumpur, Malaysia. I specialise in bridging the tenets of design thinking, research based data, and user needs to create impactful design solutions.";
     const experience = profile?.experience ?? [];
 
-    // Container animation with stagger
+    // Container animation with stagger - disabled when shouldSkipAnimations
     const containerVariants = {
-        hidden: { opacity: 0 },
+        hidden: { opacity: shouldSkipAnimations ? 1 : 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.2
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { staggerChildren: 0.1, delayChildren: 0.2 }
         }
     };
 
-    // Blur fade up animation - blur only on desktop
+    // Blur fade up animation - disabled when shouldSkipAnimations
     const blurFadeUpVariants = {
         hidden: {
-            opacity: 0,
-            y: 40,
-            filter: isMobile ? 'blur(0px)' : 'blur(15px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 40,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.7,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.7, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Word animation for name - blur only on desktop
+    // Word animation for name - disabled when shouldSkipAnimations
     const wordVariants = {
         hidden: {
-            opacity: 0,
-            y: 50,
-            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 50,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Line reveal animation
+    // Line reveal animation - disabled when shouldSkipAnimations
     const lineVariants = {
-        hidden: { scaleX: 0, opacity: 0 },
+        hidden: {
+            scaleX: shouldSkipAnimations ? 1 : 0,
+            opacity: shouldSkipAnimations ? 1 : 0
+        },
         visible: {
             scaleX: 1,
             opacity: 1,
-            transition: {
-                duration: 1,
-                delay: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 1, delay: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Card hover animation - blur only on desktop
+    // Card animation - disabled when shouldSkipAnimations
     const cardVariants = {
         hidden: {
-            opacity: 0,
-            y: 30,
-            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 30,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 

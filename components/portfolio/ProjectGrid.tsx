@@ -1,68 +1,56 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRef } from 'react';
 import { ProjectCard } from './ProjectCard';
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 import type { Project } from '@/types/database';
 
 interface ProjectGridProps {
     projects: Project[];
 }
 
-// Check mobile once at module level (runs on client only)
-const getIsMobile = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768;
-};
-
 export function ProjectGrid({ projects }: ProjectGridProps) {
-    // Capture mobile state once on first render - never changes to avoid re-render blink
-    const isMobileRef = useRef<boolean | null>(null);
-    if (isMobileRef.current === null) {
-        isMobileRef.current = getIsMobile();
-    }
-    const isMobile = isMobileRef.current;
+    const { shouldSkipAnimations } = useAnimationPreferences();
 
-    // Header animation with blur - blur only on desktop
+    // Header animation - disabled when shouldSkipAnimations
     const headerBlurVariants = {
         hidden: {
-            opacity: 0,
-            y: 40,
-            filter: isMobile ? 'blur(0px)' : 'blur(12px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 40,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.8,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.8, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
     // Staggered container for header elements
     const containerVariants = {
-        hidden: { opacity: 0 },
+        hidden: { opacity: shouldSkipAnimations ? 1 : 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.12,
-                delayChildren: 0.1
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { staggerChildren: 0.12, delayChildren: 0.1 }
         }
     };
 
     const lineVariants = {
-        hidden: { scaleX: 0, opacity: 0 },
+        hidden: {
+            scaleX: shouldSkipAnimations ? 1 : 0,
+            opacity: shouldSkipAnimations ? 1 : 0
+        },
         visible: {
             scaleX: 1,
             opacity: 1,
-            transition: {
-                duration: 1,
-                delay: 0.4,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 1, delay: 0.4, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
@@ -126,12 +114,12 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
                 ))}
             </div>
 
-            {/* Empty state with blur - blur only on desktop */}
+            {/* Empty state - disabled animation when shouldSkipAnimations */}
             {projects.length === 0 && (
                 <motion.div
-                    initial={{ opacity: 0, filter: isMobile ? 'blur(0px)' : 'blur(10px)' }}
+                    initial={{ opacity: shouldSkipAnimations ? 1 : 0, filter: 'blur(0px)' }}
                     animate={{ opacity: 1, filter: 'blur(0px)' }}
-                    transition={{ duration: 0.6 }}
+                    transition={shouldSkipAnimations ? { duration: 0 } : { duration: 0.6 }}
                     className="text-center py-24"
                 >
                     <div className="inline-flex flex-col items-center">
@@ -145,13 +133,17 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
                 </motion.div>
             )}
 
-            {/* Bottom section decoration with blur - blur only on desktop */}
+            {/* Bottom section decoration - disabled animation when shouldSkipAnimations */}
             {projects.length > 0 && (
                 <motion.div
-                    initial={{ opacity: 0, y: 30, filter: isMobile ? 'blur(0px)' : 'blur(10px)' }}
+                    initial={{
+                        opacity: shouldSkipAnimations ? 1 : 0,
+                        y: shouldSkipAnimations ? 0 : 30,
+                        filter: 'blur(0px)'
+                    }}
                     whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.7, delay: 0.2 }}
+                    transition={shouldSkipAnimations ? { duration: 0 } : { duration: 0.7, delay: 0.2 }}
                     className="mt-24 lg:mt-32 flex items-center justify-center gap-6"
                 >
                     <div className="h-px w-16 bg-gradient-to-l from-border to-transparent" />

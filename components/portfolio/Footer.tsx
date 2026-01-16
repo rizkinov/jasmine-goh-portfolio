@@ -2,21 +2,10 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRef } from 'react';
-
-// Check mobile once at module level (runs on client only)
-const getIsMobile = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768;
-};
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 
 export function Footer() {
-    // Capture mobile state once on first render - never changes to avoid re-render blink
-    const isMobileRef = useRef<boolean | null>(null);
-    if (isMobileRef.current === null) {
-        isMobileRef.current = getIsMobile();
-    }
-    const isMobile = isMobileRef.current;
+    const { shouldSkipAnimations } = useAnimationPreferences();
 
     const currentYear = new Date().getFullYear();
 
@@ -27,50 +16,46 @@ export function Footer() {
     ];
 
     const containerVariants = {
-        hidden: { opacity: 0 },
+        hidden: { opacity: shouldSkipAnimations ? 1 : 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.2
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { staggerChildren: 0.1, delayChildren: 0.2 }
         }
     };
 
-    // Item animation with blur effect - blur only on desktop
+    // Item animation - disabled when shouldSkipAnimations
     const itemVariants = {
         hidden: {
-            opacity: 0,
-            y: 30,
-            filter: isMobile ? 'blur(0px)' : 'blur(12px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 30,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Background element blur animation - blur only on desktop
+    // Background element animation - disabled when shouldSkipAnimations
     const bgElementVariants = {
         hidden: {
-            opacity: 0,
-            scale: 0.8,
-            filter: isMobile ? 'blur(0px)' : 'blur(20px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            scale: shouldSkipAnimations ? 1 : 0.8,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             scale: 1,
             filter: 'blur(0px)',
-            transition: {
-                duration: 1.2,
-                delay: 0.5,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 1.2, delay: 0.5, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 

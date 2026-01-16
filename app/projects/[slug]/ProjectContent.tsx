@@ -3,123 +3,107 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 import type { Project } from '@/types/database';
 
 interface ProjectContentProps {
     project: Project;
 }
 
-// Check mobile once at module level (runs on client only)
-const getIsMobile = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768;
-};
-
 export function ProjectContent({ project }: ProjectContentProps) {
-    // Capture mobile state once on first render - never changes to avoid re-render blink
-    const isMobileRef = useRef<boolean | null>(null);
-    if (isMobileRef.current === null) {
-        isMobileRef.current = getIsMobile();
-    }
-    const isMobile = isMobileRef.current;
+    const { shouldSkipAnimations } = useAnimationPreferences();
 
-    // Container animation with stagger
+    // Container animation with stagger - disabled when shouldSkipAnimations
     const containerVariants = {
-        hidden: { opacity: 0 },
+        hidden: { opacity: shouldSkipAnimations ? 1 : 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.1
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { staggerChildren: 0.1, delayChildren: 0.1 }
         }
     };
 
-    // Blur fade up animation - signature effect (blur only on desktop)
+    // Blur fade up animation - disabled when shouldSkipAnimations
     const blurFadeUpVariants = {
         hidden: {
-            opacity: 0,
-            y: 40,
-            filter: isMobile ? 'blur(0px)' : 'blur(15px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 40,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.7,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.7, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Word animation for title - blur only on desktop
+    // Word animation for title - disabled when shouldSkipAnimations
     const wordVariants = {
         hidden: {
-            opacity: 0,
-            y: 40,
-            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 40,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Line reveal animation
+    // Line reveal animation - disabled when shouldSkipAnimations
     const lineVariants = {
-        hidden: { scaleX: 0, opacity: 0 },
+        hidden: {
+            scaleX: shouldSkipAnimations ? 1 : 0,
+            opacity: shouldSkipAnimations ? 1 : 0
+        },
         visible: {
             scaleX: 1,
             opacity: 1,
-            transition: {
-                duration: 0.8,
-                delay: 0.4,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.8, delay: 0.4, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Image reveal with blur - blur only on desktop
+    // Image reveal - disabled when shouldSkipAnimations
     const imageVariants = {
         hidden: {
-            opacity: 0,
-            scale: 1.05,
-            filter: isMobile ? 'blur(0px)' : 'blur(20px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            scale: shouldSkipAnimations ? 1 : 1.05,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             scale: 1,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.9,
-                delay: 0.3,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.9, delay: 0.3, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Back button animation - blur only on desktop
+    // Back button animation - disabled when shouldSkipAnimations
     const backButtonVariants = {
         hidden: {
-            opacity: 0,
-            x: -20,
-            filter: isMobile ? 'blur(0px)' : 'blur(8px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            x: shouldSkipAnimations ? 0 : -20,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             x: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.5,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.5, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 

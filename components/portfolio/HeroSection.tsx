@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 
 interface HeroSectionProps {
     name?: string;
@@ -10,102 +10,87 @@ interface HeroSectionProps {
     profileImageUrl?: string;
 }
 
-// Check mobile once at module level (runs on client only)
-const getIsMobile = () => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth < 768;
-};
-
 export function HeroSection({
     name = "Jasmine Goh",
     headline = "Creating thoughtful digital experiences through user-centered design.",
     profileImageUrl
 }: HeroSectionProps) {
-    // Capture mobile state once on first render - never changes to avoid re-render blink
-    const isMobileRef = useRef<boolean | null>(null);
-    if (isMobileRef.current === null) {
-        isMobileRef.current = getIsMobile();
-    }
-    const isMobile = isMobileRef.current;
+    const { shouldSkipAnimations } = useAnimationPreferences();
 
     // Container with stagger for word animation
     const containerVariants = {
-        hidden: { opacity: 0 },
+        hidden: { opacity: shouldSkipAnimations ? 1 : 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.2
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { staggerChildren: 0.15, delayChildren: 0.2 }
         }
     };
 
-    // Word animation - blur only on desktop
+    // Word animation - disabled when shouldSkipAnimations
     const wordVariants = {
         hidden: {
-            opacity: 0,
-            y: 50,
-            filter: isMobile ? 'blur(0px)' : 'blur(10px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 50,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Content fade up - blur only on desktop
+    // Content fade up - disabled when shouldSkipAnimations
     const fadeUpVariants = {
         hidden: {
-            opacity: 0,
-            y: 30,
-            filter: isMobile ? 'blur(0px)' : 'blur(8px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            y: shouldSkipAnimations ? 0 : 30,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             y: 0,
             filter: 'blur(0px)',
-            transition: {
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Line reveal
+    // Line reveal - disabled when shouldSkipAnimations
     const lineVariants = {
-        hidden: { scaleX: 0, opacity: 0 },
+        hidden: {
+            scaleX: shouldSkipAnimations ? 1 : 0,
+            opacity: shouldSkipAnimations ? 1 : 0
+        },
         visible: {
             scaleX: 1,
             opacity: 1,
-            transition: {
-                duration: 0.8,
-                delay: 0.6,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 0.8, delay: 0.6, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
-    // Profile image animation - blur only on desktop
+    // Profile image animation - disabled when shouldSkipAnimations
     const imageVariants = {
         hidden: {
-            opacity: 0,
-            scale: 0.95,
-            filter: isMobile ? 'blur(0px)' : 'blur(15px)',
+            opacity: shouldSkipAnimations ? 1 : 0,
+            scale: shouldSkipAnimations ? 1 : 0.95,
+            filter: 'blur(0px)',
         },
         visible: {
             opacity: 1,
             scale: 1,
             filter: 'blur(0px)',
-            transition: {
-                duration: 1,
-                delay: 0.3,
-                ease: [0.33, 1, 0.68, 1] as const
-            }
+            transition: shouldSkipAnimations
+                ? { duration: 0 }
+                : { duration: 1, delay: 0.3, ease: [0.33, 1, 0.68, 1] as const }
         }
     };
 
