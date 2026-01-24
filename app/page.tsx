@@ -23,7 +23,7 @@ export default async function HomePage() {
     const projects = await getProjects();
 
     // Fetch profile image from media library (transparent PNG)
-    const profileImage = await getMediaByFilename('jasmine-profile-transparent');
+    const profileImage = await getMediaByFilename('1769245054638-7g52v8');
 
     return (
         <main className="min-h-screen bg-background">
