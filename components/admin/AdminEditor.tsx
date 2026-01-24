@@ -308,8 +308,8 @@ export function AdminEditor({
 
     return (
         <div className="border border-border rounded-xl bg-card">
-            {/* Toolbar - Sticky */}
-            <div className="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center gap-0.5 sticky top-0 z-20 backdrop-blur-sm rounded-t-xl">
+            {/* Toolbar - Sticky below admin header (65px) */}
+            <div className="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center gap-0.5 sticky top-[65px] z-20 backdrop-blur-sm rounded-t-xl">
                 {/* Text Formatting Group */}
                 <div className="flex items-center gap-0.5 bg-background/50 rounded-lg p-1">
                     <ToolbarButton
