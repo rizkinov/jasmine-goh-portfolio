@@ -925,6 +925,8 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  cursor: pointer;
 }
 
 .ProseMirror figcaption {
@@ -962,19 +964,14 @@ html {
 .ProseMirror figure.img-shadow-lg img { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
 
 /* Image hover edit overlay in editor */
-.ProseMirror figure {
-  position: relative;
-  cursor: pointer;
-}
-
-.ProseMirror figure::after {
+.ProseMirror figure::before {
   content: 'Click to edit';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   color: white;
   border-radius: 0.5rem;
   font-size: 0.75rem;
@@ -982,9 +979,11 @@ html {
   opacity: 0;
   transition: opacity 0.2s;
   pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
 }
 
-.ProseMirror figure:hover::after {
+.ProseMirror figure:hover::before {
   opacity: 1;
 }
 
