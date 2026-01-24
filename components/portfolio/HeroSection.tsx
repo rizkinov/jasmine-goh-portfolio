@@ -41,7 +41,7 @@ export function HeroSection({
     headline = "Creating thoughtful digital experiences through user-centered design.",
     profileImageUrl
 }: HeroSectionProps) {
-    const { shouldSkipAnimations, prefersReducedMotion, isMobile } = useAnimationPreferences();
+    const { shouldSkipAnimations, prefersReducedMotion } = useAnimationPreferences();
     const constraintsRef = useRef<HTMLDivElement>(null);
     const [scrollKey, setScrollKey] = useState(0);
 
@@ -130,9 +130,9 @@ export function HeroSection({
             {/* Subtle gradient background */}
             <div className="absolute inset-0 gradient-warm pointer-events-none" />
 
-            {/* FigJam-style dashed grid - top fade on desktop, bottom fade on mobile */}
+            {/* FigJam-style dashed grid - mobile version (bottom fade) */}
             <div
-                className="absolute inset-0 z-0 pointer-events-none"
+                className="absolute inset-0 z-0 pointer-events-none md:hidden"
                 style={{
                     backgroundImage: `
                         linear-gradient(to right, #e7e5e4 1px, transparent 1px),
@@ -140,28 +140,41 @@ export function HeroSection({
                     `,
                     backgroundSize: '20px 20px',
                     backgroundPosition: '0 0, 0 0',
-                    maskImage: isMobile
-                        ? `
-                            repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
-                            repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
-                            radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%)
-                        `
-                        : `
-                            repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
-                            repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
-                            radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
-                        `,
-                    WebkitMaskImage: isMobile
-                        ? `
-                            repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
-                            repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
-                            radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%)
-                        `
-                        : `
-                            repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
-                            repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
-                            radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
-                        `,
+                    maskImage: `
+                        repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+                        repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
+                        radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%)
+                    `,
+                    WebkitMaskImage: `
+                        repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+                        repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
+                        radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%)
+                    `,
+                    maskComposite: 'intersect',
+                    WebkitMaskComposite: 'source-in',
+                }}
+            />
+
+            {/* FigJam-style dashed grid - desktop version (top fade) */}
+            <div
+                className="absolute inset-0 z-0 pointer-events-none hidden md:block"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #e7e5e4 1px, transparent 1px),
+                        linear-gradient(to bottom, #e7e5e4 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px',
+                    backgroundPosition: '0 0, 0 0',
+                    maskImage: `
+                        repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+                        repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
+                        radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
+                    `,
+                    WebkitMaskImage: `
+                        repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+                        repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
+                        radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
+                    `,
                     maskComposite: 'intersect',
                     WebkitMaskComposite: 'source-in',
                 }}
