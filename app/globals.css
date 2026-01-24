@@ -489,6 +489,14 @@ html {
   opacity: 0.85;
 }
 
+/* Caption/Source text mark styling */
+.project-content .caption-text {
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+  opacity: 0.85;
+}
+
 /* Image Size Variants */
 .project-content figure.img-size-xl img,
 .project-content .img-size-xl img {
@@ -920,6 +928,14 @@ html {
   font-size: 0.8125rem;
   color: var(--muted-foreground);
   text-align: center;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* Caption/Source text mark styling in editor */
+.ProseMirror .caption-text {
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
   font-style: italic;
   opacity: 0.85;
 }

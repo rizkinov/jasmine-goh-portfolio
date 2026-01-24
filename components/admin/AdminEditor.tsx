@@ -1,6 +1,7 @@
 'use client';
 
 import { useEditor, EditorContent } from '@tiptap/react';
+import { Mark } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Image from '@tiptap/extension-image';
@@ -14,15 +15,27 @@ import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { common, createLowlight } from 'lowlight';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MediaLibrary } from './MediaLibrary';
-import { ImageInsertDialog, type ImageInsertOptions } from './ImageInsertDialog';
+import { ImageInsertDialog, type ImageInsertOptions, type ImageSize, type ImageRounded, type ImageShadow } from './ImageInsertDialog';
 import { VideoInsertDialog, type VideoInsertOptions } from './VideoInsertDialog';
 import { isVideoFile, type MediaItem } from '@/lib/media';
 import { Video } from '@/lib/tiptap-video';
 
 // Create lowlight instance with common languages
 const lowlight = createLowlight(common);
+
+// Custom Caption mark for source/note text styling
+const CaptionMark = Mark.create({
+    name: 'caption',
+    parseHTML() {
+        return [{ tag: 'span.caption-text' }];
+    },
+    renderHTML({ HTMLAttributes }) {
+        return ['span', { ...HTMLAttributes, class: 'caption-text' }, 0];
+    },
+});
 
 interface AdminEditorProps {
     initialContent?: string;
@@ -39,6 +52,22 @@ export function AdminEditor({
     const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
     const [showHeadingMenu, setShowHeadingMenu] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const [editingImage, setEditingImage] = useState<{
+        src: string;
+        alt: string;
+        size: ImageSize;
+        rounded: ImageRounded;
+        shadow: ImageShadow;
+        caption?: string;
+        width?: number;
+        height?: number;
+    } | null>(null);
+
+    // Mount state for portal
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const editor = useEditor({
         immediatelyRender: false, // Prevent SSR hydration mismatch
@@ -103,6 +132,7 @@ export function AdminEditor({
                     class: 'border-b border-border p-3 text-muted-foreground',
                 },
             }),
+            CaptionMark,
         ],
         content: initialContent,
         editorProps: {
@@ -185,6 +215,91 @@ export function AdminEditor({
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
     }, [editor]);
 
+    // Parse image classes to extract styling options
+    const parseImageClasses = useCallback((classes: string[]): { size: ImageSize; rounded: ImageRounded; shadow: ImageShadow } => {
+        let size: ImageSize = 'l';
+        let rounded: ImageRounded = 'none';
+        let shadow: ImageShadow = 'none';
+
+        for (const cls of classes) {
+            if (cls.startsWith('img-size-')) {
+                const val = cls.replace('img-size-', '') as ImageSize;
+                if (['xl', 'l', 'm', 's'].includes(val)) size = val;
+            }
+            if (cls.startsWith('img-rounded-')) {
+                const val = cls.replace('img-rounded-', '') as ImageRounded;
+                if (['sm', 'md', 'lg'].includes(val)) rounded = val;
+            }
+            if (cls.startsWith('img-shadow-')) {
+                const val = cls.replace('img-shadow-', '') as ImageShadow;
+                if (['sm', 'md', 'lg'].includes(val)) shadow = val;
+            }
+        }
+
+        return { size, rounded, shadow };
+    }, []);
+
+    // Handle click on editor to detect figure/image clicks
+    const handleEditorClick = useCallback((e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const figure = target.closest('figure');
+
+        if (figure) {
+            const img = figure.querySelector('img');
+            const figcaption = figure.querySelector('figcaption');
+
+            if (img) {
+                const classes = Array.from(figure.classList);
+                const { size, rounded, shadow } = parseImageClasses(classes);
+
+                setEditingImage({
+                    src: img.src,
+                    alt: img.alt || '',
+                    size,
+                    rounded,
+                    shadow,
+                    caption: figcaption?.textContent || undefined,
+                    width: img.width || undefined,
+                    height: img.height || undefined,
+                });
+            }
+        }
+    }, [parseImageClasses]);
+
+    // Handle editing existing image
+    const handleEditImage = useCallback((options: ImageInsertOptions) => {
+        if (!editor || !editingImage) return;
+
+        // Find and replace the figure in the editor
+        const html = editor.getHTML();
+
+        // Build new figure HTML
+        const classes = ['img-size-' + options.size];
+        if (options.rounded !== 'none') classes.push('img-rounded-' + options.rounded);
+        if (options.shadow !== 'none') classes.push('img-shadow-' + options.shadow);
+
+        const newFigureHtml = options.caption
+            ? `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /><figcaption>${options.caption}</figcaption></figure>`
+            : `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /></figure>`;
+
+        // Find the figure containing the image with matching src and replace it
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const figures = doc.querySelectorAll('figure');
+
+        for (const fig of figures) {
+            const img = fig.querySelector('img');
+            if (img && img.src === editingImage.src) {
+                fig.outerHTML = newFigureHtml;
+                break;
+            }
+        }
+
+        // Update editor content
+        editor.commands.setContent(doc.body.innerHTML);
+        setEditingImage(null);
+    }, [editor, editingImage]);
+
     if (!editor) {
         return (
             <div className="animate-pulse bg-muted rounded-xl h-[500px]" />
@@ -193,8 +308,8 @@ export function AdminEditor({
 
     return (
         <div className="border border-border rounded-xl overflow-hidden bg-card">
-            {/* Toolbar */}
-            <div className="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center gap-0.5">
+            {/* Toolbar - Sticky */}
+            <div className="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center gap-0.5 sticky top-0 z-20 backdrop-blur-sm">
                 {/* Text Formatting Group */}
                 <div className="flex items-center gap-0.5 bg-background/50 rounded-lg p-1">
                     <ToolbarButton
@@ -233,6 +348,13 @@ export function AdminEditor({
                         <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M5 5a5 5 0 0110 0v2A5 5 0 015 7V5zM0 16.68A19.9 19.9 0 0110 14c3.64 0 7.06.97 10 2.68V20H0v-3.32z" />
                         </svg>
+                    </ToolbarButton>
+                    <ToolbarButton
+                        onClick={() => editor.chain().focus().toggleMark('caption').run()}
+                        isActive={editor.isActive('caption')}
+                        title="Caption/Source (smaller italic text)"
+                    >
+                        <span className="text-[10px] italic opacity-70">Src</span>
                     </ToolbarButton>
                 </div>
 
@@ -458,7 +580,9 @@ export function AdminEditor({
             )}
 
             {/* Editor Content */}
-            <EditorContent editor={editor} className="editor-content" />
+            <div onClick={handleEditorClick}>
+                <EditorContent editor={editor} className="editor-content" />
+            </div>
 
             {/* Footer */}
             <div className="border-t border-border bg-muted/20 px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
@@ -468,32 +592,48 @@ export function AdminEditor({
                 <span className="font-serif text-primary/60">Editorial Mode</span>
             </div>
 
-            {/* Media Library Modal */}
-            <MediaLibrary
-                isOpen={isMediaLibraryOpen}
-                onClose={() => setIsMediaLibraryOpen(false)}
-                onSelect={handleMediaSelect}
-                mode="select"
-            />
+            {/* Dialogs rendered via portal to escape transform containing block */}
+            {mounted && createPortal(
+                <>
+                    {/* Media Library Modal */}
+                    <MediaLibrary
+                        isOpen={isMediaLibraryOpen}
+                        onClose={() => setIsMediaLibraryOpen(false)}
+                        onSelect={handleMediaSelect}
+                        mode="select"
+                    />
 
-            {/* Image Insert Dialog */}
-            {selectedMedia && !isVideoFile(selectedMedia.mime_type) && (
-                <ImageInsertDialog
-                    isOpen={!!selectedMedia}
-                    onClose={() => setSelectedMedia(null)}
-                    onInsert={handleImageInsert}
-                    media={selectedMedia}
-                />
-            )}
+                    {/* Image Insert Dialog (for new images) */}
+                    {selectedMedia && !isVideoFile(selectedMedia.mime_type) && (
+                        <ImageInsertDialog
+                            isOpen={!!selectedMedia}
+                            onClose={() => setSelectedMedia(null)}
+                            onInsert={handleImageInsert}
+                            media={selectedMedia}
+                        />
+                    )}
 
-            {/* Video Insert Dialog */}
-            {selectedMedia && isVideoFile(selectedMedia.mime_type) && (
-                <VideoInsertDialog
-                    isOpen={!!selectedMedia}
-                    onClose={() => setSelectedMedia(null)}
-                    onInsert={handleVideoInsert}
-                    media={selectedMedia}
-                />
+                    {/* Video Insert Dialog */}
+                    {selectedMedia && isVideoFile(selectedMedia.mime_type) && (
+                        <VideoInsertDialog
+                            isOpen={!!selectedMedia}
+                            onClose={() => setSelectedMedia(null)}
+                            onInsert={handleVideoInsert}
+                            media={selectedMedia}
+                        />
+                    )}
+
+                    {/* Image Edit Dialog (for existing images) */}
+                    {editingImage && (
+                        <ImageInsertDialog
+                            isOpen={!!editingImage}
+                            onClose={() => setEditingImage(null)}
+                            onInsert={handleEditImage}
+                            editingImage={editingImage}
+                        />
+                    )}
+                </>,
+                document.body
             )}
         </div>
     );

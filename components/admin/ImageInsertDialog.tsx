@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import type { MediaItem } from '@/lib/media';
 
 export type ImageSize = 'xl' | 'l' | 'm' | 's';
@@ -19,11 +18,24 @@ export interface ImageInsertOptions {
     caption?: string;
 }
 
+// For editing existing images
+export interface EditingImageData {
+    src: string;
+    alt: string;
+    size: ImageSize;
+    rounded: ImageRounded;
+    shadow: ImageShadow;
+    caption?: string;
+    width?: number;
+    height?: number;
+}
+
 interface ImageInsertDialogProps {
     isOpen: boolean;
     onClose: () => void;
     onInsert: (options: ImageInsertOptions) => void;
-    media: MediaItem;
+    media?: MediaItem;              // For inserting new images
+    editingImage?: EditingImageData; // For editing existing images
 }
 
 export function ImageInsertDialog({
@@ -31,12 +43,28 @@ export function ImageInsertDialog({
     onClose,
     onInsert,
     media,
+    editingImage,
 }: ImageInsertDialogProps) {
-    const [altText, setAltText] = useState<string>(media.alt_text || media.original_filename);
-    const [caption, setCaption] = useState<string>('');
-    const [size, setSize] = useState<ImageSize>('l');
-    const [rounded, setRounded] = useState<ImageRounded>('md');
-    const [shadow, setShadow] = useState<ImageShadow>('md');
+    const isEditMode = !!editingImage;
+    const imageSrc = editingImage?.src || media?.public_url || '';
+    const imageAlt = editingImage?.alt || media?.alt_text || media?.original_filename || '';
+
+    const [altText, setAltText] = useState<string>(imageAlt);
+    const [caption, setCaption] = useState<string>(editingImage?.caption || '');
+    const [size, setSize] = useState<ImageSize>(editingImage?.size || 'l');
+    const [rounded, setRounded] = useState<ImageRounded>(editingImage?.rounded || 'md');
+    const [shadow, setShadow] = useState<ImageShadow>(editingImage?.shadow || 'md');
+
+    // Reset state when dialog opens with new data
+    useEffect(() => {
+        if (isOpen) {
+            setAltText(editingImage?.alt || media?.alt_text || media?.original_filename || '');
+            setCaption(editingImage?.caption || '');
+            setSize(editingImage?.size || 'l');
+            setRounded(editingImage?.rounded || 'md');
+            setShadow(editingImage?.shadow || 'md');
+        }
+    }, [isOpen, editingImage, media]);
 
     const sizeOptions: { value: ImageSize; label: string; width: number }[] = [
         { value: 'xl', label: 'XL (Full Width)', width: 1200 },
@@ -59,7 +87,9 @@ export function ImageInsertDialog({
         { value: 'lg', label: 'Large' },
     ];
 
-    const originalAspectRatio = (media.width || 800) / (media.height || 600);
+    const originalWidth = editingImage?.width || media?.width || 800;
+    const originalHeight = editingImage?.height || media?.height || 600;
+    const originalAspectRatio = originalWidth / originalHeight;
     const selectedWidth = sizeOptions.find(s => s.value === size)?.width || 800;
     const selectedHeight = Math.round(selectedWidth / originalAspectRatio);
 
@@ -82,7 +112,7 @@ export function ImageInsertDialog({
 
     const handleInsert = () => {
         onInsert({
-            src: media.public_url,
+            src: imageSrc,
             alt: altText,
             width: selectedWidth,
             height: selectedHeight,
@@ -104,7 +134,7 @@ export function ImageInsertDialog({
             <div className="bg-card rounded-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
                 {/* Header */}
                 <div className="border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 bg-card z-10">
-                    <h3 className="text-lg font-semibold">Insert Image</h3>
+                    <h3 className="text-lg font-semibold">{isEditMode ? 'Edit Image' : 'Insert Image'}</h3>
                     <button
                         onClick={onClose}
                         className="text-muted-foreground hover:text-foreground transition-colors"
@@ -123,11 +153,10 @@ export function ImageInsertDialog({
                             className={`relative bg-white border border-border overflow-hidden transition-all ${getPreviewClasses()}`}
                             style={{ maxWidth: '100%', maxHeight: 250 }}
                         >
-                            <Image
-                                src={media.public_url}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={imageSrc}
                                 alt={altText}
-                                width={Math.min(selectedWidth, 500)}
-                                height={Math.min(selectedHeight, 250)}
                                 className="object-contain"
                                 style={{
                                     width: 'auto',
@@ -244,7 +273,7 @@ export function ImageInsertDialog({
 
                     {/* Info */}
                     <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 space-y-1">
-                        <p><strong>Original:</strong> {media.width} × {media.height}px</p>
+                        <p><strong>Original:</strong> {originalWidth} × {originalHeight}px</p>
                         <p><strong>Output:</strong> {selectedWidth} × {selectedHeight}px</p>
                     </div>
                 </div>
@@ -261,7 +290,7 @@ export function ImageInsertDialog({
                         onClick={handleInsert}
                         className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                     >
-                        Insert Image
+                        {isEditMode ? 'Update Image' : 'Insert Image'}
                     </button>
                 </div>
             </div>
