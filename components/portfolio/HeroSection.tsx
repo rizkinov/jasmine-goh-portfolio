@@ -1,16 +1,15 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 
-// Sticky note data - positioned on right side, lower down
-// Mobile positions (top) are different to avoid covering text
+// Sticky note data - using CSS classes for responsive positioning (avoids hydration mismatch)
 const stickyNotes = [
-    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotation: -6, top: '35%', topMobile: '88%', right: '65%' },
-    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotation: 4, top: '55%', topMobile: '86%', right: '50%' },
-    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotation: -3, top: '70%', topMobile: '94%', right: '12%' },
+    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotation: -6, topClass: 'top-[88%] md:top-[35%]', rightClass: 'right-[65%]' },
+    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotation: 4, topClass: 'top-[86%] md:top-[55%]', rightClass: 'right-[50%]' },
+    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotation: -3, topClass: 'top-[94%] md:top-[70%]', rightClass: 'right-[12%]' },
 ];
 
 interface HeroSectionProps {
@@ -24,9 +23,8 @@ export function HeroSection({
     headline = "Creating thoughtful digital experiences through user-centered design.",
     profileImageUrl
 }: HeroSectionProps) {
-    const { shouldSkipAnimations, prefersReducedMotion, isMobile } = useAnimationPreferences();
+    const { shouldSkipAnimations, prefersReducedMotion } = useAnimationPreferences();
     const constraintsRef = useRef<HTMLDivElement>(null);
-    const [dragOffsets, setDragOffsets] = useState<Record<number, { x: number; y: number }>>({});
 
     // Container with stagger for word animation
     const containerVariants = {
@@ -170,23 +168,7 @@ export function HeroSection({
                             boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                             cursor: 'grabbing'
                         }}
-                        onDragEnd={(_, info) => {
-                            setDragOffsets(prev => ({
-                                ...prev,
-                                [note.id]: {
-                                    x: (prev[note.id]?.x || 0) + info.offset.x,
-                                    y: (prev[note.id]?.y || 0) + info.offset.y
-                                }
-                            }));
-                        }}
-                        className={`absolute ${note.color} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center w-[60px] h-[60px] md:w-[120px] md:h-[120px]`}
-                        style={{
-                            top: isMobile ? note.topMobile : note.top,
-                            right: note.right,
-                            transform: dragOffsets[note.id]
-                                ? `translate(${dragOffsets[note.id].x}px, ${dragOffsets[note.id].y}px) rotate(${note.rotation}deg)`
-                                : undefined,
-                        }}
+                        className={`absolute ${note.color} ${note.topClass} ${note.rightClass} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center w-[60px] h-[60px] md:w-[120px] md:h-[120px]`}
                         aria-label={`Sticky note: ${note.text}`}
                     >
                         <span className="text-[10px] md:text-sm font-medium text-gray-700 px-1 md:px-2">
