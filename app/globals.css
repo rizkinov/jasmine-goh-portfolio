@@ -670,7 +670,7 @@ html {
 /* Equal column width tables */
 .project-content table.table-equal-cols {
   table-layout: fixed;
-  min-width: 600px;
+  width: 100%;
 }
 
 .project-content table.table-equal-cols td,
@@ -962,7 +962,7 @@ html {
 /* Equal column width tables */
 .ProseMirror table.table-equal-cols {
   table-layout: fixed;
-  min-width: 600px;
+  width: 100%;
 }
 
 .ProseMirror table.table-equal-cols td,

@@ -225,7 +225,7 @@ export function AdminEditor({
                     if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
                         cellUpdates.push({
                             pos,
-                            attrs: { ...node.attrs, colwidth: [colWidth] },
+                            attrs: { ...node.attrs, colwidth: null },
                         });
                     }
                     if (node.type.name === 'table') {
@@ -426,11 +426,10 @@ export function AdminEditor({
                 <div className="relative">
                     <button
                         onClick={() => setShowHeadingMenu(!showHeadingMenu)}
-                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                            editor.isActive('heading')
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${editor.isActive('heading')
                                 ? 'bg-primary text-primary-foreground'
                                 : 'bg-background/50 hover:bg-muted text-foreground'
-                        }`}
+                            }`}
                     >
                         <span className="font-serif">Heading</span>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -450,16 +449,15 @@ export function AdminEditor({
                                 {[1, 2, 3, 4, 5, 6].map((level) => (
                                     <HeadingMenuItem
                                         key={level}
-                                        onClick={() => { editor.chain().focus().toggleHeading({ level: level as 1|2|3|4|5|6 }).run(); setShowHeadingMenu(false); }}
+                                        onClick={() => { editor.chain().focus().toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 }).run(); setShowHeadingMenu(false); }}
                                         isActive={editor.isActive('heading', { level })}
                                     >
-                                        <span className={`font-serif ${
-                                            level === 1 ? 'text-xl' :
-                                            level === 2 ? 'text-lg' :
-                                            level === 3 ? 'text-base' :
-                                            level === 4 ? 'text-sm' :
-                                            'text-xs'
-                                        }`}>
+                                        <span className={`font-serif ${level === 1 ? 'text-xl' :
+                                                level === 2 ? 'text-lg' :
+                                                    level === 3 ? 'text-base' :
+                                                        level === 4 ? 'text-sm' :
+                                                            'text-xs'
+                                            }`}>
                                             Heading {level}
                                         </span>
                                     </HeadingMenuItem>
@@ -727,7 +725,7 @@ function ToolbarButton({
             className={`p-1.5 rounded-md text-sm transition-colors ${isActive
                 ? 'bg-primary text-primary-foreground'
                 : 'hover:bg-muted text-foreground'
-            }`}
+                }`}
         >
             {children}
         </button>
@@ -752,11 +750,10 @@ function HeadingMenuItem({
     return (
         <button
             onClick={onClick}
-            className={`w-full px-3 py-2 text-left transition-colors ${
-                isActive
+            className={`w-full px-3 py-2 text-left transition-colors ${isActive
                     ? 'bg-primary/10 text-primary'
                     : 'hover:bg-muted text-foreground'
-            }`}
+                }`}
         >
             {children}
         </button>
