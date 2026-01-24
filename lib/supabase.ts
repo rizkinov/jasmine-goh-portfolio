@@ -136,6 +136,63 @@ export async function updateProject(id: string, updates: Partial<Database['publi
     }
 }
 
+// Helper function to create a new project (server-side only - uses admin client)
+export async function createProject(input: Database['public']['Tables']['projects']['Insert']): Promise<Project | null> {
+    if (!supabaseAdmin) {
+        console.error('Supabase admin client is not configured. Cannot create project.');
+        return null;
+    }
+
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabaseAdmin as any)
+            .from('projects')
+            .insert({
+                ...input,
+                content_html: input.content_html || '',
+                tags: input.tags || [],
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating project:', error);
+            return null;
+        }
+
+        return data;
+    } catch (err) {
+        console.error('Error creating project:', err);
+        return null;
+    }
+}
+
+// Helper function to delete a project (server-side only - uses admin client)
+export async function deleteProject(id: string): Promise<boolean> {
+    if (!supabaseAdmin) {
+        console.error('Supabase admin client is not configured. Cannot delete project.');
+        return false;
+    }
+
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabaseAdmin as any)
+            .from('projects')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting project:', error);
+            return false;
+        }
+
+        return true;
+    } catch (err) {
+        console.error('Error deleting project:', err);
+        return false;
+    }
+}
+
 // Helper function to update profile (server-side only - uses admin client)
 export async function updateProfile(id: string, updates: Partial<Database['public']['Tables']['profile']['Update']>): Promise<Profile | null> {
     if (!supabaseAdmin) {

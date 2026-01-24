@@ -245,14 +245,14 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                     </motion.div>
                 </header>
 
-                {/* Cover Image with blur reveal */}
-                {project.cover_image_url && (
+                {/* Hero Image with blur reveal - uses hero_image_url if set, otherwise falls back to cover_image_url */}
+                {(project.hero_image_url || project.cover_image_url) && (
                     <motion.div
                         variants={imageVariants}
                         className="mb-20 rounded-2xl overflow-hidden bg-muted aspect-[16/9] relative"
                     >
                         <Image
-                            src={project.cover_image_url}
+                            src={project.hero_image_url || project.cover_image_url || ''}
                             alt={project.title}
                             fill
                             className="object-cover"

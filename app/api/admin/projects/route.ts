@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { updateProject, getProjects, getProjectBySlug } from '@/lib/supabase';
+import { updateProject, getProjects, getProjectBySlug, createProject, deleteProject } from '@/lib/supabase';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-in-production';
 
@@ -52,6 +52,66 @@ export async function GET(request: NextRequest) {
     }
 }
 
+// POST - Create new project
+export async function POST(request: NextRequest) {
+    if (!verifyAuth(request)) {
+        return NextResponse.json(
+            { error: 'Unauthorized' },
+            { status: 401 }
+        );
+    }
+
+    try {
+        const body = await request.json();
+        const { title, slug, short_description, client, role, cover_image_url, hero_image_url, content_html, tags } = body;
+
+        // Validation
+        if (!title || !slug || !short_description || !client || !role) {
+            return NextResponse.json(
+                { error: 'Missing required fields: title, slug, short_description, client, role' },
+                { status: 400 }
+            );
+        }
+
+        // Check for duplicate slug
+        const existingProject = await getProjectBySlug(slug);
+        if (existingProject) {
+            return NextResponse.json(
+                { error: 'A project with this slug already exists' },
+                { status: 409 }
+            );
+        }
+
+        // Create project
+        const newProject = await createProject({
+            title,
+            slug,
+            short_description,
+            client,
+            role,
+            cover_image_url: cover_image_url || null,
+            hero_image_url: hero_image_url || null,
+            content_html: content_html || '',
+            tags: tags || [],
+        });
+
+        if (!newProject) {
+            return NextResponse.json(
+                { error: 'Failed to create project' },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json(newProject, { status: 201 });
+    } catch (error) {
+        console.error('Error creating project:', error);
+        return NextResponse.json(
+            { error: 'Failed to create project' },
+            { status: 500 }
+        );
+    }
+}
+
 // PUT - Update project
 export async function PUT(request: NextRequest) {
     if (!verifyAuth(request)) {
@@ -86,6 +146,45 @@ export async function PUT(request: NextRequest) {
         console.error('Error updating project:', error);
         return NextResponse.json(
             { error: 'Failed to update project' },
+            { status: 500 }
+        );
+    }
+}
+
+// DELETE - Delete project
+export async function DELETE(request: NextRequest) {
+    if (!verifyAuth(request)) {
+        return NextResponse.json(
+            { error: 'Unauthorized' },
+            { status: 401 }
+        );
+    }
+
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json(
+                { error: 'Project ID is required' },
+                { status: 400 }
+            );
+        }
+
+        const success = await deleteProject(id);
+
+        if (!success) {
+            return NextResponse.json(
+                { error: 'Failed to delete project' },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting project:', error);
+        return NextResponse.json(
+            { error: 'Failed to delete project' },
             { status: 500 }
         );
     }

@@ -26,6 +26,7 @@ export interface Project {
   client: string;
   role: string;
   cover_image_url: string | null;
+  hero_image_url: string | null;
   content_html: string;
   tags: string[];
   created_at: string;
@@ -40,6 +41,7 @@ export interface CreateProjectInput {
   client: string;
   role: string;
   cover_image_url?: string | null;
+  hero_image_url?: string | null;
   content_html?: string;
   tags?: string[];
 }
@@ -52,6 +54,7 @@ export interface UpdateProjectInput {
   client?: string;
   role?: string;
   cover_image_url?: string | null;
+  hero_image_url?: string | null;
   content_html?: string;
   tags?: string[];
 }
