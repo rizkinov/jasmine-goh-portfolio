@@ -333,13 +333,11 @@ export default function AdminPage() {
                                 <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-4">
                                     Content (Rich Text)
                                 </label>
-                                <div className="border border-border/50 rounded-xl overflow-hidden bg-card">
-                                    <AdminEditor
-                                        initialContent={selectedProject.content_html}
-                                        onSave={handleSave}
-                                        placeholder="Start writing your case study content..."
-                                    />
-                                </div>
+                                <AdminEditor
+                                    initialContent={selectedProject.content_html}
+                                    onSave={handleSave}
+                                    placeholder="Start writing your case study content..."
+                                />
                             </div>
 
                             {/* Preview Link */}

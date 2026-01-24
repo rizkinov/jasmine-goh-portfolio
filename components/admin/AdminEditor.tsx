@@ -20,8 +20,10 @@ import { createPortal } from 'react-dom';
 import { MediaLibrary } from './MediaLibrary';
 import { ImageInsertDialog, type ImageInsertOptions, type ImageSize, type ImageRounded, type ImageShadow } from './ImageInsertDialog';
 import { VideoInsertDialog, type VideoInsertOptions } from './VideoInsertDialog';
+import { TableInsertDialog } from './TableInsertDialog';
 import { isVideoFile, type MediaItem } from '@/lib/media';
 import { Video } from '@/lib/tiptap-video';
+import { Figure } from '@/lib/tiptap-figure';
 
 // Create lowlight instance with common languages
 const lowlight = createLowlight(common);
@@ -63,6 +65,7 @@ export function AdminEditor({
         width?: number;
         height?: number;
     } | null>(null);
+    const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
 
     // Mount state for portal
     useEffect(() => {
@@ -92,6 +95,7 @@ export function AdminEditor({
                     class: 'rounded-xl max-w-full my-8',
                 },
             }),
+            Figure,
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
@@ -166,28 +170,17 @@ export function AdminEditor({
     const handleImageInsert = useCallback((options: ImageInsertOptions) => {
         if (!editor) return;
 
-        // Build CSS classes based on options
-        const classes = ['img-size-' + options.size];
-
-        // Rounded corners
-        if (options.rounded !== 'none') {
-            classes.push('img-rounded-' + options.rounded);
-        }
-
-        // Shadow
-        if (options.shadow !== 'none') {
-            classes.push('img-shadow-' + options.shadow);
-        }
-
-        // If there's a caption, insert a figure element with figcaption
-        if (options.caption) {
-            const figureHtml = `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /><figcaption>${options.caption}</figcaption></figure>`;
-            editor.chain().focus().insertContent(figureHtml).run();
-        } else {
-            // Insert just the image with classes
-            const imgHtml = `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /></figure>`;
-            editor.chain().focus().insertContent(imgHtml).run();
-        }
+        // Use the custom Figure extension to properly persist classes
+        editor.chain().focus().setFigure({
+            src: options.src,
+            alt: options.alt,
+            width: options.width,
+            height: options.height,
+            size: options.size,
+            rounded: options.rounded,
+            shadow: options.shadow,
+            caption: options.caption,
+        }).run();
 
         setSelectedMedia(null);
     }, [editor]);
@@ -210,9 +203,60 @@ export function AdminEditor({
     }, [editor]);
 
     // Insert table helper
-    const insertTable = useCallback(() => {
+    const insertTable = useCallback((rows: number, cols: number, withHeaderRow: boolean, equalColumns: boolean) => {
         if (!editor) return;
-        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+        editor.chain().focus().insertTable({ rows, cols, withHeaderRow }).run();
+
+        // If equalColumns is true, set equal percentage width on each column
+        if (equalColumns) {
+            // Use setTimeout to ensure the table is inserted before we update it
+            setTimeout(() => {
+                const { state, view } = editor;
+                let { tr } = state;
+
+                // Calculate the width for each column (TipTap uses pixels, we'll use a base width)
+                const colWidth = Math.floor(1000 / cols);
+
+                // Collect all positions first to avoid issues with changing positions
+                const cellUpdates: { pos: number; attrs: Record<string, unknown> }[] = [];
+                const tableUpdates: { pos: number; attrs: Record<string, unknown> }[] = [];
+
+                state.doc.descendants((node, pos) => {
+                    if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
+                        cellUpdates.push({
+                            pos,
+                            attrs: { ...node.attrs, colwidth: [colWidth] },
+                        });
+                    }
+                    if (node.type.name === 'table') {
+                        const existingClass = node.attrs.class || '';
+                        if (!existingClass.includes('table-equal-cols')) {
+                            tableUpdates.push({
+                                pos,
+                                attrs: {
+                                    ...node.attrs,
+                                    class: existingClass ? `${existingClass} table-equal-cols` : 'table-equal-cols',
+                                },
+                            });
+                        }
+                    }
+                });
+
+                // Apply updates in reverse order (from end to start) to preserve positions
+                [...cellUpdates, ...tableUpdates]
+                    .sort((a, b) => b.pos - a.pos)
+                    .forEach(({ pos, attrs }) => {
+                        const node = tr.doc.nodeAt(pos);
+                        if (node) {
+                            tr = tr.setNodeMarkup(pos, undefined, attrs);
+                        }
+                    });
+
+                view.dispatch(tr);
+            }, 10);
+        }
+
+        setIsTableDialogOpen(false);
     }, [editor]);
 
     // Parse image classes to extract styling options
@@ -273,29 +317,47 @@ export function AdminEditor({
         // Find and replace the figure in the editor
         const html = editor.getHTML();
 
-        // Build new figure HTML
-        const classes = ['img-size-' + options.size];
-        if (options.rounded !== 'none') classes.push('img-rounded-' + options.rounded);
-        if (options.shadow !== 'none') classes.push('img-shadow-' + options.shadow);
+        // Build new figure HTML using the same format as the Figure extension
+        const classes = [
+            `img-size-${options.size}`,
+            `img-rounded-${options.rounded}`,
+            `img-shadow-${options.shadow}`
+        ].join(' ');
+
+        const imgAttrs = `src="${options.src}" alt="${options.alt}"${options.width ? ` width="${options.width}"` : ''}${options.height ? ` height="${options.height}"` : ''}`;
 
         const newFigureHtml = options.caption
-            ? `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /><figcaption>${options.caption}</figcaption></figure>`
-            : `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /></figure>`;
+            ? `<figure class="${classes}"><img ${imgAttrs}><figcaption>${options.caption}</figcaption></figure>`
+            : `<figure class="${classes}"><img ${imgAttrs}></figure>`;
 
         // Find the figure containing the image with matching src and replace it
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const figures = doc.querySelectorAll('figure');
 
+        // Extract just the pathname for comparison (handles full URLs vs relative paths)
+        const getPathname = (src: string) => {
+            try {
+                return new URL(src, window.location.origin).pathname;
+            } catch {
+                return src;
+            }
+        };
+
+        const editingSrcPath = getPathname(editingImage.src);
+
         for (const fig of figures) {
             const img = fig.querySelector('img');
-            if (img && img.src === editingImage.src) {
-                fig.outerHTML = newFigureHtml;
-                break;
+            if (img) {
+                const imgSrcPath = getPathname(img.getAttribute('src') || '');
+                if (imgSrcPath === editingSrcPath) {
+                    fig.outerHTML = newFigureHtml;
+                    break;
+                }
             }
         }
 
-        // Update editor content
+        // Update editor content - the Figure extension will re-parse this
         editor.commands.setContent(doc.body.innerHTML);
         setEditingImage(null);
     }, [editor, editingImage]);
@@ -309,7 +371,7 @@ export function AdminEditor({
     return (
         <div className="border border-border rounded-xl bg-card">
             {/* Toolbar - Sticky below admin header (65px) */}
-            <div className="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center gap-0.5 sticky top-[65px] z-20 backdrop-blur-sm rounded-t-xl">
+            <div className="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center gap-0.5 sticky top-[65px] z-20 backdrop-blur-sm">
                 {/* Text Formatting Group */}
                 <div className="flex items-center gap-0.5 bg-background/50 rounded-lg p-1">
                     <ToolbarButton
@@ -467,7 +529,7 @@ export function AdminEditor({
 
                 {/* Table */}
                 <ToolbarButton
-                    onClick={insertTable}
+                    onClick={() => setIsTableDialogOpen(true)}
                     isActive={editor.isActive('table')}
                     title="Insert Table"
                 >
@@ -632,6 +694,13 @@ export function AdminEditor({
                             editingImage={editingImage}
                         />
                     )}
+
+                    {/* Table Insert Dialog */}
+                    <TableInsertDialog
+                        isOpen={isTableDialogOpen}
+                        onClose={() => setIsTableDialogOpen(false)}
+                        onInsert={insertTable}
+                    />
                 </>,
                 document.body
             )}
