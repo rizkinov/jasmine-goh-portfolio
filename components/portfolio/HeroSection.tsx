@@ -1,15 +1,31 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 
 // Sticky note data - using CSS classes for responsive positioning (avoids hydration mismatch)
-const stickyNotes = [
+type StickyNote = {
+    id: number;
+    text?: string;
+    type?: 'image';
+    imageUrl?: string;
+    color: string;
+    rotateClass: string;
+    topClass: string;
+    rightClass: string;
+    size?: 'small' | 'large';
+    imageScale?: string;
+};
+
+const stickyNotes: StickyNote[] = [
     { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotateClass: '-rotate-6', topClass: 'top-[62%] md:top-[35%]', rightClass: 'right-[65%]' },
     { id: 2, text: 'scroll down', color: 'bg-pink-100', rotateClass: 'rotate-3', topClass: 'top-[72%] md:top-[55%]', rightClass: 'right-[50%]' },
     { id: 3, text: 'to explore more', color: 'bg-sky-100', rotateClass: '-rotate-3', topClass: 'top-[82%] md:top-[70%]', rightClass: 'right-[12%]' },
+    { id: 4, type: 'image', imageUrl: 'https://fpsputfmlbzfifeillss.supabase.co/storage/v1/object/public/media/uploads/1769248977897-08rj7l.png', color: 'bg-purple-100', rotateClass: 'rotate-2', topClass: 'top-[55%] md:top-[25%]', rightClass: 'right-[30%]', imageScale: 'scale-75' },
+    { id: 5, text: '🥁', color: 'bg-green-100', rotateClass: '-rotate-4', topClass: 'top-[68%] md:top-[45%]', rightClass: 'right-[5%]' },
+    { id: 6, type: 'image', color: 'bg-orange-100', rotateClass: 'rotate-1', topClass: 'top-[55%] md:top-[40%]', rightClass: 'right-[15%] md:right-[25%]', size: 'large' },
 ];
 
 interface HeroSectionProps {
@@ -25,6 +41,22 @@ export function HeroSection({
 }: HeroSectionProps) {
     const { shouldSkipAnimations, prefersReducedMotion } = useAnimationPreferences();
     const constraintsRef = useRef<HTMLDivElement>(null);
+    const [scrollKey, setScrollKey] = useState(0);
+
+    // Reset sticky notes when scrolling up near the top (syncs visual and drag state)
+    useEffect(() => {
+        let lastScrollY = window.scrollY;
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            // Reset when scrolling up and near the top of the page
+            if (currentScrollY < lastScrollY && currentScrollY < 100) {
+                setScrollKey(k => k + 1);
+            }
+            lastScrollY = currentScrollY;
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     // Container with stagger for word animation
     const containerVariants = {
@@ -86,23 +118,6 @@ export function HeroSection({
         }
     };
 
-    // Profile image animation - disabled when shouldSkipAnimations
-    const imageVariants = {
-        hidden: {
-            opacity: shouldSkipAnimations ? 1 : 0,
-            scale: shouldSkipAnimations ? 1 : 0.95,
-            filter: 'blur(0px)',
-        },
-        visible: {
-            opacity: 1,
-            scale: 1,
-            filter: 'blur(0px)',
-            transition: shouldSkipAnimations
-                ? { duration: 0 }
-                : { duration: 1, delay: 0.3, ease: [0.33, 1, 0.68, 1] as const }
-        }
-    };
-
     const nameWords = name.split(' ');
 
     return (
@@ -110,64 +125,61 @@ export function HeroSection({
             {/* Subtle gradient background */}
             <div className="absolute inset-0 gradient-warm pointer-events-none" />
 
-            {/* Profile Image - Desktop: overlapping editorial style, Mobile: closer to content */}
-            {profileImageUrl && (
-                <motion.div
-                    variants={imageVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="absolute right-4 sm:right-6 md:right-8 lg:right-12 xl:right-[10%] 2xl:right-[15%] top-[40%] sm:top-[35%] md:top-[5%] w-[65vw] sm:w-[55vw] md:w-[42vw] lg:w-[38vw] xl:w-[35vw] 2xl:w-[30vw] max-w-[550px] h-[40vh] sm:h-[45vh] md:h-[70vh] pointer-events-none"
-                    style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)',
-                        WebkitTransform: 'translateZ(0)',
-                    }}
-                >
-                    <Image
-                        src={profileImageUrl}
-                        alt="Jasmine Goh"
-                        fill
-                        className="object-contain object-bottom md:object-right-bottom"
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 85vw, (max-width: 1024px) 60vw, 55vw"
-                        priority
-                    />
-                </motion.div>
-            )}
-
             {/* Draggable Sticky Notes */}
             <div
                 ref={constraintsRef}
                 className="absolute right-0 top-0 w-full md:w-[60%] h-full pointer-events-none z-20"
             >
-                {stickyNotes.map((note, index) => (
-                    <motion.div
-                        key={note.id}
-                        drag={!prefersReducedMotion}
-                        dragConstraints={constraintsRef}
-                        dragElastic={0}
-                        dragMomentum={false}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{
-                            delay: shouldSkipAnimations ? 0 : 0.8 + index * 0.15,
-                            duration: shouldSkipAnimations ? 0 : 0.5,
-                            ease: [0.33, 1, 0.68, 1] as const
-                        }}
-                        whileHover={{ scale: 1.05 }}
-                        whileDrag={{
-                            scale: 1.1,
-                            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                            cursor: 'grabbing'
-                        }}
-                        className={`absolute ${note.color} ${note.topClass} ${note.rightClass} ${note.rotateClass} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center w-[60px] h-[60px] md:w-[120px] md:h-[120px]`}
-                        aria-label={`Sticky note: ${note.text}`}
-                    >
-                        <span className="text-[10px] md:text-sm font-medium text-gray-700 px-1 md:px-2">
-                            {note.text}
-                        </span>
-                    </motion.div>
-                ))}
+                {stickyNotes.map((note, index) => {
+                    const isLarge = note.size === 'large';
+                    const isSmall = note.size === 'small';
+                    const sizeClass = isLarge
+                        ? 'w-[100px] h-[100px] md:w-[200px] md:h-[200px]'
+                        : isSmall
+                        ? 'w-[45px] h-[45px] md:w-[90px] md:h-[90px]'
+                        : 'w-[60px] h-[60px] md:w-[120px] md:h-[120px]';
+
+                    return (
+                        <motion.div
+                            key={`${note.id}-${scrollKey}`}
+                            drag={!prefersReducedMotion}
+                            dragConstraints={constraintsRef}
+                            dragElastic={0}
+                            dragMomentum={false}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                                delay: shouldSkipAnimations ? 0 : 0.8 + index * 0.15,
+                                duration: shouldSkipAnimations ? 0 : 0.5,
+                                ease: [0.33, 1, 0.68, 1] as const
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileDrag={{
+                                scale: 1.1,
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                                cursor: 'grabbing'
+                            }}
+                            className={`absolute ${note.color} ${note.topClass} ${note.rightClass} ${note.rotateClass} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center overflow-hidden ${sizeClass}`}
+                            aria-label={note.type === 'image' ? 'Jasmine Goh photo' : `Sticky note: ${note.text}`}
+                        >
+                            {note.type === 'image' ? (
+                                <Image
+                                    src={note.imageUrl || profileImageUrl || ''}
+                                    alt={note.imageUrl ? 'Decoration' : 'Jasmine Goh'}
+                                    fill
+                                    className={`object-contain object-bottom pointer-events-none select-none ${note.imageScale || ''}`}
+                                    sizes={isLarge ? '(max-width: 768px) 100px, 200px' : isSmall ? '(max-width: 768px) 45px, 90px' : '(max-width: 768px) 60px, 120px'}
+                                    priority={isLarge}
+                                    draggable={false}
+                                />
+                            ) : (
+                                <span className={`font-medium text-gray-700 px-1 md:px-2 ${note.text && note.text.length <= 2 ? 'text-2xl md:text-4xl' : 'text-[10px] md:text-sm'}`}>
+                                    {note.text}
+                                </span>
+                            )}
+                        </motion.div>
+                    );
+                })}
             </div>
 
             <motion.div
