@@ -11,6 +11,13 @@ interface ProjectContentProps {
     otherProjects?: Project[];
 }
 
+// Process HTML to wrap tables in scrollable containers for mobile responsiveness
+const processContent = (html: string) => {
+    return html
+        .replace(/<table/g, '<div class="table-scroll-wrapper"><table')
+        .replace(/<\/table>/g, '</table></div>');
+};
+
 export function ProjectContent({ project, otherProjects = [] }: ProjectContentProps) {
     const { shouldSkipAnimations } = useAnimationPreferences();
 
@@ -262,7 +269,7 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                 >
                     <div
                         className="project-content"
-                        dangerouslySetInnerHTML={{ __html: project.content_html }}
+                        dangerouslySetInnerHTML={{ __html: processContent(project.content_html) }}
                     />
                 </motion.div>
 
