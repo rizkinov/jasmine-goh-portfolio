@@ -171,6 +171,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -233,21 +234,17 @@ html {
 
 /* Elegant gradient overlays */
 .gradient-warm {
-  background: linear-gradient(
-    135deg,
-    oklch(0.55 0.12 35 / 0.08) 0%,
-    transparent 50%,
-    oklch(0.65 0.08 50 / 0.05) 100%
-  );
+  background: linear-gradient(135deg,
+      oklch(0.55 0.12 35 / 0.08) 0%,
+      transparent 50%,
+      oklch(0.65 0.08 50 / 0.05) 100%);
 }
 
 .dark .gradient-warm {
-  background: linear-gradient(
-    135deg,
-    oklch(0.68 0.14 40 / 0.1) 0%,
-    transparent 50%,
-    oklch(0.5 0.08 50 / 0.08) 100%
-  );
+  background: linear-gradient(135deg,
+      oklch(0.68 0.14 40 / 0.1) 0%,
+      transparent 50%,
+      oklch(0.5 0.08 50 / 0.08) 100%);
 }
 
 /* =============================================================================
@@ -381,6 +378,7 @@ html {
   .project-content h1 {
     font-size: 3.75rem;
   }
+
   .project-content h2 {
     font-size: 2.5rem;
   }
@@ -395,12 +393,12 @@ html {
 }
 
 /* First paragraph after heading - no top margin */
-.project-content h1 + p,
-.project-content h2 + p,
-.project-content h3 + p,
-.project-content h4 + p,
-.project-content h5 + p,
-.project-content h6 + p {
+.project-content h1+p,
+.project-content h2+p,
+.project-content h3+p,
+.project-content h4+p,
+.project-content h5+p,
+.project-content h6+p {
   margin-top: 0;
 }
 
@@ -565,7 +563,7 @@ html {
 }
 
 /* Legacy support - images without figure wrapper */
-.project-content > img {
+.project-content>img {
   margin-top: 2rem;
   margin-bottom: 2rem;
   border-radius: 0.75rem;
@@ -675,13 +673,19 @@ html {
 
 .project-content table.table-equal-cols td,
 .project-content table.table-equal-cols th {
-  min-width: 80px;
+  min-width: 0 !important;
+  width: auto !important;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
+.project-content table.table-equal-cols col {
+  width: auto !important;
+}
+
 /* Tablet: Adjust table text and padding */
 @media (max-width: 1024px) {
+
   .project-content th,
   .project-content td {
     padding: 0.625rem 0.75rem;
@@ -695,6 +699,7 @@ html {
 
 /* Mobile: Smaller text */
 @media (max-width: 768px) {
+
   .project-content th,
   .project-content td {
     padding: 0.5rem 0.625rem;
@@ -967,13 +972,19 @@ html {
 
 .ProseMirror table.table-equal-cols td,
 .ProseMirror table.table-equal-cols th {
-  min-width: 80px;
+  min-width: 0 !important;
+  width: auto !important;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
+.ProseMirror table.table-equal-cols col {
+  width: auto !important;
+}
+
 /* Tablet: Adjust table text and padding */
 @media (max-width: 1024px) {
+
   .ProseMirror table th,
   .ProseMirror table td {
     padding: 0.625rem 0.75rem;
@@ -987,6 +998,7 @@ html {
 
 /* Mobile: Smaller text */
 @media (max-width: 768px) {
+
   .ProseMirror table th,
   .ProseMirror table td {
     padding: 0.5rem 0.625rem;
@@ -1051,22 +1063,59 @@ html {
 }
 
 /* Editor Image Size Variants */
-.ProseMirror figure.img-size-xl img { max-width: 1200px; width: 100%; }
-.ProseMirror figure.img-size-l img { max-width: 800px; width: 100%; }
-.ProseMirror figure.img-size-m img { max-width: 600px; width: 100%; }
-.ProseMirror figure.img-size-s img { max-width: 400px; width: 100%; }
+.ProseMirror figure.img-size-xl img {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.ProseMirror figure.img-size-l img {
+  max-width: 800px;
+  width: 100%;
+}
+
+.ProseMirror figure.img-size-m img {
+  max-width: 600px;
+  width: 100%;
+}
+
+.ProseMirror figure.img-size-s img {
+  max-width: 400px;
+  width: 100%;
+}
 
 /* Editor Image Rounded Variants - explicit classes including 'none' */
-.ProseMirror figure.img-rounded-none img { border-radius: 0 !important; }
-.ProseMirror figure.img-rounded-sm img { border-radius: 0.375rem !important; }
-.ProseMirror figure.img-rounded-md img { border-radius: 0.75rem !important; }
-.ProseMirror figure.img-rounded-lg img { border-radius: 1rem !important; }
+.ProseMirror figure.img-rounded-none img {
+  border-radius: 0 !important;
+}
+
+.ProseMirror figure.img-rounded-sm img {
+  border-radius: 0.375rem !important;
+}
+
+.ProseMirror figure.img-rounded-md img {
+  border-radius: 0.75rem !important;
+}
+
+.ProseMirror figure.img-rounded-lg img {
+  border-radius: 1rem !important;
+}
 
 /* Editor Image Shadow Variants - explicit classes including 'none' */
-.ProseMirror figure.img-shadow-none img { box-shadow: none !important; }
-.ProseMirror figure.img-shadow-sm img { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important; }
-.ProseMirror figure.img-shadow-md img { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important; }
-.ProseMirror figure.img-shadow-lg img { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important; }
+.ProseMirror figure.img-shadow-none img {
+  box-shadow: none !important;
+}
+
+.ProseMirror figure.img-shadow-sm img {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+}
+
+.ProseMirror figure.img-shadow-md img {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+}
+
+.ProseMirror figure.img-shadow-lg img {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+}
 
 /* Image hover edit overlay in editor */
 .ProseMirror figure::before,
@@ -1120,27 +1169,23 @@ html {
 /* Decorative line */
 .decorative-line {
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    var(--primary) 0%,
-    oklch(0.55 0.12 35 / 0.3) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      var(--primary) 0%,
+      oklch(0.55 0.12 35 / 0.3) 50%,
+      transparent 100%);
 }
 
 .dark .decorative-line {
-  background: linear-gradient(
-    90deg,
-    var(--primary) 0%,
-    oklch(0.68 0.14 40 / 0.3) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      var(--primary) 0%,
+      oklch(0.68 0.14 40 / 0.3) 50%,
+      transparent 100%);
 }
 
 /* Hover lift effect */
 .hover-lift {
   transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1),
-              box-shadow 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    box-shadow 0.4s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .hover-lift:hover {
@@ -1157,14 +1202,37 @@ html {
    ============================================================================= */
 
 /* Stagger animation delays */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
-.stagger-6 { animation-delay: 0.6s; }
-.stagger-7 { animation-delay: 0.7s; }
-.stagger-8 { animation-delay: 0.8s; }
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+
+.stagger-6 {
+  animation-delay: 0.6s;
+}
+
+.stagger-7 {
+  animation-delay: 0.7s;
+}
+
+.stagger-8 {
+  animation-delay: 0.8s;
+}
 
 /* Blur fade up animation - SIGNATURE EFFECT */
 @keyframes blurFadeUp {
@@ -1173,6 +1241,7 @@ html {
     transform: translateY(30px);
     filter: blur(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1192,6 +1261,7 @@ html {
     opacity: 0;
     filter: blur(20px);
   }
+
   to {
     opacity: 1;
     filter: blur(0px);
@@ -1211,6 +1281,7 @@ html {
     transform: scale(0.92);
     filter: blur(15px);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1230,6 +1301,7 @@ html {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1246,6 +1318,7 @@ html {
   from {
     clip-path: inset(0 100% 0 0);
   }
+
   to {
     clip-path: inset(0 0 0 0);
   }
@@ -1261,6 +1334,7 @@ html {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1279,6 +1353,7 @@ html {
     transform: translateY(100%);
     filter: blur(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1298,6 +1373,7 @@ html {
     transform: translateX(-30px);
     filter: blur(8px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1344,9 +1420,12 @@ html {
 
 /* Slow bounce animation for scroll indicator - CSS-only, GPU optimized */
 @keyframes bounceSlow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(8px);
   }
@@ -1372,6 +1451,7 @@ html {
    ============================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
