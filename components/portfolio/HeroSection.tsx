@@ -20,14 +20,14 @@ type StickyNote = {
 };
 
 const stickyNotes: StickyNote[] = [
-    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotateClass: '-rotate-6', topClass: 'top-[62%] md:top-[35%]', rightClass: 'right-[65%]' },
-    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotateClass: 'rotate-3', topClass: 'top-[72%] md:top-[55%]', rightClass: 'right-[50%]' },
-    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotateClass: '-rotate-3', topClass: 'top-[82%] md:top-[70%]', rightClass: 'right-[12%]' },
-    { id: 4, type: 'image', imageUrl: 'https://fpsputfmlbzfifeillss.supabase.co/storage/v1/object/public/media/uploads/1769248977897-08rj7l.png', color: 'bg-purple-100', rotateClass: 'rotate-2', topClass: 'top-[55%] md:top-[25%]', rightClass: 'right-[30%]', imageScale: 'scale-75' },
-    { id: 5, text: '🥁', color: 'bg-green-100', rotateClass: '-rotate-4', topClass: 'top-[68%] md:top-[45%]', rightClass: 'right-[5%]' },
-    { id: 6, text: '✏️', color: 'bg-yellow-100', rotateClass: 'rotate-4', topClass: 'top-[58%] md:top-[30%]', rightClass: 'right-[45%]' },
-    { id: 7, text: '💻', color: 'bg-slate-100', rotateClass: '-rotate-2', topClass: 'top-[78%] md:top-[65%]', rightClass: 'right-[35%]' },
-    { id: 8, type: 'image', color: 'bg-orange-100', rotateClass: '-rotate-6', topClass: 'top-[55%] md:top-[40%]', rightClass: 'right-[15%] md:right-[25%]', size: 'large' },
+    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotateClass: '-rotate-6', topClass: 'top-[62%] md:top-[35%]', rightClass: 'right-[75%] md:right-[65%]' },
+    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotateClass: 'rotate-3', topClass: 'top-[72%] md:top-[55%]', rightClass: 'right-[55%] md:right-[50%]' },
+    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotateClass: '-rotate-3', topClass: 'top-[82%] md:top-[70%]', rightClass: 'right-[20%] md:right-[12%]' },
+    { id: 4, type: 'image', imageUrl: 'https://fpsputfmlbzfifeillss.supabase.co/storage/v1/object/public/media/uploads/1769248977897-08rj7l.png', color: 'bg-purple-100', rotateClass: 'rotate-2', topClass: 'top-[55%] md:top-[25%]', rightClass: 'right-[40%] md:right-[30%]', imageScale: 'scale-75' },
+    { id: 5, text: '🥁', color: 'bg-green-100', rotateClass: '-rotate-4', topClass: 'top-[68%] md:top-[45%]', rightClass: 'right-[8%] md:right-[5%]' },
+    { id: 6, text: '✏️', color: 'bg-yellow-100', rotateClass: 'rotate-4', topClass: 'top-[58%] md:top-[30%]', rightClass: 'right-[60%] md:right-[45%]' },
+    { id: 7, text: '💻', color: 'bg-slate-100', rotateClass: '-rotate-2', topClass: 'top-[78%] md:top-[65%]', rightClass: 'right-[45%] md:right-[35%]' },
+    { id: 8, type: 'image', color: 'bg-orange-100', rotateClass: '-rotate-6', topClass: 'top-[62%] md:top-[40%]', rightClass: 'right-[30%] md:right-[25%]', size: 'large' },
 ];
 
 interface HeroSectionProps {
@@ -45,8 +45,11 @@ export function HeroSection({
     const constraintsRef = useRef<HTMLDivElement>(null);
     const [scrollKey, setScrollKey] = useState(0);
 
-    // Reset sticky notes when scrolling up near the top (syncs visual and drag state)
+    // Reset sticky notes when scrolling up near the top (mobile only - syncs visual and drag state)
     useEffect(() => {
+        const isMobile = window.innerWidth < 768;
+        if (!isMobile) return; // Skip on desktop - drag position persists fine
+
         let lastScrollY = window.scrollY;
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
@@ -126,6 +129,31 @@ export function HeroSection({
         <section className="relative min-h-[100svh] md:min-h-[90vh] flex flex-col justify-start md:justify-center px-6 md:px-12 lg:px-24 pt-8 pb-0 md:py-24 overflow-hidden">
             {/* Subtle gradient background */}
             <div className="absolute inset-0 gradient-warm pointer-events-none" />
+
+            {/* FigJam-style dashed grid */}
+            <div
+                className="absolute inset-0 z-0 pointer-events-none"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #e7e5e4 1px, transparent 1px),
+                        linear-gradient(to bottom, #e7e5e4 1px, transparent 1px)
+                    `,
+                    backgroundSize: '20px 20px',
+                    backgroundPosition: '0 0, 0 0',
+                    maskImage: `
+                        repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+                        repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
+                        radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
+                    `,
+                    WebkitMaskImage: `
+                        repeating-linear-gradient(to right, black 0px, black 3px, transparent 3px, transparent 8px),
+                        repeating-linear-gradient(to bottom, black 0px, black 3px, transparent 3px, transparent 8px),
+                        radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)
+                    `,
+                    maskComposite: 'intersect',
+                    WebkitMaskComposite: 'source-in',
+                }}
+            />
 
             {/* Draggable Sticky Notes */}
             <div
