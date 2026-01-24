@@ -149,23 +149,18 @@ export function ImageInsertDialog({
                 <div className="p-6 space-y-6">
                     {/* Preview */}
                     <div className="bg-muted/30 rounded-lg p-4 flex items-center justify-center">
-                        <div
-                            className={`relative bg-white border border-border overflow-hidden transition-all ${getPreviewClasses()}`}
-                            style={{ maxWidth: '100%', maxHeight: 250 }}
-                        >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={imageSrc}
-                                alt={altText}
-                                className="object-contain"
-                                style={{
-                                    width: 'auto',
-                                    height: 'auto',
-                                    maxWidth: '100%',
-                                    maxHeight: 250,
-                                }}
-                            />
-                        </div>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={imageSrc}
+                            alt={altText}
+                            className={`object-contain transition-all ${getPreviewClasses()}`}
+                            style={{
+                                width: 'auto',
+                                height: 'auto',
+                                maxWidth: '100%',
+                                maxHeight: 250,
+                            }}
+                        />
                     </div>
 
                     {/* Alt Text */}

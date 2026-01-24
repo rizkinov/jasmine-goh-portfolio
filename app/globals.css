@@ -539,6 +539,10 @@ html {
 }
 
 /* Image Shadow Variants */
+.project-content figure img {
+  box-shadow: none; /* Default: no shadow */
+}
+
 .project-content figure.img-shadow-sm img,
 .project-content .img-shadow-sm img {
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -952,9 +956,37 @@ html {
 .ProseMirror figure.img-rounded-lg img { border-radius: 1rem; }
 
 /* Editor Image Shadow Variants */
+.ProseMirror figure img { box-shadow: none; } /* Default: no shadow */
 .ProseMirror figure.img-shadow-sm img { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
 .ProseMirror figure.img-shadow-md img { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
 .ProseMirror figure.img-shadow-lg img { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+
+/* Image hover edit overlay in editor */
+.ProseMirror figure {
+  position: relative;
+  cursor: pointer;
+}
+
+.ProseMirror figure::after {
+  content: 'Click to edit';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.ProseMirror figure:hover::after {
+  opacity: 1;
+}
 
 /* =============================================================================
    COMPONENT UTILITIES
