@@ -10,6 +10,7 @@ export interface MediaItem {
     size_bytes: number;
     width: number | null;
     height: number | null;
+    duration: number | null; // Video duration in seconds
     alt_text: string | null;
     created_at: string;
     updated_at: string;
@@ -43,6 +44,32 @@ async function getImageDimensions(blob: Blob): Promise<{ width: number; height: 
         };
         img.src = URL.createObjectURL(blob);
     });
+}
+
+// Get video dimensions and duration from a blob
+async function getVideoMetadata(blob: Blob): Promise<{ width: number; height: number; duration: number }> {
+    return new Promise((resolve) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+            resolve({
+                width: video.videoWidth,
+                height: video.videoHeight,
+                duration: Math.round(video.duration)
+            });
+            URL.revokeObjectURL(video.src);
+        };
+        video.onerror = () => {
+            resolve({ width: 0, height: 0, duration: 0 });
+            URL.revokeObjectURL(video.src);
+        };
+        video.src = URL.createObjectURL(blob);
+    });
+}
+
+// Check if file is a video based on MIME type
+export function isVideoFile(mimeType: string): boolean {
+    return mimeType.startsWith('video/');
 }
 
 // Upload image to Supabase Storage
@@ -111,6 +138,91 @@ export async function uploadImage(
     } catch (error) {
         console.error('Upload error:', error);
         return { success: false, error: 'Failed to upload image' };
+    }
+}
+
+// Upload video to Supabase Storage
+export async function uploadVideo(
+    file: File | Blob,
+    originalFilename: string,
+    altText?: string
+): Promise<UploadResult> {
+    if (!supabase) {
+        return { success: false, error: 'Supabase is not configured' };
+    }
+
+    try {
+        const filename = generateFilename(originalFilename);
+        const storagePath = `uploads/${filename}`;
+
+        // Upload to storage
+        const { error: uploadError } = await supabase.storage
+            .from('media')
+            .upload(storagePath, file, {
+                contentType: file.type || 'video/mp4',
+                cacheControl: '31536000', // 1 year cache
+            });
+
+        if (uploadError) {
+            console.error('Storage upload error:', uploadError);
+            return { success: false, error: uploadError.message };
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('media')
+            .getPublicUrl(storagePath);
+
+        const publicUrl = urlData.publicUrl;
+
+        // Get video dimensions and duration
+        const metadata = await getVideoMetadata(file);
+
+        // Insert into media table
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: mediaData, error: dbError } = await (supabase as any)
+            .from('media')
+            .insert({
+                filename,
+                original_filename: originalFilename,
+                storage_path: storagePath,
+                public_url: publicUrl,
+                mime_type: file.type || 'video/mp4',
+                size_bytes: file.size,
+                width: metadata.width || null,
+                height: metadata.height || null,
+                duration: metadata.duration || null,
+                alt_text: altText || null,
+            })
+            .select()
+            .single();
+
+        if (dbError) {
+            console.error('Database insert error:', dbError);
+            // Try to clean up the uploaded file
+            await supabase.storage.from('media').remove([storagePath]);
+            return { success: false, error: dbError.message };
+        }
+
+        return { success: true, media: mediaData };
+    } catch (error) {
+        console.error('Upload error:', error);
+        return { success: false, error: 'Failed to upload video' };
+    }
+}
+
+// Unified upload function that detects file type
+export async function uploadMedia(
+    file: File | Blob,
+    originalFilename: string,
+    altText?: string
+): Promise<UploadResult> {
+    const mimeType = file.type || '';
+
+    if (isVideoFile(mimeType)) {
+        return uploadVideo(file, originalFilename, altText);
+    } else {
+        return uploadImage(file, originalFilename, altText);
     }
 }
 

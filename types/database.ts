@@ -75,6 +75,7 @@ export interface Media {
   size_bytes: number;
   width: number | null;
   height: number | null;
+  duration: number | null; // Video duration in seconds
   alt_text: string | null;
   created_at: string;
   updated_at: string;
@@ -89,6 +90,7 @@ export interface CreateMediaInput {
   size_bytes: number;
   width?: number | null;
   height?: number | null;
+  duration?: number | null; // Video duration in seconds
   alt_text?: string | null;
 }
 

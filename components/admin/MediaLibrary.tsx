@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getMediaItems, deleteMedia, uploadImage, type MediaItem } from '@/lib/media';
+import { getMediaItems, deleteMedia, uploadImage, uploadVideo, isVideoFile, type MediaItem } from '@/lib/media';
 import { ImageCropper } from './ImageCropper';
 
 interface MediaLibraryProps {
@@ -45,17 +45,32 @@ export function MediaLibrary({
     }, [isOpen, fetchMedia]);
 
     // Handle file selection
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Show cropper
-        const reader = new FileReader();
-        reader.onload = () => {
-            setCropperImage(reader.result as string);
-            setPendingFile(file);
-        };
-        reader.readAsDataURL(file);
+        // Check if it's a video file
+        if (isVideoFile(file.type)) {
+            // Upload video directly (no cropping)
+            setIsUploading(true);
+            const result = await uploadVideo(file, file.name);
+
+            if (result.success && result.media) {
+                setMedia((prev) => [result.media!, ...prev]);
+            } else {
+                console.error('Upload failed:', result.error);
+            }
+
+            setIsUploading(false);
+        } else {
+            // Show cropper for images
+            const reader = new FileReader();
+            reader.onload = () => {
+                setCropperImage(reader.result as string);
+                setPendingFile(file);
+            };
+            reader.readAsDataURL(file);
+        }
 
         // Reset input
         e.target.value = '';
@@ -82,7 +97,8 @@ export function MediaLibrary({
 
     // Handle delete
     const handleDelete = async (item: MediaItem) => {
-        if (!confirm('Are you sure you want to delete this image?')) return;
+        const mediaType = isVideoFile(item.mime_type) ? 'video' : 'image';
+        if (!confirm(`Are you sure you want to delete this ${mediaType}?`)) return;
 
         setIsDeleting(true);
         const success = await deleteMedia(item.id, item.storage_path);
@@ -180,10 +196,10 @@ export function MediaLibrary({
                     <div className="border-b border-border px-6 py-3 flex items-center gap-4">
                         {/* Upload Button */}
                         <label className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg cursor-pointer hover:bg-primary/90 transition-colors">
-                            {isUploading ? 'Uploading...' : 'Upload Image'}
+                            {isUploading ? 'Uploading...' : 'Upload Media'}
                             <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,video/mp4,video/webm,video/quicktime"
                                 onChange={handleFileSelect}
                                 disabled={isUploading}
                                 className="hidden"
@@ -230,52 +246,73 @@ export function MediaLibrary({
                                     </svg>
                                 </div>
                                 <p className="text-lg font-medium mb-2">No media found</p>
-                                <p className="text-sm">Upload images to get started</p>
+                                <p className="text-sm">Upload images or videos to get started</p>
                             </div>
                         ) : view === 'grid' ? (
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                {filteredMedia.map((item, index) => (
-                                    <motion.div
-                                        key={item.id || `media-grid-${index}`}
-                                        whileHover={{ scale: 1.02 }}
-                                        className={`group relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors ${selectedItem?.id === item.id
-                                                ? 'border-primary'
-                                                : 'border-transparent hover:border-primary/50'
-                                            }`}
-                                        onClick={() => handleSelect(item)}
-                                    >
-                                        <Image
-                                            src={item.public_url}
-                                            alt={item.alt_text || item.filename}
-                                            fill
-                                            className="object-cover"
-                                            sizes="(max-width: 768px) 50vw, 20vw"
-                                        />
-                                        {/* Overlay */}
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors">
-                                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <p className="text-white text-xs truncate">
-                                                    {item.original_filename}
-                                                </p>
-                                                <p className="text-white/70 text-xs">
-                                                    {item.width}×{item.height} · {formatSize(item.size_bytes)}
-                                                </p>
+                                {filteredMedia.map((item, index) => {
+                                    const itemIsVideo = isVideoFile(item.mime_type);
+                                    return (
+                                        <motion.div
+                                            key={item.id || `media-grid-${index}`}
+                                            whileHover={{ scale: 1.02 }}
+                                            className={`group relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-colors ${selectedItem?.id === item.id
+                                                    ? 'border-primary'
+                                                    : 'border-transparent hover:border-primary/50'
+                                                }`}
+                                            onClick={() => handleSelect(item)}
+                                        >
+                                            {itemIsVideo ? (
+                                                <video
+                                                    src={item.public_url}
+                                                    className="w-full h-full object-cover"
+                                                    muted
+                                                    preload="metadata"
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src={item.public_url}
+                                                    alt={item.alt_text || item.filename}
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="(max-width: 768px) 50vw, 20vw"
+                                                />
+                                            )}
+                                            {/* Video Badge */}
+                                            {itemIsVideo && (
+                                                <div className="absolute top-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded flex items-center gap-1">
+                                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z" />
+                                                    </svg>
+                                                    {item.duration ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(2, '0')}` : 'Video'}
+                                                </div>
+                                            )}
+                                            {/* Overlay */}
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors">
+                                                <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <p className="text-white text-xs truncate">
+                                                        {item.original_filename}
+                                                    </p>
+                                                    <p className="text-white/70 text-xs">
+                                                        {item.width}×{item.height} · {formatSize(item.size_bytes)}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        {/* Delete Button */}
-                                        {mode === 'manage' && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDelete(item);
-                                                }}
-                                                className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity text-xs"
-                                            >
-                                                ✕
-                                            </button>
-                                        )}
-                                    </motion.div>
-                                ))}
+                                            {/* Delete Button */}
+                                            {mode === 'manage' && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDelete(item);
+                                                    }}
+                                                    className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </motion.div>
+                                    );
+                                })}
                             </div>
                         ) : (
                             <table className="w-full text-sm">
@@ -283,6 +320,7 @@ export function MediaLibrary({
                                     <tr className="border-b border-border text-left">
                                         <th className="pb-3 font-medium">Preview</th>
                                         <th className="pb-3 font-medium">Filename</th>
+                                        <th className="pb-3 font-medium">Type</th>
                                         <th className="pb-3 font-medium">Dimensions</th>
                                         <th className="pb-3 font-medium">Size</th>
                                         <th className="pb-3 font-medium">Date</th>
@@ -290,50 +328,79 @@ export function MediaLibrary({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredMedia.map((item, index) => (
-                                        <tr
-                                            key={item.id || `media-list-${index}`}
-                                            onClick={() => handleSelect(item)}
-                                            className={`border-b border-border cursor-pointer transition-colors ${selectedItem?.id === item.id
-                                                    ? 'bg-primary/10'
-                                                    : 'hover:bg-muted/50'
-                                                }`}
-                                        >
-                                            <td className="py-3">
-                                                <div className="w-12 h-12 rounded overflow-hidden relative">
-                                                    <Image
-                                                        src={item.public_url}
-                                                        alt={item.alt_text || item.filename}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="py-3">{item.original_filename}</td>
-                                            <td className="py-3 text-muted-foreground">
-                                                {item.width}×{item.height}
-                                            </td>
-                                            <td className="py-3 text-muted-foreground">
-                                                {formatSize(item.size_bytes)}
-                                            </td>
-                                            <td className="py-3 text-muted-foreground">
-                                                {new Date(item.created_at).toLocaleDateString()}
-                                            </td>
-                                            <td className="py-3">
-                                                {mode === 'manage' && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDelete(item);
-                                                        }}
-                                                        className="text-red-500 hover:text-red-400"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {filteredMedia.map((item, index) => {
+                                        const itemIsVideo = isVideoFile(item.mime_type);
+                                        return (
+                                            <tr
+                                                key={item.id || `media-list-${index}`}
+                                                onClick={() => handleSelect(item)}
+                                                className={`border-b border-border cursor-pointer transition-colors ${selectedItem?.id === item.id
+                                                        ? 'bg-primary/10'
+                                                        : 'hover:bg-muted/50'
+                                                    }`}
+                                            >
+                                                <td className="py-3">
+                                                    <div className="w-12 h-12 rounded overflow-hidden relative">
+                                                        {itemIsVideo ? (
+                                                            <video
+                                                                src={item.public_url}
+                                                                className="w-full h-full object-cover"
+                                                                muted
+                                                                preload="metadata"
+                                                            />
+                                                        ) : (
+                                                            <Image
+                                                                src={item.public_url}
+                                                                alt={item.alt_text || item.filename}
+                                                                fill
+                                                                className="object-cover"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="py-3">{item.original_filename}</td>
+                                                <td className="py-3 text-muted-foreground">
+                                                    {itemIsVideo ? (
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded text-xs">
+                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M8 5v14l11-7z" />
+                                                            </svg>
+                                                            Video
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs">Image</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3 text-muted-foreground">
+                                                    {item.width}×{item.height}
+                                                    {itemIsVideo && item.duration && (
+                                                        <span className="ml-2 text-xs">
+                                                            ({Math.floor(item.duration / 60)}:{String(item.duration % 60).padStart(2, '0')})
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3 text-muted-foreground">
+                                                    {formatSize(item.size_bytes)}
+                                                </td>
+                                                <td className="py-3 text-muted-foreground">
+                                                    {new Date(item.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="py-3">
+                                                    {mode === 'manage' && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(item);
+                                                            }}
+                                                            className="text-red-500 hover:text-red-400"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         )}
@@ -344,17 +411,29 @@ export function MediaLibrary({
                         <div className="border-t border-border px-6 py-4 flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded overflow-hidden relative">
-                                    <Image
-                                        src={selectedItem.public_url}
-                                        alt=""
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    {isVideoFile(selectedItem.mime_type) ? (
+                                        <video
+                                            src={selectedItem.public_url}
+                                            className="w-full h-full object-cover"
+                                            muted
+                                            preload="metadata"
+                                        />
+                                    ) : (
+                                        <Image
+                                            src={selectedItem.public_url}
+                                            alt=""
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    )}
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">{selectedItem.original_filename}</p>
                                     <p className="text-xs text-muted-foreground">
                                         {selectedItem.width}×{selectedItem.height} · {formatSize(selectedItem.size_bytes)}
+                                        {isVideoFile(selectedItem.mime_type) && selectedItem.duration && (
+                                            <span> · {Math.floor(selectedItem.duration / 60)}:{String(selectedItem.duration % 60).padStart(2, '0')}</span>
+                                        )}
                                     </p>
                                 </div>
                             </div>
@@ -367,7 +446,7 @@ export function MediaLibrary({
                                 }}
                                 className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-lg hover:bg-primary/90"
                             >
-                                Insert Image
+                                {isVideoFile(selectedItem.mime_type) ? 'Insert Video' : 'Insert Image'}
                             </button>
                         </div>
                     )}

@@ -17,7 +17,9 @@ import { common, createLowlight } from 'lowlight';
 import { useState, useCallback } from 'react';
 import { MediaLibrary } from './MediaLibrary';
 import { ImageInsertDialog } from './ImageInsertDialog';
-import type { MediaItem } from '@/lib/media';
+import { VideoInsertDialog, type VideoInsertOptions } from './VideoInsertDialog';
+import { isVideoFile, type MediaItem } from '@/lib/media';
+import { Video } from '@/lib/tiptap-video';
 
 // Create lowlight instance with common languages
 const lowlight = createLowlight(common);
@@ -52,6 +54,11 @@ export function AdminEditor({
                 placeholder,
             }),
             Image.configure({
+                HTMLAttributes: {
+                    class: 'rounded-xl max-w-full my-8',
+                },
+            }),
+            Video.configure({
                 HTMLAttributes: {
                     class: 'rounded-xl max-w-full my-8',
                 },
@@ -134,6 +141,23 @@ export function AdminEditor({
             alt,
             width: width,
             height: height,
+        }).run();
+
+        setSelectedMedia(null);
+    }, [editor]);
+
+    // Handle video insertion with options
+    const handleVideoInsert = useCallback((options: VideoInsertOptions) => {
+        if (!editor) return;
+
+        editor.chain().focus().setVideo({
+            src: options.src,
+            width: options.width,
+            height: options.height,
+            autoplay: options.autoplay,
+            loop: options.loop,
+            muted: options.muted,
+            controls: options.controls,
         }).run();
 
         setSelectedMedia(null);
@@ -344,7 +368,7 @@ export function AdminEditor({
                     )}
                     <ToolbarButton
                         onClick={() => setIsMediaLibraryOpen(true)}
-                        title="Insert Image"
+                        title="Insert Image/Video"
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -437,11 +461,21 @@ export function AdminEditor({
             />
 
             {/* Image Insert Dialog */}
-            {selectedMedia && (
+            {selectedMedia && !isVideoFile(selectedMedia.mime_type) && (
                 <ImageInsertDialog
                     isOpen={!!selectedMedia}
                     onClose={() => setSelectedMedia(null)}
                     onInsert={handleImageInsert}
+                    media={selectedMedia}
+                />
+            )}
+
+            {/* Video Insert Dialog */}
+            {selectedMedia && isVideoFile(selectedMedia.mime_type) && (
+                <VideoInsertDialog
+                    isOpen={!!selectedMedia}
+                    onClose={() => setSelectedMedia(null)}
+                    onInsert={handleVideoInsert}
                     media={selectedMedia}
                 />
             )}
