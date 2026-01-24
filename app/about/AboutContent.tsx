@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 import type { Profile } from '@/types/database';
 
@@ -163,10 +164,15 @@ export function AboutContent({ profile }: AboutContentProps) {
                         variants={blurFadeUpVariants}
                         className="md:col-span-1"
                     >
-                        <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center overflow-hidden border border-border/50">
-                            <span className="text-8xl font-serif text-primary/20 select-none">
-                                {name.split(' ').map(n => n[0]).join('')}
-                            </span>
+                        <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center overflow-hidden border border-border/50 relative">
+                            <Image
+                                src="https://fpsputfmlbzfifeillss.supabase.co/storage/v1/object/public/media/uploads/1769252577966-eqarpy.png"
+                                alt={name}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                priority
+                            />
                         </div>
                     </motion.div>
 
