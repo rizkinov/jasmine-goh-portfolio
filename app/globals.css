@@ -662,7 +662,42 @@ html {
 
 .project-content table.table-equal-cols td,
 .project-content table.table-equal-cols th {
-  width: auto;
+  min-width: 100px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Tablet: Adjust table text and padding */
+@media (max-width: 1024px) {
+  .project-content th,
+  .project-content td {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .project-content th {
+    font-size: 0.6875rem;
+  }
+}
+
+/* Mobile: Horizontal scroll and smaller text */
+@media (max-width: 768px) {
+  .project-content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .project-content th,
+  .project-content td {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .project-content th {
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+  }
 }
 
 /* =============================================================================
@@ -924,7 +959,42 @@ html {
 
 .ProseMirror table.table-equal-cols td,
 .ProseMirror table.table-equal-cols th {
-  width: auto;
+  min-width: 100px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Tablet: Adjust table text and padding */
+@media (max-width: 1024px) {
+  .ProseMirror table th,
+  .ProseMirror table td {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .ProseMirror table th {
+    font-size: 0.6875rem;
+  }
+}
+
+/* Mobile: Horizontal scroll and smaller text */
+@media (max-width: 768px) {
+  .ProseMirror table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ProseMirror table th,
+  .ProseMirror table td {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .ProseMirror table th {
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+  }
 }
 
 /* Highlight mark */
