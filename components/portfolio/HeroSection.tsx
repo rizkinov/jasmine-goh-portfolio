@@ -25,7 +25,9 @@ const stickyNotes: StickyNote[] = [
     { id: 3, text: 'to explore more', color: 'bg-sky-100', rotateClass: '-rotate-3', topClass: 'top-[82%] md:top-[70%]', rightClass: 'right-[12%]' },
     { id: 4, type: 'image', imageUrl: 'https://fpsputfmlbzfifeillss.supabase.co/storage/v1/object/public/media/uploads/1769248977897-08rj7l.png', color: 'bg-purple-100', rotateClass: 'rotate-2', topClass: 'top-[55%] md:top-[25%]', rightClass: 'right-[30%]', imageScale: 'scale-75' },
     { id: 5, text: '🥁', color: 'bg-green-100', rotateClass: '-rotate-4', topClass: 'top-[68%] md:top-[45%]', rightClass: 'right-[5%]' },
-    { id: 6, type: 'image', color: 'bg-orange-100', rotateClass: 'rotate-1', topClass: 'top-[55%] md:top-[40%]', rightClass: 'right-[15%] md:right-[25%]', size: 'large' },
+    { id: 6, text: '✏️', color: 'bg-yellow-100', rotateClass: 'rotate-4', topClass: 'top-[58%] md:top-[30%]', rightClass: 'right-[45%]' },
+    { id: 7, text: '💻', color: 'bg-slate-100', rotateClass: '-rotate-2', topClass: 'top-[78%] md:top-[65%]', rightClass: 'right-[35%]' },
+    { id: 8, type: 'image', color: 'bg-orange-100', rotateClass: '-rotate-6', topClass: 'top-[55%] md:top-[40%]', rightClass: 'right-[15%] md:right-[25%]', size: 'large' },
 ];
 
 interface HeroSectionProps {
