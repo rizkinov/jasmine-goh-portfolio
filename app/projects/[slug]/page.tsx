@@ -4,6 +4,9 @@ import { ProjectContent } from './ProjectContent';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
+// Revalidate every 60 seconds to pick up database changes
+export const revalidate = 60;
+
 interface ProjectPageProps {
     params: Promise<{ slug: string }>;
 }

@@ -3,6 +3,9 @@ import { getMediaByFilename } from '@/lib/media';
 import { HeroSection, ProjectGrid, Navbar, Footer } from '@/components/portfolio';
 import type { Metadata } from 'next';
 
+// Revalidate every 60 seconds to pick up database changes
+export const revalidate = 60;
+
 // Metadata for SEO
 export const metadata: Metadata = {
     title: 'Jasmine Goh | UX/Product Designer',
