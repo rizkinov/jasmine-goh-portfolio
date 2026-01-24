@@ -23,7 +23,7 @@ export function HeroSection({
     headline = "Creating thoughtful digital experiences through user-centered design.",
     profileImageUrl
 }: HeroSectionProps) {
-    const { shouldSkipAnimations } = useAnimationPreferences();
+    const { shouldSkipAnimations, prefersReducedMotion } = useAnimationPreferences();
     const constraintsRef = useRef<HTMLDivElement>(null);
 
     // Container with stagger for word animation
@@ -143,7 +143,7 @@ export function HeroSection({
                 {stickyNotes.map((note, index) => (
                     <motion.div
                         key={note.id}
-                        drag={!shouldSkipAnimations}
+                        drag={!prefersReducedMotion}
                         dragConstraints={constraintsRef}
                         dragElastic={0}
                         dragMomentum={false}
@@ -168,16 +168,14 @@ export function HeroSection({
                             boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                             cursor: 'grabbing'
                         }}
-                        className={`absolute ${note.color} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center`}
+                        className={`absolute ${note.color} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center w-[60px] h-[60px] md:w-[120px] md:h-[120px]`}
                         style={{
-                            width: '120px',
-                            height: '120px',
                             top: note.top,
                             right: note.right,
                         }}
                         aria-label={`Sticky note: ${note.text}`}
                     >
-                        <span className="text-sm font-medium text-gray-700 px-2">
+                        <span className="text-[10px] md:text-sm font-medium text-gray-700 px-1 md:px-2">
                             {note.text}
                         </span>
                     </motion.div>
