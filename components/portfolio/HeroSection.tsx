@@ -23,7 +23,7 @@ const stickyNotes: StickyNote[] = [
     { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotateClass: '-rotate-6', topClass: 'top-[60%] md:top-[35%]', rightClass: 'right-[80%] md:right-[65%]' },
     { id: 2, text: 'scroll down', color: 'bg-pink-100', rotateClass: 'rotate-3', topClass: 'top-[74%] md:top-[55%]', rightClass: 'right-[55%] md:right-[50%]' },
     { id: 3, text: 'to explore more', color: 'bg-sky-100', rotateClass: '-rotate-3', topClass: 'top-[85%] md:top-[70%]', rightClass: 'right-[15%] md:right-[12%]' },
-    { id: 4, type: 'image', imageUrl: 'https://fpsputfmlbzfifeillss.supabase.co/storage/v1/render/image/public/media/uploads/1769248977897-08rj7l.png?width=120&quality=75', color: 'bg-purple-100', rotateClass: 'rotate-2', topClass: 'top-[52%] md:top-[25%]', rightClass: 'right-[35%] md:right-[30%]', imageScale: 'scale-50' },
+    { id: 4, type: 'image', imageUrl: 'https://fpsputfmlbzfifeillss.supabase.co/storage/v1/object/public/media/uploads/1769251202386-3yil2i.png', color: 'bg-purple-100', rotateClass: 'rotate-2', topClass: 'top-[52%] md:top-[25%]', rightClass: 'right-[35%] md:right-[30%]', imageScale: 'scale-50' },
     { id: 5, text: '🥁', color: 'bg-green-100', rotateClass: '-rotate-4', topClass: 'top-[66%] md:top-[45%]', rightClass: 'right-[3%] md:right-[5%]' },
     { id: 6, text: '✏️', color: 'bg-yellow-100', rotateClass: 'rotate-4', topClass: 'top-[56%] md:top-[30%]', rightClass: 'right-[65%] md:right-[45%]' },
     { id: 7, text: '💻', color: 'bg-slate-100', rotateClass: '-rotate-2', topClass: 'top-[80%] md:top-[65%]', rightClass: 'right-[42%] md:right-[35%]' },
