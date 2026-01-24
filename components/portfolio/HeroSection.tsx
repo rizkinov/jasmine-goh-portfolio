@@ -45,7 +45,7 @@ export function HeroSection({
     const constraintsRef = useRef<HTMLDivElement>(null);
     const [scrollKey, setScrollKey] = useState(0);
 
-    // Reset sticky notes when scrolling up near the top (mobile only - syncs visual and drag state)
+    // Reset sticky notes when scrolling up (mobile only - syncs visual and drag state)
     useEffect(() => {
         const isMobile = window.innerWidth < 768;
         if (!isMobile) return; // Skip on desktop - drag position persists fine
@@ -53,8 +53,8 @@ export function HeroSection({
         let lastScrollY = window.scrollY;
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            // Reset when scrolling up and near the top of the page
-            if (currentScrollY < lastScrollY && currentScrollY < 100) {
+            // Reset when scrolling up (any amount)
+            if (currentScrollY < lastScrollY) {
                 setScrollKey(k => k + 1);
             }
             lastScrollY = currentScrollY;
