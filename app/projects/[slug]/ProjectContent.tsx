@@ -8,9 +8,10 @@ import type { Project } from '@/types/database';
 
 interface ProjectContentProps {
     project: Project;
+    otherProjects?: Project[];
 }
 
-export function ProjectContent({ project }: ProjectContentProps) {
+export function ProjectContent({ project, otherProjects = [] }: ProjectContentProps) {
     const { shouldSkipAnimations } = useAnimationPreferences();
 
     // Container animation with stagger - disabled when shouldSkipAnimations
@@ -117,7 +118,7 @@ export function ProjectContent({ project }: ProjectContentProps) {
                 {/* Back button with blur */}
                 <motion.div
                     variants={backButtonVariants}
-                    className="mb-16"
+                    className="max-w-5xl mx-auto mb-16"
                 >
                     <Link
                         href="/#work"
@@ -148,7 +149,7 @@ export function ProjectContent({ project }: ProjectContentProps) {
                 </motion.div>
 
                 {/* Project Header */}
-                <header className="max-w-5xl mb-20">
+                <header className="max-w-5xl mx-auto mb-20">
                     {/* Editorial label */}
                     <motion.div
                         variants={blurFadeUpVariants}
@@ -257,13 +258,57 @@ export function ProjectContent({ project }: ProjectContentProps) {
                 {/* Content with blur */}
                 <motion.div
                     variants={blurFadeUpVariants}
-                    className="max-w-4xl"
+                    className="max-w-4xl mx-auto"
                 >
                     <div
                         className="project-content"
                         dangerouslySetInnerHTML={{ __html: project.content_html }}
                     />
                 </motion.div>
+
+                {/* More Projects Section */}
+                {otherProjects.length > 0 && (
+                    <motion.div
+                        variants={blurFadeUpVariants}
+                        className="mt-24 pt-12 border-t border-border/50"
+                    >
+                        <span className="text-xs font-medium tracking-[0.25em] uppercase text-primary mb-10 block">
+                            More Projects
+                        </span>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {otherProjects.map((otherProject) => (
+                                <Link
+                                    key={otherProject.id}
+                                    href={`/projects/${otherProject.slug}`}
+                                    className="group block"
+                                >
+                                    <div className="aspect-[16/10] rounded-xl overflow-hidden bg-muted mb-4 relative">
+                                        {otherProject.cover_image_url ? (
+                                            <Image
+                                                src={otherProject.cover_image_url}
+                                                alt={otherProject.title}
+                                                fill
+                                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                                sizes="(max-width: 768px) 100vw, 33vw"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                                                <span className="text-4xl font-serif">{otherProject.title.charAt(0)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <h3 className="font-serif text-lg group-hover:text-primary transition-colors">
+                                        {otherProject.title}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {otherProject.tags[0] || 'Design'}
+                                    </p>
+                                </Link>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
 
                 {/* Bottom CTA with blur */}
                 <motion.div

@@ -45,18 +45,26 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
     const { slug } = await params;
-    const project = await getProjectBySlug(slug);
+    const [project, allProjects] = await Promise.all([
+        getProjectBySlug(slug),
+        getProjects()
+    ]);
 
     if (!project) {
         notFound();
     }
+
+    // Get other projects (exclude current, limit to 3)
+    const otherProjects = allProjects
+        .filter(p => p.slug !== slug)
+        .slice(0, 3);
 
     return (
         <main className="min-h-screen bg-background">
             <Navbar />
 
             <div className="pt-16">
-                <ProjectContent project={project} />
+                <ProjectContent project={project} otherProjects={otherProjects} />
             </div>
 
             <Footer />
