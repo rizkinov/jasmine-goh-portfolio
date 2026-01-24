@@ -228,7 +228,7 @@ export function HeroSection({
                                     draggable={false}
                                 />
                             ) : (
-                                <span className={`font-medium text-gray-700 px-1 md:px-2 ${note.text && note.text.length <= 2 ? 'text-2xl md:text-4xl' : 'text-[10px] md:text-sm'}`}>
+                                <span className={`font-medium text-gray-700 px-1 md:px-2 ${note.text && note.text.length <= 2 ? 'text-3xl md:text-5xl' : 'text-xs md:text-base'}`}>
                                     {note.text}
                                 </span>
                             )}
