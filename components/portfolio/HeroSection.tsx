@@ -8,9 +8,9 @@ import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 // Sticky note data - positioned on right side, lower down
 // Mobile positions (top) are different to avoid covering text
 const stickyNotes = [
-    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotation: -6, top: '35%', topMobile: '68%', right: '65%' },
-    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotation: 4, top: '55%', topMobile: '76%', right: '50%' },
-    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotation: -3, top: '70%', topMobile: '84%', right: '12%' },
+    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotation: -6, top: '35%', topMobile: '88%', right: '65%' },
+    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotation: 4, top: '55%', topMobile: '86%', right: '50%' },
+    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotation: -3, top: '70%', topMobile: '94%', right: '12%' },
 ];
 
 interface HeroSectionProps {
@@ -118,7 +118,7 @@ export function HeroSection({
                     variants={imageVariants}
                     initial="hidden"
                     animate="visible"
-                    className="absolute right-4 sm:right-6 md:right-8 lg:right-12 top-[40%] sm:top-[35%] md:top-[5%] w-[75vw] sm:w-[60vw] md:w-[42vw] lg:w-[38vw] max-w-[550px] h-[45vh] sm:h-[50vh] md:h-[70vh] pointer-events-none"
+                    className="absolute right-4 sm:right-6 md:right-8 lg:right-12 xl:right-[10%] 2xl:right-[15%] top-[40%] sm:top-[35%] md:top-[5%] w-[75vw] sm:w-[60vw] md:w-[42vw] lg:w-[38vw] xl:w-[35vw] 2xl:w-[30vw] max-w-[550px] h-[45vh] sm:h-[50vh] md:h-[70vh] pointer-events-none"
                     style={{
                         backfaceVisibility: 'hidden',
                         WebkitBackfaceVisibility: 'hidden',
