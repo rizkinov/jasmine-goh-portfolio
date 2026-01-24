@@ -16,7 +16,7 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import { common, createLowlight } from 'lowlight';
 import { useState, useCallback } from 'react';
 import { MediaLibrary } from './MediaLibrary';
-import { ImageInsertDialog } from './ImageInsertDialog';
+import { ImageInsertDialog, type ImageInsertOptions } from './ImageInsertDialog';
 import { VideoInsertDialog, type VideoInsertOptions } from './VideoInsertDialog';
 import { isVideoFile, type MediaItem } from '@/lib/media';
 import { Video } from '@/lib/tiptap-video';
@@ -132,16 +132,32 @@ export function AdminEditor({
         setIsMediaLibraryOpen(false);
     }, []);
 
-    // Handle final image insertion with dimensions
-    const handleImageInsert = useCallback((src: string, alt: string, width?: number, height?: number) => {
+    // Handle final image insertion with styling options
+    const handleImageInsert = useCallback((options: ImageInsertOptions) => {
         if (!editor) return;
 
-        editor.chain().focus().setImage({
-            src,
-            alt,
-            width: width,
-            height: height,
-        }).run();
+        // Build CSS classes based on options
+        const classes = ['img-size-' + options.size];
+
+        // Rounded corners
+        if (options.rounded !== 'none') {
+            classes.push('img-rounded-' + options.rounded);
+        }
+
+        // Shadow
+        if (options.shadow !== 'none') {
+            classes.push('img-shadow-' + options.shadow);
+        }
+
+        // If there's a caption, insert a figure element with figcaption
+        if (options.caption) {
+            const figureHtml = `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /><figcaption>${options.caption}</figcaption></figure>`;
+            editor.chain().focus().insertContent(figureHtml).run();
+        } else {
+            // Insert just the image with classes
+            const imgHtml = `<figure class="${classes.join(' ')}"><img src="${options.src}" alt="${options.alt}" width="${options.width}" height="${options.height}" /></figure>`;
+            editor.chain().focus().insertContent(imgHtml).run();
+        }
 
         setSelectedMedia(null);
     }, [editor]);

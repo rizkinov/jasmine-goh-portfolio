@@ -4,10 +4,25 @@ import { useState } from 'react';
 import Image from 'next/image';
 import type { MediaItem } from '@/lib/media';
 
+export type ImageSize = 'xl' | 'l' | 'm' | 's';
+export type ImageRounded = 'none' | 'sm' | 'md' | 'lg';
+export type ImageShadow = 'none' | 'sm' | 'md' | 'lg';
+
+export interface ImageInsertOptions {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+    size: ImageSize;
+    rounded: ImageRounded;
+    shadow: ImageShadow;
+    caption?: string;
+}
+
 interface ImageInsertDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    onInsert: (src: string, alt: string, width?: number, height?: number) => void;
+    onInsert: (options: ImageInsertOptions) => void;
     media: MediaItem;
 }
 
@@ -17,38 +32,65 @@ export function ImageInsertDialog({
     onInsert,
     media,
 }: ImageInsertDialogProps) {
-    const [width, setWidth] = useState<number>(media.width || 800);
-    const [height, setHeight] = useState<number>(media.height || 600);
     const [altText, setAltText] = useState<string>(media.alt_text || media.original_filename);
-    const [maintainAspectRatio, setMaintainAspectRatio] = useState(true);
-    const [alignment, setAlignment] = useState<'left' | 'center' | 'right'>('center');
+    const [caption, setCaption] = useState<string>('');
+    const [size, setSize] = useState<ImageSize>('l');
+    const [rounded, setRounded] = useState<ImageRounded>('md');
+    const [shadow, setShadow] = useState<ImageShadow>('md');
 
-    const originalAspectRatio = (media.width || 800) / (media.height || 600);
-
-    const handleWidthChange = (newWidth: number) => {
-        setWidth(newWidth);
-        if (maintainAspectRatio) {
-            setHeight(Math.round(newWidth / originalAspectRatio));
-        }
-    };
-
-    const handleHeightChange = (newHeight: number) => {
-        setHeight(newHeight);
-        if (maintainAspectRatio) {
-            setWidth(Math.round(newHeight * originalAspectRatio));
-        }
-    };
-
-    const presets = [
-        { label: '✓ Original', width: media.width || 800, height: media.height || 600, highlight: true },
-        { label: 'Full Width', width: 1200, height: Math.round(1200 / originalAspectRatio), highlight: false },
-        { label: 'Large (800px)', width: 800, height: Math.round(800 / originalAspectRatio), highlight: false },
-        { label: 'Medium (600px)', width: 600, height: Math.round(600 / originalAspectRatio), highlight: false },
-        { label: 'Small (400px)', width: 400, height: Math.round(400 / originalAspectRatio), highlight: false },
+    const sizeOptions: { value: ImageSize; label: string; width: number }[] = [
+        { value: 'xl', label: 'XL (Full Width)', width: 1200 },
+        { value: 'l', label: 'L (Large)', width: 800 },
+        { value: 'm', label: 'M (Medium)', width: 600 },
+        { value: 's', label: 'S (Small)', width: 400 },
     ];
 
+    const roundedOptions: { value: ImageRounded; label: string }[] = [
+        { value: 'none', label: 'None' },
+        { value: 'sm', label: 'Small' },
+        { value: 'md', label: 'Medium' },
+        { value: 'lg', label: 'Large' },
+    ];
+
+    const shadowOptions: { value: ImageShadow; label: string }[] = [
+        { value: 'none', label: 'None' },
+        { value: 'sm', label: 'Small' },
+        { value: 'md', label: 'Medium' },
+        { value: 'lg', label: 'Large' },
+    ];
+
+    const originalAspectRatio = (media.width || 800) / (media.height || 600);
+    const selectedWidth = sizeOptions.find(s => s.value === size)?.width || 800;
+    const selectedHeight = Math.round(selectedWidth / originalAspectRatio);
+
+    // Generate preview classes
+    const getPreviewClasses = () => {
+        const classes = [];
+
+        // Rounded
+        if (rounded === 'sm') classes.push('rounded');
+        else if (rounded === 'md') classes.push('rounded-xl');
+        else if (rounded === 'lg') classes.push('rounded-2xl');
+
+        // Shadow
+        if (shadow === 'sm') classes.push('shadow-sm');
+        else if (shadow === 'md') classes.push('shadow-lg');
+        else if (shadow === 'lg') classes.push('shadow-xl');
+
+        return classes.join(' ');
+    };
+
     const handleInsert = () => {
-        onInsert(media.public_url, altText, width, height);
+        onInsert({
+            src: media.public_url,
+            alt: altText,
+            width: selectedWidth,
+            height: selectedHeight,
+            size,
+            rounded,
+            shadow,
+            caption: caption.trim() || undefined,
+        });
         onClose();
     };
 
@@ -59,15 +101,17 @@ export function ImageInsertDialog({
             className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-            <div className="bg-card rounded-xl max-w-2xl w-full max-h-[85vh] overflow-auto">
+            <div className="bg-card rounded-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
                 {/* Header */}
-                <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+                <div className="border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 bg-card z-10">
                     <h3 className="text-lg font-semibold">Insert Image</h3>
                     <button
                         onClick={onClose}
-                        className="text-muted-foreground hover:text-foreground"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                     >
-                        ✕
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
@@ -76,20 +120,20 @@ export function ImageInsertDialog({
                     {/* Preview */}
                     <div className="bg-muted/30 rounded-lg p-4 flex items-center justify-center">
                         <div
-                            className="relative bg-white border border-border rounded overflow-hidden"
-                            style={{ maxWidth: '100%', maxHeight: 300 }}
+                            className={`relative bg-white border border-border overflow-hidden transition-all ${getPreviewClasses()}`}
+                            style={{ maxWidth: '100%', maxHeight: 250 }}
                         >
                             <Image
                                 src={media.public_url}
                                 alt={altText}
-                                width={Math.min(width, 500)}
-                                height={Math.min(height, 300)}
+                                width={Math.min(selectedWidth, 500)}
+                                height={Math.min(selectedHeight, 250)}
                                 className="object-contain"
                                 style={{
                                     width: 'auto',
                                     height: 'auto',
                                     maxWidth: '100%',
-                                    maxHeight: 300,
+                                    maxHeight: 250,
                                 }}
                             />
                         </div>
@@ -98,113 +142,115 @@ export function ImageInsertDialog({
                     {/* Alt Text */}
                     <div>
                         <label className="block text-sm font-medium mb-2">
-                            Alt Text (for accessibility & SEO)
+                            Alt Text <span className="text-muted-foreground font-normal">(for accessibility)</span>
                         </label>
                         <input
                             type="text"
                             value={altText}
                             onChange={(e) => setAltText(e.target.value)}
                             placeholder="Describe this image..."
-                            className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm"
+                            className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                         />
                     </div>
 
-                    {/* Size Presets */}
+                    {/* Caption / Footnote */}
                     <div>
                         <label className="block text-sm font-medium mb-2">
-                            Size Presets
+                            Caption / Source <span className="text-muted-foreground font-normal">(optional, displays below image)</span>
                         </label>
-                        <div className="flex flex-wrap gap-2">
-                            {presets.map((preset) => (
+                        <input
+                            type="text"
+                            value={caption}
+                            onChange={(e) => setCaption(e.target.value)}
+                            placeholder="e.g., Source: Company Report 2024"
+                            className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                    </div>
+
+                    {/* Size */}
+                    <div>
+                        <label className="block text-sm font-medium mb-3">
+                            Size
+                        </label>
+                        <div className="grid grid-cols-4 gap-2">
+                            {sizeOptions.map((option) => (
                                 <button
-                                    key={preset.label}
-                                    onClick={() => {
-                                        setWidth(preset.width);
-                                        setHeight(preset.height);
-                                    }}
-                                    className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${width === preset.width
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'bg-muted hover:bg-muted/80'
-                                        }`}
+                                    key={option.value}
+                                    onClick={() => setSize(option.value)}
+                                    className={`px-3 py-2.5 text-xs font-medium rounded-lg transition-all ${
+                                        size === option.value
+                                            ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-card'
+                                            : 'bg-muted hover:bg-muted/80 text-foreground'
+                                    }`}
                                 >
-                                    {preset.label}
+                                    <span className="block text-sm font-semibold">{option.value.toUpperCase()}</span>
+                                    <span className="block text-[10px] opacity-70">{option.width}px</span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Custom Dimensions */}
+                    {/* Rounded Corners */}
                     <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="text-sm font-medium">
-                                Custom Dimensions
-                            </label>
-                            <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <input
-                                    type="checkbox"
-                                    checked={maintainAspectRatio}
-                                    onChange={(e) => setMaintainAspectRatio(e.target.checked)}
-                                    className="rounded"
-                                />
-                                Maintain aspect ratio
-                            </label>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-xs text-muted-foreground">Width (px)</label>
-                                <input
-                                    type="number"
-                                    value={width}
-                                    onChange={(e) => handleWidthChange(Number(e.target.value))}
-                                    min={50}
-                                    max={2000}
-                                    className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-xs text-muted-foreground">Height (px)</label>
-                                <input
-                                    type="number"
-                                    value={height}
-                                    onChange={(e) => handleHeightChange(Number(e.target.value))}
-                                    min={50}
-                                    max={2000}
-                                    className="w-full px-3 py-2 bg-muted border border-border rounded-lg text-sm"
-                                />
-                            </div>
+                        <label className="block text-sm font-medium mb-3">
+                            Rounded Corners
+                        </label>
+                        <div className="grid grid-cols-4 gap-2">
+                            {roundedOptions.map((option) => (
+                                <button
+                                    key={option.value}
+                                    onClick={() => setRounded(option.value)}
+                                    className={`px-3 py-2.5 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
+                                        rounded === option.value
+                                            ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-card'
+                                            : 'bg-muted hover:bg-muted/80 text-foreground'
+                                    }`}
+                                >
+                                    <div
+                                        className={`w-4 h-4 bg-current opacity-40 ${
+                                            option.value === 'none' ? '' :
+                                            option.value === 'sm' ? 'rounded-sm' :
+                                            option.value === 'md' ? 'rounded-md' :
+                                            'rounded-lg'
+                                        }`}
+                                    />
+                                    {option.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Alignment */}
+                    {/* Shadow */}
                     <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Alignment
+                        <label className="block text-sm font-medium mb-3">
+                            Shadow
                         </label>
-                        <div className="flex gap-2">
-                            {(['left', 'center', 'right'] as const).map((align) => (
+                        <div className="grid grid-cols-4 gap-2">
+                            {shadowOptions.map((option) => (
                                 <button
-                                    key={align}
-                                    onClick={() => setAlignment(align)}
-                                    className={`px-4 py-2 text-xs rounded-lg transition-colors ${alignment === align
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'bg-muted hover:bg-muted/80'
-                                        }`}
+                                    key={option.value}
+                                    onClick={() => setShadow(option.value)}
+                                    className={`px-3 py-2.5 text-xs font-medium rounded-lg transition-all ${
+                                        shadow === option.value
+                                            ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-card'
+                                            : 'bg-muted hover:bg-muted/80 text-foreground'
+                                    }`}
                                 >
-                                    {align.charAt(0).toUpperCase() + align.slice(1)}
+                                    {option.label}
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     {/* Info */}
-                    <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
-                        <p><strong>Original:</strong> {media.width} × {media.height} px</p>
-                        <p><strong>Output:</strong> {width} × {height} px</p>
+                    <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 space-y-1">
+                        <p><strong>Original:</strong> {media.width} × {media.height}px</p>
+                        <p><strong>Output:</strong> {selectedWidth} × {selectedHeight}px</p>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-border px-6 py-4 flex justify-end gap-3">
+                <div className="border-t border-border px-6 py-4 flex justify-end gap-3 sticky bottom-0 bg-card">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -213,7 +259,7 @@ export function ImageInsertDialog({
                     </button>
                     <button
                         onClick={handleInsert}
-                        className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                        className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
                     >
                         Insert Image
                     </button>
