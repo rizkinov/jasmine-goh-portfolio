@@ -1,8 +1,16 @@
 'use client';
 
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
+
+// Sticky note data - positioned on right side, lower down
+const stickyNotes = [
+    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotation: -6, top: '35%', right: '65%' },
+    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotation: 4, top: '55%', right: '50%' },
+    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotation: -3, top: '70%', right: '12%' },
+];
 
 interface HeroSectionProps {
     name?: string;
@@ -16,6 +24,7 @@ export function HeroSection({
     profileImageUrl
 }: HeroSectionProps) {
     const { shouldSkipAnimations } = useAnimationPreferences();
+    const constraintsRef = useRef<HTMLDivElement>(null);
 
     // Container with stagger for word animation
     const containerVariants = {
@@ -125,6 +134,55 @@ export function HeroSection({
                     />
                 </motion.div>
             )}
+
+            {/* Draggable Sticky Notes */}
+            <div
+                ref={constraintsRef}
+                className="absolute right-0 top-0 w-full md:w-[60%] h-full pointer-events-none z-20"
+            >
+                {stickyNotes.map((note, index) => (
+                    <motion.div
+                        key={note.id}
+                        drag={!shouldSkipAnimations}
+                        dragConstraints={constraintsRef}
+                        dragElastic={0}
+                        dragMomentum={false}
+                        initial={{
+                            opacity: 0,
+                            scale: 0.8,
+                            rotate: note.rotation
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            rotate: note.rotation
+                        }}
+                        transition={{
+                            delay: shouldSkipAnimations ? 0 : 0.8 + index * 0.15,
+                            duration: shouldSkipAnimations ? 0 : 0.5,
+                            ease: [0.33, 1, 0.68, 1] as const
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                        whileDrag={{
+                            scale: 1.1,
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                            cursor: 'grabbing'
+                        }}
+                        className={`absolute ${note.color} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center`}
+                        style={{
+                            width: '120px',
+                            height: '120px',
+                            top: note.top,
+                            right: note.right,
+                        }}
+                        aria-label={`Sticky note: ${note.text}`}
+                    >
+                        <span className="text-sm font-medium text-gray-700 px-2">
+                            {note.text}
+                        </span>
+                    </motion.div>
+                ))}
+            </div>
 
             <motion.div
                 variants={containerVariants}
