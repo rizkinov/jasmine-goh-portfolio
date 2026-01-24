@@ -107,7 +107,7 @@ export function HeroSection({
                     variants={imageVariants}
                     initial="hidden"
                     animate="visible"
-                    className="absolute right-0 top-[35%] sm:top-[30%] md:top-0 w-[100vw] sm:w-[85vw] md:w-[60vw] lg:w-[55vw] max-w-[800px] h-[65vh] sm:h-[70vh] md:h-[90vh] pointer-events-none"
+                    className="absolute right-4 sm:right-6 md:right-8 lg:right-12 top-[40%] sm:top-[35%] md:top-[5%] w-[75vw] sm:w-[60vw] md:w-[42vw] lg:w-[38vw] max-w-[550px] h-[45vh] sm:h-[50vh] md:h-[70vh] pointer-events-none"
                     style={{
                         backfaceVisibility: 'hidden',
                         WebkitBackfaceVisibility: 'hidden',
