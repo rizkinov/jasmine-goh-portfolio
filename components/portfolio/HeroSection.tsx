@@ -27,7 +27,7 @@ const stickyNotes: StickyNote[] = [
     { id: 5, text: '🥁', color: 'bg-green-100', rotateClass: '-rotate-4', topClass: 'top-[66%] md:top-[45%]', rightClass: 'right-[3%] md:right-[5%]' },
     { id: 6, text: '✏️', color: 'bg-yellow-100', rotateClass: 'rotate-4', topClass: 'top-[56%] md:top-[30%]', rightClass: 'right-[65%] md:right-[45%]' },
     { id: 7, text: '💻', color: 'bg-slate-100', rotateClass: '-rotate-2', topClass: 'top-[80%] md:top-[65%]', rightClass: 'right-[42%] md:right-[35%]' },
-    { id: 8, type: 'image', color: 'bg-orange-100', rotateClass: '-rotate-6', topClass: 'top-[64%] md:top-[40%]', rightClass: 'right-[22%] md:right-[25%]', size: 'large', imageScale: 'scale-75' },
+    { id: 8, type: 'image', color: 'bg-orange-100', rotateClass: '-rotate-6', topClass: 'top-[64%] md:top-[40%]', rightClass: 'right-[35%] md:right-[25%]', size: 'large', imageScale: 'scale-75' },
 ];
 
 interface HeroSectionProps {
