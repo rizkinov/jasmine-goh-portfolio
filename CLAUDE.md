@@ -29,18 +29,18 @@ This is a **Jasmine Goh Portfolio** website built with Next.js 16 (App Router), 
 
 ```
 /app
-  /api/admin/         # Auth endpoints (login, verify, logout)
+  /api/admin/         # Auth & CRUD endpoints (login, verify, projects, profile, media)
   /admin/             # Admin dashboard pages
   /projects/[slug]/   # Dynamic project pages
   page.tsx            # Home (server component)
 
 /components
   /portfolio/         # Public-facing (HeroSection, ProjectCard, Navbar, etc.)
-  /admin/             # Admin-only (AdminEditor, MediaLibrary, ImageCropper)
+  /admin/             # Admin-only (AdminEditor, MediaLibrary, ProjectMetadataForm)
   /ui/                # shadcn base components
 
 /lib
-  supabase.ts         # Supabase client & helper functions
+  supabase.ts         # Supabase clients & CRUD helper functions
   media.ts            # Media upload utilities
 
 /types
@@ -53,14 +53,16 @@ This is a **Jasmine Goh Portfolio** website built with Next.js 16 (App Router), 
 
 ### Data Flow
 - `getProjects()`, `getProjectBySlug()`, `getProfile()` are async server functions in `/lib/supabase.ts`
+- `createProject()`, `updateProject()`, `deleteProject()` use `supabaseAdmin` (service role) to bypass RLS
 - Projects stored in Supabase with `content_html` (TipTap rich text)
 - Media stored in Supabase Storage with metadata in `media` table
-- RLS policies: public SELECT, authenticated INSERT/UPDATE/DELETE
+- RLS policies: public SELECT; admin operations bypass RLS via service role key
 
 ### Authentication
 - JWT-based admin auth with bcrypt password verification
 - Token stored in HTTP-only cookie (24h expiration)
 - Endpoints: `/api/admin/login`, `/api/admin/verify`, `/api/admin/logout`
+- Admin API routes verify JWT before processing requests
 
 ## Important Patterns
 
@@ -96,5 +98,5 @@ JWT_SECRET
 ## Database Tables
 
 - **profile**: Single row with designer info (name, headline, bio, experience JSONB)
-- **projects**: Case studies (slug, title, content_html, cover_image_url, tags)
+- **projects**: Case studies (slug, title, content_html, cover_image_url, hero_image_url, tags, client, role)
 - **media**: Uploaded images (storage_path, public_url, dimensions, alt_text)
