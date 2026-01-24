@@ -7,9 +7,9 @@ import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 
 // Sticky note data - using CSS classes for responsive positioning (avoids hydration mismatch)
 const stickyNotes = [
-    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotation: -6, topClass: 'top-[88%] md:top-[35%]', rightClass: 'right-[65%]' },
-    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotation: 4, topClass: 'top-[86%] md:top-[55%]', rightClass: 'right-[50%]' },
-    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotation: -3, topClass: 'top-[94%] md:top-[70%]', rightClass: 'right-[12%]' },
+    { id: 1, text: 'hello 👋', color: 'bg-amber-100', rotateClass: '-rotate-6', topClass: 'top-[62%] md:top-[35%]', rightClass: 'right-[65%]' },
+    { id: 2, text: 'scroll down', color: 'bg-pink-100', rotateClass: 'rotate-3', topClass: 'top-[72%] md:top-[55%]', rightClass: 'right-[50%]' },
+    { id: 3, text: 'to explore more', color: 'bg-sky-100', rotateClass: '-rotate-3', topClass: 'top-[82%] md:top-[70%]', rightClass: 'right-[12%]' },
 ];
 
 interface HeroSectionProps {
@@ -116,7 +116,7 @@ export function HeroSection({
                     variants={imageVariants}
                     initial="hidden"
                     animate="visible"
-                    className="absolute right-4 sm:right-6 md:right-8 lg:right-12 xl:right-[10%] 2xl:right-[15%] top-[40%] sm:top-[35%] md:top-[5%] w-[75vw] sm:w-[60vw] md:w-[42vw] lg:w-[38vw] xl:w-[35vw] 2xl:w-[30vw] max-w-[550px] h-[45vh] sm:h-[50vh] md:h-[70vh] pointer-events-none"
+                    className="absolute right-4 sm:right-6 md:right-8 lg:right-12 xl:right-[10%] 2xl:right-[15%] top-[40%] sm:top-[35%] md:top-[5%] w-[65vw] sm:w-[55vw] md:w-[42vw] lg:w-[38vw] xl:w-[35vw] 2xl:w-[30vw] max-w-[550px] h-[40vh] sm:h-[45vh] md:h-[70vh] pointer-events-none"
                     style={{
                         backfaceVisibility: 'hidden',
                         WebkitBackfaceVisibility: 'hidden',
@@ -147,16 +147,8 @@ export function HeroSection({
                         dragConstraints={constraintsRef}
                         dragElastic={0}
                         dragMomentum={false}
-                        initial={{
-                            opacity: 0,
-                            scale: 0.8,
-                            rotate: note.rotation
-                        }}
-                        animate={{
-                            opacity: 1,
-                            scale: 1,
-                            rotate: note.rotation
-                        }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{
                             delay: shouldSkipAnimations ? 0 : 0.8 + index * 0.15,
                             duration: shouldSkipAnimations ? 0 : 0.5,
@@ -168,7 +160,7 @@ export function HeroSection({
                             boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                             cursor: 'grabbing'
                         }}
-                        className={`absolute ${note.color} ${note.topClass} ${note.rightClass} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center w-[60px] h-[60px] md:w-[120px] md:h-[120px]`}
+                        className={`absolute ${note.color} ${note.topClass} ${note.rightClass} ${note.rotateClass} rounded shadow-md cursor-grab pointer-events-auto select-none flex items-center justify-center text-center w-[60px] h-[60px] md:w-[120px] md:h-[120px]`}
                         aria-label={`Sticky note: ${note.text}`}
                     >
                         <span className="text-[10px] md:text-sm font-medium text-gray-700 px-1 md:px-2">
