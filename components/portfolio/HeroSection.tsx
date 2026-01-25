@@ -189,10 +189,10 @@ export function HeroSection({
                     const isLarge = note.size === 'large';
                     const isSmall = note.size === 'small';
                     const sizeClass = isLarge
-                        ? 'w-[100px] h-[100px] md:w-[200px] md:h-[200px]'
+                        ? 'w-[100px] h-[100px] [@media(pointer:fine)]:w-[130px] [@media(pointer:fine)]:h-[130px] md:w-[200px] md:h-[200px]'
                         : isSmall
-                        ? 'w-[45px] h-[45px] md:w-[90px] md:h-[90px]'
-                        : 'w-[60px] h-[60px] md:w-[120px] md:h-[120px]';
+                            ? 'w-[45px] h-[45px] [@media(pointer:fine)]:w-[60px] [@media(pointer:fine)]:h-[60px] md:w-[90px] md:h-[90px]'
+                            : 'w-[60px] h-[60px] [@media(pointer:fine)]:w-[80px] [@media(pointer:fine)]:h-[80px] md:w-[120px] md:h-[120px]';
 
                     return (
                         <motion.div
@@ -223,7 +223,7 @@ export function HeroSection({
                                     alt={note.imageUrl ? 'Decoration' : 'Jasmine Goh'}
                                     fill
                                     className={`object-contain object-bottom pointer-events-none select-none ${note.imageScale || ''}`}
-                                    sizes={isLarge ? '(max-width: 768px) 100px, 200px' : isSmall ? '(max-width: 768px) 45px, 90px' : '(max-width: 768px) 60px, 120px'}
+                                    sizes={isLarge ? '(max-width: 768px) 130px, 200px' : isSmall ? '(max-width: 768px) 60px, 90px' : '(max-width: 768px) 80px, 120px'}
                                     priority={isLarge}
                                     draggable={false}
                                 />
