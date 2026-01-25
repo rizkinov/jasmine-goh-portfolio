@@ -591,11 +591,12 @@ export function AdminEditor({
 
             {/* Table Controls (shown when table is active) */}
             {editor.isActive('table') && (
-                <div className="border-b border-border bg-muted/20 px-3 py-2 flex items-center gap-2">
+                <div className="border-b border-border bg-muted/90 backdrop-blur-sm px-3 py-2 flex items-center gap-2 sticky top-[106px] z-10 transition-all">
                     <span className="text-xs text-muted-foreground font-medium">Table:</span>
                     <button
                         onClick={() => editor.chain().focus().addColumnBefore().run()}
-                        className="px-2 py-1 text-xs bg-background rounded hover:bg-muted transition-colors"
+                        className="px-2 py-1 text-xs bg-background rounded hover:bg-muted transition-colors border border-border/50"
+                        title="Add Column Before"
                     >
                         + Col Before
                     </button>
