@@ -427,8 +427,8 @@ export function AdminEditor({
                     <button
                         onClick={() => setShowHeadingMenu(!showHeadingMenu)}
                         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${editor.isActive('heading')
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-background/50 hover:bg-muted text-foreground'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-background/50 hover:bg-muted text-foreground'
                             }`}
                     >
                         <span className="font-serif">Heading</span>
@@ -453,10 +453,10 @@ export function AdminEditor({
                                         isActive={editor.isActive('heading', { level })}
                                     >
                                         <span className={`font-serif ${level === 1 ? 'text-xl' :
-                                                level === 2 ? 'text-lg' :
-                                                    level === 3 ? 'text-base' :
-                                                        level === 4 ? 'text-sm' :
-                                                            'text-xs'
+                                            level === 2 ? 'text-lg' :
+                                                level === 3 ? 'text-base' :
+                                                    level === 4 ? 'text-sm' :
+                                                        'text-xs'
                                             }`}>
                                             Heading {level}
                                         </span>
@@ -751,8 +751,8 @@ function HeadingMenuItem({
         <button
             onClick={onClick}
             className={`w-full px-3 py-2 text-left transition-colors ${isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'hover:bg-muted text-foreground'
+                ? 'bg-primary/10 text-primary'
+                : 'hover:bg-muted text-foreground'
                 }`}
         >
             {children}

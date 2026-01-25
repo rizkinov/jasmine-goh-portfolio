@@ -94,7 +94,11 @@ export const Figure = Node.create<FigureOptions>({
                     if (!img) return false;
 
                     const figcaption = figure.querySelector('figcaption');
-                    const classes = (figure.className || '').split(' ').filter(Boolean);
+
+                    // Get classes from both figure and img to be robust
+                    const figureClasses = (figure.getAttribute('class') || '').split(' ').filter(Boolean);
+                    const imgClasses = (img.getAttribute('class') || '').split(' ').filter(Boolean);
+                    const allClasses = [...figureClasses, ...imgClasses];
 
                     // Parse size, rounded, shadow from classes
                     // Default to 'l', 'md', 'md' if no classes found
@@ -102,7 +106,7 @@ export const Figure = Node.create<FigureOptions>({
                     let rounded: FigureRounded = 'md';
                     let shadow: FigureShadow = 'md';
 
-                    for (const cls of classes) {
+                    for (const cls of allClasses) {
                         if (cls.startsWith('img-size-')) {
                             const val = cls.replace('img-size-', '');
                             if (['xl', 'l', 'm', 's'].includes(val)) {
@@ -126,7 +130,7 @@ export const Figure = Node.create<FigureOptions>({
                     const widthAttr = img.getAttribute('width');
                     const heightAttr = img.getAttribute('height');
 
-                    return {
+                    const result = {
                         src: img.getAttribute('src'),
                         alt: img.getAttribute('alt') || '',
                         width: widthAttr ? parseInt(widthAttr, 10) : null,
@@ -136,6 +140,7 @@ export const Figure = Node.create<FigureOptions>({
                         shadow,
                         caption: figcaption?.textContent || '',
                     };
+                    return result;
                 },
             },
         ];
@@ -303,33 +308,33 @@ export const Figure = Node.create<FigureOptions>({
         return {
             setFigure:
                 (options) =>
-                ({ commands }) => {
-                    return commands.insertContent({
-                        type: this.name,
-                        attrs: {
-                            src: options.src,
-                            alt: options.alt || '',
-                            width: options.width || null,
-                            height: options.height || null,
-                            size: options.size || 'l',
-                            rounded: options.rounded || 'md',
-                            shadow: options.shadow || 'md',
-                            caption: options.caption || '',
-                        },
-                    });
-                },
+                    ({ commands }) => {
+                        return commands.insertContent({
+                            type: this.name,
+                            attrs: {
+                                src: options.src,
+                                alt: options.alt || '',
+                                width: options.width || null,
+                                height: options.height || null,
+                                size: options.size || 'l',
+                                rounded: options.rounded || 'md',
+                                shadow: options.shadow || 'md',
+                                caption: options.caption || '',
+                            },
+                        });
+                    },
             updateFigure:
                 (options) =>
-                ({ commands, state }) => {
-                    const { selection } = state;
-                    const node = state.doc.nodeAt(selection.from);
+                    ({ commands, state }) => {
+                        const { selection } = state;
+                        const node = state.doc.nodeAt(selection.from);
 
-                    if (node?.type.name !== this.name) {
-                        return false;
-                    }
+                        if (node?.type.name !== this.name) {
+                            return false;
+                        }
 
-                    return commands.updateAttributes(this.name, options);
-                },
+                        return commands.updateAttributes(this.name, options);
+                    },
         };
     },
 });
