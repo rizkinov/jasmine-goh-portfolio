@@ -643,6 +643,46 @@ export function AdminEditor({
                     <button
                         onClick={() => {
                             const isEqual = editor.getAttributes('table').class?.includes('table-equal-cols');
+
+                            // If enabling Equal Width, scrub explicit column widths from all cells
+                            if (!isEqual) {
+                                editor.commands.command(({ tr, state, dispatch }) => {
+                                    if (dispatch) {
+                                        const { selection } = state;
+                                        let tablePos = -1;
+
+                                        // Find the parent table position
+                                        const $pos = selection.$from;
+                                        for (let d = $pos.depth; d > 0; d--) {
+                                            const node = $pos.node(d);
+                                            if (node.type.name === 'table') {
+                                                tablePos = $pos.before(d);
+                                                break;
+                                            }
+                                        }
+
+                                        if (tablePos > -1) {
+                                            const tableNode = state.doc.nodeAt(tablePos);
+                                            if (tableNode) {
+                                                // Traverse table to find cells with colwidth
+                                                tableNode.descendants((node, pos) => {
+                                                    if (
+                                                        (node.type.name === 'tableCell' || node.type.name === 'tableHeader') &&
+                                                        node.attrs.colwidth
+                                                    ) {
+                                                        // Reset colwidth to null
+                                                        tr.setNodeMarkup(tablePos + 1 + pos, undefined, { ...node.attrs, colwidth: null });
+                                                    }
+                                                    return true; // continue traversing
+                                                });
+                                            }
+                                        }
+                                    }
+                                    return true;
+                                });
+                            }
+
+                            // Toggle the class
                             editor.chain().focus().updateAttributes('table', {
                                 class: isEqual
                                     ? 'border-collapse my-8 w-full'
@@ -650,8 +690,8 @@ export function AdminEditor({
                             }).run();
                         }}
                         className={`px-2 py-1 text-xs rounded transition-colors border flex items-center gap-1.5 ${editor.getAttributes('table').class?.includes('table-equal-cols')
-                                ? 'bg-primary text-primary-foreground border-primary'
-                                : 'bg-background hover:bg-muted border-border/50 text-foreground'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-background hover:bg-muted border-border/50 text-foreground'
                             }`}
                         title="Toggle fixed equal-width columns"
                     >
