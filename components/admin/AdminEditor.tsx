@@ -591,7 +591,7 @@ export function AdminEditor({
 
             {/* Table Controls (shown when table is active) */}
             {editor.isActive('table') && (
-                <div className="border-b border-border bg-muted/90 backdrop-blur-sm px-3 py-2 flex items-center gap-2 sticky top-[106px] z-10 transition-all">
+                <div className="border-b border-border bg-muted/90 backdrop-blur-sm px-3 py-2 flex items-center gap-2 sticky top-[125px] z-10 transition-all">
                     <span className="text-xs text-muted-foreground font-medium">Table:</span>
                     <button
                         onClick={() => editor.chain().focus().addColumnBefore().run()}
@@ -633,9 +633,37 @@ export function AdminEditor({
                     </button>
                     <button
                         onClick={() => editor.chain().focus().deleteTable().run()}
-                        className="px-2 py-1 text-xs bg-background rounded hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        className="px-2 py-1 text-xs bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors border border-red-100 dark:border-red-900/30"
                     >
                         Delete Table
+                    </button>
+
+                    <div className="w-px h-4 bg-border/50 mx-1" />
+
+                    <button
+                        onClick={() => {
+                            const isEqual = editor.getAttributes('table').class?.includes('table-equal-cols');
+                            editor.chain().focus().updateAttributes('table', {
+                                class: isEqual
+                                    ? 'border-collapse my-8 w-full'
+                                    : 'border-collapse my-8 w-full table-equal-cols'
+                            }).run();
+                        }}
+                        className={`px-2 py-1 text-xs rounded transition-colors border flex items-center gap-1.5 ${editor.getAttributes('table').class?.includes('table-equal-cols')
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background hover:bg-muted border-border/50 text-foreground'
+                            }`}
+                        title="Toggle fixed equal-width columns"
+                    >
+                        <span className={`w-3 h-3 border rounded-sm flex items-center justify-center ${editor.getAttributes('table').class?.includes('table-equal-cols') ? 'border-current' : 'border-muted-foreground'
+                            }`}>
+                            {editor.getAttributes('table').class?.includes('table-equal-cols') && (
+                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                            )}
+                        </span>
+                        Equal Width
                     </button>
                 </div>
             )}
