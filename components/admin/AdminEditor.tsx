@@ -39,6 +39,24 @@ const CaptionMark = Mark.create({
     },
 });
 
+// Custom Table extension to support equal width mode
+const CustomTable = Table.extend({
+    addAttributes() {
+        return {
+            ...this.parent?.(),
+            isEqualWidth: {
+                default: false,
+                parseHTML: element => element.classList.contains('table-equal-cols'),
+                renderHTML: attributes => {
+                    return {
+                        class: `border-collapse my-8 w-full ${attributes.isEqualWidth ? 'table-equal-cols' : ''}`,
+                    }
+                },
+            },
+        }
+    }
+});
+
 interface AdminEditorProps {
     initialContent?: string;
     onSave?: (content: string) => Promise<void>;
@@ -115,11 +133,8 @@ export function AdminEditor({
                     class: 'bg-muted rounded-xl p-4 my-6 overflow-x-auto text-sm font-mono',
                 },
             }),
-            Table.configure({
+            CustomTable.configure({
                 resizable: true,
-                HTMLAttributes: {
-                    class: 'border-collapse my-8 w-full',
-                },
             }),
             TableRow.configure({
                 HTMLAttributes: {
@@ -642,7 +657,7 @@ export function AdminEditor({
 
                     <button
                         onClick={() => {
-                            const isEqual = editor.getAttributes('table').class?.includes('table-equal-cols');
+                            const isEqual = editor.getAttributes('table').isEqualWidth;
 
                             // If enabling Equal Width, scrub explicit column widths from all cells
                             if (!isEqual) {
@@ -682,22 +697,20 @@ export function AdminEditor({
                                 });
                             }
 
-                            // Toggle the class
+                            // Toggle the attribute
                             editor.chain().focus().updateAttributes('table', {
-                                class: isEqual
-                                    ? 'border-collapse my-8 w-full'
-                                    : 'border-collapse my-8 w-full table-equal-cols'
+                                isEqualWidth: !isEqual
                             }).run();
                         }}
-                        className={`px-2 py-1 text-xs rounded transition-colors border flex items-center gap-1.5 ${editor.getAttributes('table').class?.includes('table-equal-cols')
+                        className={`px-2 py-1 text-xs rounded transition-colors border flex items-center gap-1.5 ${editor.getAttributes('table').isEqualWidth
                             ? 'bg-primary text-primary-foreground border-primary'
                             : 'bg-background hover:bg-muted border-border/50 text-foreground'
                             }`}
                         title="Toggle fixed equal-width columns"
                     >
-                        <span className={`w-3 h-3 border rounded-sm flex items-center justify-center ${editor.getAttributes('table').class?.includes('table-equal-cols') ? 'border-current' : 'border-muted-foreground'
+                        <span className={`w-3 h-3 border rounded-sm flex items-center justify-center ${editor.getAttributes('table').isEqualWidth ? 'border-current' : 'border-muted-foreground'
                             }`}>
-                            {editor.getAttributes('table').class?.includes('table-equal-cols') && (
+                            {editor.getAttributes('table').isEqualWidth && (
                                 <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                 </svg>
