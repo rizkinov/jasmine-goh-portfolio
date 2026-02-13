@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getMediaItems, deleteMedia, uploadImage, uploadVideo, isVideoFile, type MediaItem } from '@/lib/media';
@@ -138,9 +139,10 @@ export function MediaLibrary({
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <AnimatePresence>
             <motion.div
+                key="media-overlay"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -456,6 +458,7 @@ export function MediaLibrary({
             {/* Image Cropper Modal */}
             {cropperImage && pendingFile && (
                 <ImageCropper
+                    key="image-cropper"
                     imageSrc={cropperImage}
                     originalMimeType={pendingFile.type}
                     onCropComplete={handleCropComplete}
@@ -465,6 +468,7 @@ export function MediaLibrary({
                     }}
                 />
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }

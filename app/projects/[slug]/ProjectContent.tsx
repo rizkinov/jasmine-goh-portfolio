@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
+import { BlockRenderer } from '@/components/portfolio/BlockRenderer';
 import type { Project } from '@/types/database';
 
 interface ProjectContentProps {
@@ -267,10 +268,14 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                     variants={blurFadeUpVariants}
                     className="max-w-4xl mx-auto"
                 >
-                    <div
-                        className="project-content"
-                        dangerouslySetInnerHTML={{ __html: processContent(project.content_html) }}
-                    />
+                    {project.content_blocks ? (
+                        <BlockRenderer content={project.content_blocks} />
+                    ) : (
+                        <div
+                            className="project-content"
+                            dangerouslySetInnerHTML={{ __html: processContent(project.content_html) }}
+                        />
+                    )}
                 </motion.div>
 
                 {/* More Projects Section */}

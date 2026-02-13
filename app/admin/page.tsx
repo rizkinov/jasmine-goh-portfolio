@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { AdminEditor, AdminLogin, ProjectMetadataForm } from '@/components/admin';
+import { AdminLogin, PageBuilder, ProjectMetadataForm } from '@/components/admin';
 import { supabase } from '@/lib/supabase';
 import type { Project, CreateProjectInput } from '@/types/database';
+import type { PageContent } from '@/types/page-builder';
+import { migrateHtmlToBlocks } from '@/lib/content-migration';
 
 type ActiveTab = 'metadata' | 'content';
 
@@ -16,7 +18,7 @@ export default function AdminPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
     const [isCreating, setIsCreating] = useState(false);
-    const [activeTab, setActiveTab] = useState<ActiveTab>('metadata');
+    const [activeTab, setActiveTab] = useState<ActiveTab>('content');
 
     // Blur animation variants
     const blurFadeVariants = {
@@ -193,8 +195,8 @@ export default function AdminPage() {
         }
     };
 
-    // Handle saving content
-    const handleSaveContent = async (content: string) => {
+    // Handle saving content blocks
+    const handleSaveBlocks = async (content: PageContent) => {
         if (!selectedProject || !supabase) return;
 
         setSaveStatus('saving');
@@ -203,7 +205,7 @@ export default function AdminPage() {
             const response = await fetch('/api/admin/projects', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: selectedProject.id, content_html: content }),
+                body: JSON.stringify({ id: selectedProject.id, content_blocks: content }),
             });
 
             if (!response.ok) {
@@ -219,7 +221,7 @@ export default function AdminPage() {
             setProjects(prev =>
                 prev.map(p =>
                     p.id === selectedProject.id
-                        ? { ...p, content_html: content }
+                        ? { ...p, content_blocks: content }
                         : p
                 )
             );
@@ -233,6 +235,15 @@ export default function AdminPage() {
             setTimeout(() => setSaveStatus('idle'), 3000);
         }
     };
+
+    // Get page builder initial content (auto-migrate from HTML if needed)
+    const getPageBuilderContent = useCallback((project: Project): PageContent | null => {
+        if (project.content_blocks) return project.content_blocks;
+        if (project.content_html) {
+            return migrateHtmlToBlocks(project.content_html);
+        }
+        return null;
+    }, []);
 
     // Handle starting new project creation
     const handleNewProject = () => {
@@ -250,7 +261,7 @@ export default function AdminPage() {
     const handleSelectProject = (project: Project) => {
         setIsCreating(false);
         setSelectedProject(project);
-        setActiveTab('metadata');
+        setActiveTab('content');
     };
 
     // Show loading state while checking auth
@@ -494,22 +505,6 @@ export default function AdminPage() {
                             {/* Tabs */}
                             <div className="flex items-center gap-1 mb-8 border-b border-border">
                                 <button
-                                    onClick={() => setActiveTab('metadata')}
-                                    className={`px-5 py-3 text-sm font-medium transition-colors relative ${
-                                        activeTab === 'metadata'
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                                >
-                                    Metadata
-                                    {activeTab === 'metadata' && (
-                                        <motion.div
-                                            layoutId="activeTab"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                                        />
-                                    )}
-                                </button>
-                                <button
                                     onClick={() => setActiveTab('content')}
                                     className={`px-5 py-3 text-sm font-medium transition-colors relative ${
                                         activeTab === 'content'
@@ -519,6 +514,22 @@ export default function AdminPage() {
                                 >
                                     Content
                                     {activeTab === 'content' && (
+                                        <motion.div
+                                            layoutId="activeTab"
+                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                                        />
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('metadata')}
+                                    className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                                        activeTab === 'metadata'
+                                            ? 'text-primary'
+                                            : 'text-muted-foreground hover:text-foreground'
+                                    }`}
+                                >
+                                    Metadata
+                                    {activeTab === 'metadata' && (
                                         <motion.div
                                             layoutId="activeTab"
                                             className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
@@ -539,10 +550,10 @@ export default function AdminPage() {
                                 </div>
                             ) : (
                                 <div>
-                                    <AdminEditor
-                                        initialContent={selectedProject.content_html}
-                                        onSave={handleSaveContent}
-                                        placeholder="Start writing your case study content..."
+                                    <PageBuilder
+                                        key={selectedProject.id}
+                                        initialContent={getPageBuilderContent(selectedProject)}
+                                        onSave={handleSaveBlocks}
                                     />
 
                                     {/* Preview Link */}

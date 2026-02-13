@@ -2,6 +2,8 @@
 // Database Types for Supabase
 // =============================================
 
+import type { PageContent } from './page-builder';
+
 export interface Experience {
   id?: string;  // Optional unique identifier for React keys
   company: string;
@@ -28,6 +30,7 @@ export interface Project {
   cover_image_url: string | null;
   hero_image_url: string | null;
   content_html: string;
+  content_blocks: PageContent | null;
   tags: string[];
   created_at: string;
   updated_at: string;
@@ -43,6 +46,7 @@ export interface CreateProjectInput {
   cover_image_url?: string | null;
   hero_image_url?: string | null;
   content_html?: string;
+  content_blocks?: PageContent | null;
   tags?: string[];
 }
 
@@ -56,6 +60,7 @@ export interface UpdateProjectInput {
   cover_image_url?: string | null;
   hero_image_url?: string | null;
   content_html?: string;
+  content_blocks?: PageContent | null;
   tags?: string[];
 }
 

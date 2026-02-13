@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { title, slug, short_description, client, role, cover_image_url, hero_image_url, content_html, tags } = body;
+        const { title, slug, short_description, client, role, cover_image_url, hero_image_url, content_html, content_blocks, tags } = body;
 
         // Validation
         if (!title || !slug || !short_description || !client || !role) {
@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
             cover_image_url: cover_image_url || null,
             hero_image_url: hero_image_url || null,
             content_html: content_html || '',
+            content_blocks: content_blocks || null,
             tags: tags || [],
         });
 
