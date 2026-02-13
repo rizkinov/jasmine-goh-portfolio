@@ -36,7 +36,7 @@ function textBlock(html: string) {
 }
 
 function imageBlock(src: string, alt: string, opts: Record<string, unknown> = {}) {
-    return { id: id(), type: 'image' as const, src, alt, size: 'l', rounded: 'md', shadow: 'md', ...opts };
+    return { id: id(), type: 'image' as const, src, alt, size: 'xl', rounded: 'md', shadow: 'md', ...opts };
 }
 
 function spacerBlock(height = 32) {
