@@ -120,7 +120,7 @@ function parseFigureElement(el: Element): ImageBlock | null {
     const figcaption = el.querySelector('figcaption');
     const classes = (el.getAttribute('class') || '').split(' ').filter(Boolean);
 
-    let size: ImageBlock['size'] = 'xl';
+    let size: ImageBlock['size'] = 'l';
     let rounded: ImageBlock['rounded'] = 'md';
     let shadow: ImageBlock['shadow'] = 'md';
 
