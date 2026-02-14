@@ -100,6 +100,12 @@ export function TextBlockEditor({ content, onChange, placeholder = 'Type somethi
                     onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().toggleUnderline().run(); }}
                     className={`px-1.5 py-0.5 rounded hover:bg-muted ${editor.isActive('underline') ? 'bg-muted text-foreground underline' : 'text-muted-foreground'}`}
                 >U</button>
+                <button
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().toggleMark('caption').run(); }}
+                    className={`px-1.5 py-0.5 rounded hover:bg-muted ${editor.isActive('caption') ? 'bg-muted text-foreground' : 'text-muted-foreground'}`}
+                    title="Source (smaller italic text)"
+                ><span className="text-[10px] italic opacity-70">Src</span></button>
                 <div className="w-px h-4 bg-border mx-0.5" />
                 <select
                     className="bg-transparent text-xs text-muted-foreground px-1 py-0.5 rounded hover:bg-muted cursor-pointer"

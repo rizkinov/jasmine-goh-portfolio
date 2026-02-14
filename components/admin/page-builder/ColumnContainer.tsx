@@ -19,7 +19,7 @@ interface ColumnContainerProps {
 }
 
 export function ColumnContainer({ column, sectionId }: ColumnContainerProps) {
-    const { addBlock, removeBlock, updateBlock, openMediaLibrary } = usePageBuilder();
+    const { addBlock, removeBlock, updateBlock, moveBlockUp, moveBlockDown, openMediaLibrary } = usePageBuilder();
 
     const droppableId = `${sectionId}:${column.id}`;
     const { setNodeRef, isOver } = useDroppable({
@@ -123,7 +123,7 @@ export function ColumnContainer({ column, sectionId }: ColumnContainerProps) {
             style={{ flex: `0 0 ${column.widthPercent}%` }}
         >
             <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
-                {column.blocks.map((block) => (
+                {column.blocks.map((block, index) => (
                     <ContentBlockWrapper
                         key={block.id}
                         block={block}
@@ -131,6 +131,10 @@ export function ColumnContainer({ column, sectionId }: ColumnContainerProps) {
                         columnId={column.id}
                         onRemove={() => handleRemoveBlock(block.id)}
                         onDuplicate={() => handleDuplicateBlock(block)}
+                        onMoveUp={() => moveBlockUp(sectionId, column.id, block.id)}
+                        onMoveDown={() => moveBlockDown(sectionId, column.id, block.id)}
+                        isFirst={index === 0}
+                        isLast={index === column.blocks.length - 1}
                     >
                         {renderBlockContent(block)}
                     </ContentBlockWrapper>

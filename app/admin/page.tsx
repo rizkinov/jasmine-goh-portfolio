@@ -209,7 +209,8 @@ export default function AdminPage() {
             });
 
             if (!response.ok) {
-                console.error('Error saving content');
+                const errorData = await response.json().catch(() => ({}));
+                console.error(`Error saving content (${response.status}):`, errorData.error || response.statusText);
                 setSaveStatus('error');
                 setTimeout(() => setSaveStatus('idle'), 3000);
                 return;

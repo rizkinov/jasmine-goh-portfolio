@@ -16,6 +16,8 @@ export interface PageBuilderContextValue {
     addBlock: (sectionId: string, columnId: string, type: BlockType) => void;
     removeBlock: (sectionId: string, columnId: string, blockId: string) => void;
     updateBlock: (sectionId: string, columnId: string, blockId: string, updates: Partial<ContentBlock>) => void;
+    moveBlockUp: (sectionId: string, columnId: string, blockId: string) => void;
+    moveBlockDown: (sectionId: string, columnId: string, blockId: string) => void;
     // Media
     openMediaLibrary: (callback: (media: { url: string; width?: number; height?: number; alt?: string }) => void) => void;
 }

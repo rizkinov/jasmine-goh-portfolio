@@ -115,25 +115,19 @@ export async function updateProject(id: string, updates: Partial<Database['publi
         return null;
     }
 
-    try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabaseAdmin as any)
-            .from('projects')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabaseAdmin as any)
+        .from('projects')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
 
-        if (error) {
-            console.error('Error updating project:', error);
-            return null;
-        }
-
-        return data;
-    } catch (err) {
-        console.error('Error updating project:', err);
-        return null;
+    if (error) {
+        throw new Error(`Supabase updateProject error: ${error.message}`);
     }
+
+    return data;
 }
 
 // Helper function to create a new project (server-side only - uses admin client)

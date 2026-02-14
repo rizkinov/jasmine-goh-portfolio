@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import {
     DndContext,
     closestCenter,
@@ -40,6 +40,8 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
     );
     const [isSaving, setIsSaving] = useState(false);
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
+    const [activeDragBlock, setActiveDragBlock] = useState<ContentBlock | null>(null);
+    const activeDragLocationRef = useRef<{ sectionId: string; columnId: string } | null>(null);
     const [isMediaLibraryOpen, setIsMediaLibraryOpen] = useState(false);
     const mediaCallbackRef = useRef<((media: { url: string; width?: number; height?: number; alt?: string }) => void) | null>(null);
 
@@ -49,9 +51,61 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
         })
     );
 
+    // ---- Undo / Redo ----
+
+    const pageContentRef = useRef(pageContent);
+    pageContentRef.current = pageContent;
+
+    const undoStackRef = useRef<PageContent[]>([]);
+    const redoStackRef = useRef<PageContent[]>([]);
+    const [, forceHistoryRender] = useState(0);
+
+    const canUndo = undoStackRef.current.length > 0;
+    const canRedo = redoStackRef.current.length > 0;
+    const MAX_HISTORY = 50;
+
+    const recordSnapshot = useCallback(() => {
+        undoStackRef.current.push(pageContentRef.current);
+        if (undoStackRef.current.length > MAX_HISTORY) undoStackRef.current.shift();
+        redoStackRef.current = [];
+        forceHistoryRender(n => n + 1);
+    }, []);
+
+    const undo = useCallback(() => {
+        if (undoStackRef.current.length === 0) return;
+        const prevState = undoStackRef.current.pop()!;
+        redoStackRef.current.push(pageContentRef.current);
+        setPageContent(prevState);
+        forceHistoryRender(n => n + 1);
+    }, []);
+
+    const redo = useCallback(() => {
+        if (redoStackRef.current.length === 0) return;
+        const nextState = redoStackRef.current.pop()!;
+        undoStackRef.current.push(pageContentRef.current);
+        setPageContent(nextState);
+        forceHistoryRender(n => n + 1);
+    }, []);
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+            if ((e.metaKey || e.ctrlKey) && e.key === 'z' && e.shiftKey) {
+                e.preventDefault();
+                redo();
+            }
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [undo, redo]);
+
     // ---- Section operations ----
 
     const addSection = useCallback((layout: ColumnLayout, insertIndex?: number) => {
+        recordSnapshot();
         setPageContent(prev => {
             const newSection = createSection(layout);
             const sections = [...prev.sections];
@@ -62,16 +116,18 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
             }
             return { ...prev, sections };
         });
-    }, []);
+    }, [recordSnapshot]);
 
     const removeSection = useCallback((sectionId: string) => {
+        recordSnapshot();
         setPageContent(prev => ({
             ...prev,
             sections: prev.sections.filter(s => s.id !== sectionId),
         }));
-    }, []);
+    }, [recordSnapshot]);
 
     const duplicateSection = useCallback((sectionId: string) => {
+        recordSnapshot();
         setPageContent(prev => {
             const idx = prev.sections.findIndex(s => s.id === sectionId);
             if (idx === -1) return prev;
@@ -80,27 +136,30 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
             sections.splice(idx + 1, 0, cloned);
             return { ...prev, sections };
         });
-    }, []);
+    }, [recordSnapshot]);
 
     const moveSectionUp = useCallback((sectionId: string) => {
+        recordSnapshot();
         setPageContent(prev => {
             const idx = prev.sections.findIndex(s => s.id === sectionId);
             if (idx <= 0) return prev;
             const sections = arrayMove(prev.sections, idx, idx - 1);
             return { ...prev, sections };
         });
-    }, []);
+    }, [recordSnapshot]);
 
     const moveSectionDown = useCallback((sectionId: string) => {
+        recordSnapshot();
         setPageContent(prev => {
             const idx = prev.sections.findIndex(s => s.id === sectionId);
             if (idx === -1 || idx >= prev.sections.length - 1) return prev;
             const sections = arrayMove(prev.sections, idx, idx + 1);
             return { ...prev, sections };
         });
-    }, []);
+    }, [recordSnapshot]);
 
     const updateSectionLayout = useCallback((sectionId: string, layout: ColumnLayout) => {
+        recordSnapshot();
         setPageContent(prev => ({
             ...prev,
             sections: prev.sections.map(s =>
@@ -109,11 +168,12 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                     : s
             ),
         }));
-    }, []);
+    }, [recordSnapshot]);
 
     // ---- Block operations ----
 
     const addBlock = useCallback((sectionId: string, columnId: string, type: BlockType) => {
+        recordSnapshot();
         setPageContent(prev => ({
             ...prev,
             sections: prev.sections.map(s =>
@@ -129,9 +189,10 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                     : s
             ),
         }));
-    }, []);
+    }, [recordSnapshot]);
 
     const removeBlock = useCallback((sectionId: string, columnId: string, blockId: string) => {
+        recordSnapshot();
         setPageContent(prev => ({
             ...prev,
             sections: prev.sections.map(s =>
@@ -147,7 +208,7 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                     : s
             ),
         }));
-    }, []);
+    }, [recordSnapshot]);
 
     const updateBlock = useCallback((sectionId: string, columnId: string, blockId: string, updates: Partial<ContentBlock>) => {
         setPageContent(prev => ({
@@ -171,6 +232,46 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
             ),
         }));
     }, []);
+
+    const moveBlockUp = useCallback((sectionId: string, columnId: string, blockId: string) => {
+        recordSnapshot();
+        setPageContent(prev => ({
+            ...prev,
+            sections: prev.sections.map(s =>
+                s.id === sectionId
+                    ? {
+                        ...s,
+                        columns: s.columns.map(c => {
+                            if (c.id !== columnId) return c;
+                            const idx = c.blocks.findIndex(b => b.id === blockId);
+                            if (idx <= 0) return c;
+                            return { ...c, blocks: arrayMove(c.blocks, idx, idx - 1) };
+                        }),
+                    }
+                    : s
+            ),
+        }));
+    }, [recordSnapshot]);
+
+    const moveBlockDown = useCallback((sectionId: string, columnId: string, blockId: string) => {
+        recordSnapshot();
+        setPageContent(prev => ({
+            ...prev,
+            sections: prev.sections.map(s =>
+                s.id === sectionId
+                    ? {
+                        ...s,
+                        columns: s.columns.map(c => {
+                            if (c.id !== columnId) return c;
+                            const idx = c.blocks.findIndex(b => b.id === blockId);
+                            if (idx === -1 || idx >= c.blocks.length - 1) return c;
+                            return { ...c, blocks: arrayMove(c.blocks, idx, idx + 1) };
+                        }),
+                    }
+                    : s
+            ),
+        }));
+    }, [recordSnapshot]);
 
     // ---- Media Library ----
 
@@ -216,8 +317,17 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
     }, []);
 
     const handleDragStart = useCallback((event: DragStartEvent) => {
+        recordSnapshot();
         setActiveDragId(event.active.id as string);
-    }, []);
+        const data = event.active.data.current;
+        if (data?.type === 'block') {
+            setActiveDragBlock(data.block);
+            activeDragLocationRef.current = {
+                sectionId: data.sectionId,
+                columnId: data.columnId,
+            };
+        }
+    }, [recordSnapshot]);
 
     const handleDragOver = useCallback((event: DragOverEvent) => {
         const { active, over } = event;
@@ -228,10 +338,12 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
 
         // Only handle block-level drag between columns
         if (activeData?.type !== 'block') return;
+        if (!activeDragLocationRef.current) return;
 
         const blockId = active.id as string;
-        const fromSectionId = activeData.sectionId;
-        const fromColumnId = activeData.columnId;
+        // Use ref for current location (active.data.current goes stale after cross-column moves)
+        const fromSectionId = activeDragLocationRef.current.sectionId;
+        const fromColumnId = activeDragLocationRef.current.columnId;
 
         let toSectionId: string;
         let toColumnId: string;
@@ -289,10 +401,17 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
 
             return { ...prev, sections: newSections };
         });
+
+        // Update ref to reflect the block's new location
+        activeDragLocationRef.current = { sectionId: toSectionId, columnId: toColumnId };
     }, []);
 
     const handleDragEnd = useCallback((event: DragEndEvent) => {
         setActiveDragId(null);
+        setActiveDragBlock(null);
+        const dragLocation = activeDragLocationRef.current;
+        activeDragLocationRef.current = null;
+
         const { active, over } = event;
         if (!over || active.id === over.id) return;
 
@@ -314,10 +433,11 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
         }
 
         // Block reordering within same column
-        if (activeData?.type === 'block') {
+        if (activeData?.type === 'block' && dragLocation) {
             const blockId = active.id as string;
-            const fromSectionId = activeData.sectionId;
-            const fromColumnId = activeData.columnId;
+            // Use ref for current location (may have changed during drag)
+            const fromSectionId = dragLocation.sectionId;
+            const fromColumnId = dragLocation.columnId;
 
             let toSectionId: string, toColumnId: string;
             if (overData?.type === 'block') {
@@ -358,6 +478,8 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
 
     const handleDragCancel = useCallback(() => {
         setActiveDragId(null);
+        setActiveDragBlock(null);
+        activeDragLocationRef.current = null;
     }, []);
 
     // ---- Save ----
@@ -385,6 +507,8 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
         addBlock,
         removeBlock,
         updateBlock,
+        moveBlockUp,
+        moveBlockDown,
         openMediaLibrary,
     };
 
@@ -402,6 +526,29 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                             className="px-3 py-1.5 text-xs font-medium border border-border rounded-md hover:bg-muted transition-colors"
                         >
                             + Add Section
+                        </button>
+                        <div className="w-px h-5 bg-border" />
+                        <button
+                            type="button"
+                            onClick={undo}
+                            disabled={!canUndo}
+                            className="p-1.5 text-xs border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-30"
+                            title="Undo (Ctrl+Z)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={redo}
+                            disabled={!canRedo}
+                            className="p-1.5 text-xs border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-30"
+                            title="Redo (Ctrl+Shift+Z)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
+                            </svg>
                         </button>
                     </div>
                     <button
@@ -453,6 +600,28 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                                                     {col.blocks.length} block{col.blocks.length !== 1 ? 's' : ''}
                                                 </div>
                                             ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                            {activeDragBlock && (() => {
+                                const block = activeDragBlock;
+                                const label = block.type === 'text'
+                                    ? block.content_html.replace(/<[^>]*>/g, '').slice(0, 40) || 'Empty text'
+                                    : block.type === 'image'
+                                        ? (block as { alt?: string }).alt || 'Image'
+                                        : block.type === 'spacer'
+                                            ? `Spacer (${(block as { height: number }).height}px)`
+                                            : block.type.charAt(0).toUpperCase() + block.type.slice(1);
+                                return (
+                                    <div className="opacity-70 border-2 border-primary border-dashed rounded-lg bg-background/90 p-3 shadow-lg max-w-xs">
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+                                                <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                                            </svg>
+                                            <span className="capitalize font-medium">{block.type}</span>
+                                            <span className="truncate opacity-60">{label}</span>
                                         </div>
                                     </div>
                                 );

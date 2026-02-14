@@ -11,6 +11,10 @@ interface ContentBlockWrapperProps {
     columnId: string;
     onRemove: () => void;
     onDuplicate: () => void;
+    onMoveUp: () => void;
+    onMoveDown: () => void;
+    isFirst: boolean;
+    isLast: boolean;
     children: React.ReactNode;
 }
 
@@ -20,6 +24,10 @@ export function ContentBlockWrapper({
     columnId,
     onRemove,
     onDuplicate,
+    onMoveUp,
+    onMoveDown,
+    isFirst,
+    isLast,
     children,
 }: ContentBlockWrapperProps) {
     const [isHovered, setIsHovered] = useState(false);
@@ -68,6 +76,30 @@ export function ContentBlockWrapper({
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
                             <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                        </svg>
+                    </button>
+                    {/* Move up */}
+                    <button
+                        type="button"
+                        onClick={onMoveUp}
+                        disabled={isFirst}
+                        className="px-1 py-0.5 rounded hover:bg-muted text-muted-foreground disabled:opacity-30"
+                        title="Move up"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="m18 15-6-6-6 6"/>
+                        </svg>
+                    </button>
+                    {/* Move down */}
+                    <button
+                        type="button"
+                        onClick={onMoveDown}
+                        disabled={isLast}
+                        className="px-1 py-0.5 rounded hover:bg-muted text-muted-foreground disabled:opacity-30"
+                        title="Move down"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="m6 9 6 6 6-6"/>
                         </svg>
                     </button>
                     {/* Block type label */}
