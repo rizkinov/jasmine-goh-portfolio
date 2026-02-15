@@ -459,7 +459,7 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
         <div className="flex gap-2 items-center">
             <Select value={month || null} onValueChange={handleMonthChange}>
                 <SelectTrigger className="flex-1 bg-muted border-border rounded-lg text-sm h-[42px]">
-                    {month ? <SelectValue /> : <span className="text-muted-foreground">Month</span>}
+                    {month ? <span>{MONTHS[parseInt(month, 10) - 1]}</span> : <span className="text-muted-foreground">Month</span>}
                 </SelectTrigger>
                 <SelectContent>
                     {MONTHS.map((m, i) => (
