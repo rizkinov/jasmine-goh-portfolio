@@ -19,6 +19,7 @@ export default function AdminPage() {
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
     const [isCreating, setIsCreating] = useState(false);
     const [activeTab, setActiveTab] = useState<ActiveTab>('content');
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     // Blur animation variants
     const blurFadeVariants = {
@@ -364,88 +365,113 @@ export default function AdminPage() {
                 </div>
             </header>
 
-            <div className="flex">
+            <div className="flex relative">
                 {/* Sidebar - Project List */}
-                <aside className="w-80 border-r border-border/50 min-h-[calc(100vh-65px)] bg-muted/20 p-5">
-                    {/* New Project Button */}
-                    <button
-                        onClick={handleNewProject}
-                        className={`w-full mb-4 px-4 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                            isCreating
-                                ? 'bg-primary text-primary-foreground shadow-lg'
-                                : 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
-                        }`}
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        New Project
-                    </button>
-
-                    <div className="flex items-center gap-3 mb-6 px-2">
-                        <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">
-                            Projects
-                        </span>
-                        <div className="h-px flex-1 bg-primary/30" />
-                        <span className="text-xs text-muted-foreground">
-                            {projects.length}
-                        </span>
-                    </div>
-
-                    {isLoading ? (
-                        <div className="space-y-3">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="h-20 bg-muted/50 rounded-xl animate-pulse" />
-                            ))}
-                        </div>
-                    ) : projects.length === 0 ? (
-                        <motion.div
-                            variants={blurFadeVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="text-center py-12 text-muted-foreground text-sm"
+                <aside className={`border-r border-border/50 min-h-[calc(100vh-65px)] bg-muted/20 transition-[width] duration-300 overflow-hidden ${sidebarOpen ? 'w-80' : 'w-0 border-r-0'}`}>
+                    <div className="w-80 p-5">
+                        {/* New Project Button */}
+                        <button
+                            onClick={handleNewProject}
+                            className={`w-full mb-4 px-4 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                                isCreating
+                                    ? 'bg-primary text-primary-foreground shadow-lg'
+                                    : 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
+                            }`}
                         >
-                            <p className="font-serif text-lg mb-2">No projects yet</p>
-                            <p>Click &quot;New Project&quot; to create one.</p>
-                        </motion.div>
-                    ) : (
-                        <nav className="space-y-2">
-                            {projects.map((project, index) => (
-                                <motion.button
-                                    key={project.id}
-                                    initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
-                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                                    transition={{ delay: index * 0.05, duration: 0.4 }}
-                                    onClick={() => handleSelectProject(project)}
-                                    className={`w-full text-left p-4 rounded-xl transition-all ${!isCreating && selectedProject?.id === project.id
-                                        ? 'bg-primary text-primary-foreground shadow-lg'
-                                        : 'hover:bg-muted/80 border border-transparent hover:border-border/50'
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-3">
-                                        <span className={`font-serif text-lg ${!isCreating && selectedProject?.id === project.id
-                                            ? 'text-primary-foreground/60'
-                                            : 'text-primary/40'
-                                            }`}>
-                                            {String(index + 1).padStart(2, '0')}
-                                        </span>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-serif text-base line-clamp-1">
-                                                {project.title}
-                                            </p>
-                                            <p className={`text-xs mt-1 line-clamp-1 ${!isCreating && selectedProject?.id === project.id
-                                                ? 'text-primary-foreground/70'
-                                                : 'text-muted-foreground'
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            New Project
+                        </button>
+
+                        <div className="flex items-center gap-3 mb-6 px-2">
+                            <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary">
+                                Projects
+                            </span>
+                            <div className="h-px flex-1 bg-primary/30" />
+                            <span className="text-xs text-muted-foreground">
+                                {projects.length}
+                            </span>
+                        </div>
+
+                        {isLoading ? (
+                            <div className="space-y-3">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="h-20 bg-muted/50 rounded-xl animate-pulse" />
+                                ))}
+                            </div>
+                        ) : projects.length === 0 ? (
+                            <motion.div
+                                variants={blurFadeVariants}
+                                initial="hidden"
+                                animate="visible"
+                                className="text-center py-12 text-muted-foreground text-sm"
+                            >
+                                <p className="font-serif text-lg mb-2">No projects yet</p>
+                                <p>Click &quot;New Project&quot; to create one.</p>
+                            </motion.div>
+                        ) : (
+                            <nav className="space-y-2">
+                                {projects.map((project, index) => (
+                                    <motion.button
+                                        key={project.id}
+                                        initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+                                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                        transition={{ delay: index * 0.05, duration: 0.4 }}
+                                        onClick={() => handleSelectProject(project)}
+                                        className={`w-full text-left p-4 rounded-xl transition-all ${!isCreating && selectedProject?.id === project.id
+                                            ? 'bg-primary text-primary-foreground shadow-lg'
+                                            : 'hover:bg-muted/80 border border-transparent hover:border-border/50'
+                                            }`}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <span className={`font-serif text-lg ${!isCreating && selectedProject?.id === project.id
+                                                ? 'text-primary-foreground/60'
+                                                : 'text-primary/40'
                                                 }`}>
-                                                {project.client}
-                                            </p>
+                                                {String(index + 1).padStart(2, '0')}
+                                            </span>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-serif text-base line-clamp-1">
+                                                    {project.title}
+                                                </p>
+                                                <p className={`text-xs mt-1 line-clamp-1 ${!isCreating && selectedProject?.id === project.id
+                                                    ? 'text-primary-foreground/70'
+                                                    : 'text-muted-foreground'
+                                                    }`}>
+                                                    {project.client}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </motion.button>
-                            ))}
-                        </nav>
-                    )}
+                                    </motion.button>
+                                ))}
+                            </nav>
+                        )}
+                    </div>
                 </aside>
+
+                {/* Sidebar toggle button */}
+                <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="absolute top-3 z-10 w-6 h-6 flex items-center justify-center rounded-full bg-background border border-border/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-all shadow-sm"
+                    style={{ left: sidebarOpen ? 'calc(20rem - 12px)' : '8px', transition: 'left 300ms' }}
+                    title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ transform: sidebarOpen ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 300ms' }}
+                    >
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                </button>
 
                 {/* Main Content */}
                 <main className="flex-1 p-8">
