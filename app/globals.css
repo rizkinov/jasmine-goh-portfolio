@@ -424,6 +424,11 @@ html {
   margin-bottom: 0.15rem;
 }
 
+.project-content li p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 /* Strong/Bold */
 .project-content strong {
   font-weight: 600;
@@ -647,6 +652,20 @@ html {
   color: var(--muted-foreground);
   border-bottom: 1px solid var(--border);
   vertical-align: top;
+}
+
+.project-content td p,
+.project-content th p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.project-content td ul,
+.project-content td ol,
+.project-content th ul,
+.project-content th ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .project-content tr:last-child td {
@@ -891,6 +910,11 @@ html {
   margin-bottom: 0.25rem;
 }
 
+.ProseMirror li p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 /* Editorial Blockquote */
 .ProseMirror blockquote {
   margin-top: 1.5rem;
@@ -1010,6 +1034,20 @@ html {
   font-family: var(--font-sans), system-ui, sans-serif;
   color: var(--muted-foreground);
   border-bottom: 1px solid var(--border);
+}
+
+.ProseMirror table td p,
+.ProseMirror table th p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ProseMirror table td ul,
+.ProseMirror table td ol,
+.ProseMirror table th ul,
+.ProseMirror table th ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .ProseMirror table tr:last-child td {
