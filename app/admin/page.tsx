@@ -555,7 +555,7 @@ export default function AdminPage() {
                                             : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
-                                    Metadata
+                                    Project Details
                                     {activeTab === 'metadata' && (
                                         <motion.div
                                             layoutId="activeTab"
