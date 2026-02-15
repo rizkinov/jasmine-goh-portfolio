@@ -33,6 +33,8 @@ export function ProjectMetadataForm({
     const [heroImageUrl, setHeroImageUrl] = useState(project?.hero_image_url || '');
     const [tags, setTags] = useState<string[]>(project?.tags || []);
     const [tagInput, setTagInput] = useState('');
+    const [category, setCategory] = useState(project?.category || '');
+    const [status, setStatus] = useState(project?.status || 'Completed');
 
     // Media library state
     const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -52,6 +54,8 @@ export function ProjectMetadataForm({
         setHeroImageUrl(project?.hero_image_url || '');
         setTags(project?.tags || []);
         setTagInput('');
+        setCategory(project?.category || '');
+        setStatus(project?.status || 'Completed');
         setShowDeleteConfirm(false);
     }, [project]);
 
@@ -110,12 +114,64 @@ export function ProjectMetadataForm({
             cover_image_url: coverImageUrl || null,
             hero_image_url: heroImageUrl || null,
             tags,
+            category,
+            status,
         });
     };
 
     return (
         <>
             <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Tags */}
+                <div>
+                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                        Tags
+                    </label>
+                    {tags.length > 0 && (
+                        <div className="flex gap-2 mb-3 flex-wrap">
+                            {tags.map((tag, i) => (
+                                <span
+                                    key={i}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm"
+                                >
+                                    {tag}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveTag(tag)}
+                                        className="hover:text-destructive transition-colors"
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleAddTag();
+                                }
+                            }}
+                            placeholder="Add a tag"
+                            className="flex-1 px-4 py-2.5 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAddTag}
+                            className="px-4 py-2.5 bg-muted border border-border rounded-lg text-sm hover:bg-muted/80 transition-colors"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+
                 {/* Title */}
                 <div>
                     <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
@@ -194,53 +250,31 @@ export function ProjectMetadataForm({
                     </div>
                 </div>
 
-                {/* Tags */}
-                <div>
-                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Tags
-                    </label>
-                    {tags.length > 0 && (
-                        <div className="flex gap-2 mb-3 flex-wrap">
-                            {tags.map((tag, i) => (
-                                <span
-                                    key={i}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm"
-                                >
-                                    {tag}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveTag(tag)}
-                                        className="hover:text-destructive transition-colors"
-                                    >
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
-                    )}
-                    <div className="flex gap-2">
+                {/* Category & Status */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                            Category
+                        </label>
                         <input
                             type="text"
-                            value={tagInput}
-                            onChange={(e) => setTagInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleAddTag();
-                                }
-                            }}
-                            placeholder="Add a tag"
-                            className="flex-1 px-4 py-2.5 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            placeholder="e.g. UX Research"
+                            className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
                         />
-                        <button
-                            type="button"
-                            onClick={handleAddTag}
-                            className="px-4 py-2.5 bg-muted border border-border rounded-lg text-sm hover:bg-muted/80 transition-colors"
-                        >
-                            Add
-                        </button>
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                            Status
+                        </label>
+                        <input
+                            type="text"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            placeholder="e.g. Completed"
+                            className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
                     </div>
                 </div>
 

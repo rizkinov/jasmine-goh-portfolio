@@ -32,6 +32,8 @@ export interface Project {
   content_html: string;
   content_blocks: PageContent | null;
   tags: string[];
+  category: string;
+  status: string;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +50,8 @@ export interface CreateProjectInput {
   content_html?: string;
   content_blocks?: PageContent | null;
   tags?: string[];
+  category?: string;
+  status?: string;
 }
 
 // Type for updating a project
@@ -62,6 +66,8 @@ export interface UpdateProjectInput {
   content_html?: string;
   content_blocks?: PageContent | null;
   tags?: string[];
+  category?: string;
+  status?: string;
 }
 
 // Type for creating/updating profile

@@ -237,11 +237,11 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                         </div>
                         <div>
                             <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Category</p>
-                            <p className="font-serif text-lg">{project.tags[0] || 'Design'}</p>
+                            <p className="font-serif text-lg">{project.category || project.tags[0] || 'Design'}</p>
                         </div>
                         <div>
                             <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Status</p>
-                            <p className="font-serif text-lg">Completed</p>
+                            <p className="font-serif text-lg">{project.status || 'Completed'}</p>
                         </div>
                     </motion.div>
                 </header>
