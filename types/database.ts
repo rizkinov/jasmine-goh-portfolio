@@ -46,8 +46,8 @@ export interface CreateProjectInput {
   slug: string;
   title: string;
   short_description: string;
-  client: string;
-  role: string;
+  client?: string;
+  role?: string;
   cover_image_url?: string | null;
   hero_image_url?: string | null;
   content_html?: string;

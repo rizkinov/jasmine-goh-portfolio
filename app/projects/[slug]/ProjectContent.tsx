@@ -238,23 +238,30 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                         {project.short_description}
                     </motion.p>
 
-                    {/* Meta info with blur */}
+                    {/* Meta info with blur — only render if at least one field is populated */}
+                    {(project.client || project.role || project.category || project.tags[0] || project.methods_tools || project.date_from || project.status) && (
                     <motion.div
                         variants={blurFadeUpVariants}
                         className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12 pt-10 border-t border-border/50"
                     >
-                        <div>
-                            <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Client</p>
-                            <p className="font-serif text-lg">{project.client}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Role</p>
-                            <p className="font-serif text-lg">{project.role}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Category</p>
-                            <p className="font-serif text-lg">{project.category || project.tags[0] || 'Design'}</p>
-                        </div>
+                        {project.client && (
+                            <div>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Client</p>
+                                <p className="font-serif text-lg">{project.client}</p>
+                            </div>
+                        )}
+                        {project.role && (
+                            <div>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Role</p>
+                                <p className="font-serif text-lg">{project.role}</p>
+                            </div>
+                        )}
+                        {(project.category || project.tags[0]) && (
+                            <div>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Category</p>
+                                <p className="font-serif text-lg">{project.category || project.tags[0]}</p>
+                            </div>
+                        )}
                         {project.methods_tools && (
                             <div>
                                 <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Methods & Tools</p>
@@ -267,11 +274,14 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                                 <p className="font-serif text-lg">{formatProjectDate(project.date_from, project.date_to)}</p>
                             </div>
                         )}
-                        <div>
-                            <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Status</p>
-                            <p className="font-serif text-lg">{project.status || 'Completed'}</p>
-                        </div>
+                        {project.status && (
+                            <div>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Status</p>
+                                <p className="font-serif text-lg">{project.status}</p>
+                            </div>
+                        )}
                     </motion.div>
+                    )}
                 </header>
 
                 {/* Hero Image with blur reveal - uses hero_image_url if set, otherwise falls back to cover_image_url */}

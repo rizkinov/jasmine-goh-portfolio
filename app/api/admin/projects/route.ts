@@ -67,9 +67,9 @@ export async function POST(request: NextRequest) {
         const { title, slug, short_description, client, role, cover_image_url, hero_image_url, content_html, content_blocks, tags, category, status, methods_tools, date_from, date_to } = body;
 
         // Validation
-        if (!title || !slug || !short_description || !client || !role) {
+        if (!title || !slug || !short_description) {
             return NextResponse.json(
-                { error: 'Missing required fields: title, slug, short_description, client, role' },
+                { error: 'Missing required fields: title, slug, short_description' },
                 { status: 400 }
             );
         }
@@ -88,8 +88,8 @@ export async function POST(request: NextRequest) {
             title,
             slug,
             short_description,
-            client,
-            role,
+            client: client || '',
+            role: role || '',
             cover_image_url: cover_image_url || null,
             hero_image_url: hero_image_url || null,
             content_html: content_html || '',

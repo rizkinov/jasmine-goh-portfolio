@@ -233,26 +233,24 @@ export function ProjectMetadataForm({
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                            Client *
+                            Client
                         </label>
                         <input
                             type="text"
                             value={client}
                             onChange={(e) => setClient(e.target.value)}
-                            required
                             placeholder="Client name"
                             className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
                         />
                     </div>
                     <div>
                         <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                            Role *
+                            Role
                         </label>
                         <input
                             type="text"
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
-                            required
                             placeholder="Your role"
                             className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
                         />
