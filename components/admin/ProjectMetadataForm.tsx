@@ -457,7 +457,7 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
 
     return (
         <div className="flex gap-2 items-center">
-            <Select value={month || undefined} onValueChange={handleMonthChange}>
+            <Select value={month || null} onValueChange={handleMonthChange}>
                 <SelectTrigger className="flex-1 bg-muted border-border rounded-lg text-sm h-[42px]">
                     {month ? <SelectValue /> : <span className="text-muted-foreground">Month</span>}
                 </SelectTrigger>
@@ -467,7 +467,7 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
                     ))}
                 </SelectContent>
             </Select>
-            <Select value={year || undefined} onValueChange={handleYearChange}>
+            <Select value={year || null} onValueChange={handleYearChange}>
                 <SelectTrigger className="w-28 bg-muted border-border rounded-lg text-sm h-[42px]">
                     {year ? <SelectValue /> : <span className="text-muted-foreground">Year</span>}
                 </SelectTrigger>
