@@ -28,14 +28,12 @@ export function ProjectMetadataForm({
     const [title, setTitle] = useState(project?.title || '');
     const [slug, setSlug] = useState(project?.slug || '');
     const [shortDescription, setShortDescription] = useState(project?.short_description || '');
-    const [client, setClient] = useState(project?.client || '');
     const [role, setRole] = useState(project?.role || '');
     const [coverImageUrl, setCoverImageUrl] = useState(project?.cover_image_url || '');
     const [heroImageUrl, setHeroImageUrl] = useState(project?.hero_image_url || '');
     const [tags, setTags] = useState<string[]>(project?.tags || []);
     const [tagInput, setTagInput] = useState('');
     const [category, setCategory] = useState(project?.category || '');
-    const [status, setStatus] = useState(project?.status || 'Completed');
     const [methodsTools, setMethodsTools] = useState(project?.methods_tools || '');
     const [dateFrom, setDateFrom] = useState(project?.date_from || '');
     const [dateTo, setDateTo] = useState(project?.date_to || '');
@@ -53,14 +51,12 @@ export function ProjectMetadataForm({
         setTitle(project?.title || '');
         setSlug(project?.slug || '');
         setShortDescription(project?.short_description || '');
-        setClient(project?.client || '');
         setRole(project?.role || '');
         setCoverImageUrl(project?.cover_image_url || '');
         setHeroImageUrl(project?.hero_image_url || '');
         setTags(project?.tags || []);
         setTagInput('');
         setCategory(project?.category || '');
-        setStatus(project?.status || 'Completed');
         setMethodsTools(project?.methods_tools || '');
         setDateFrom(project?.date_from || '');
         setDateTo(project?.date_to || '');
@@ -117,13 +113,11 @@ export function ProjectMetadataForm({
             title,
             slug,
             short_description: shortDescription,
-            client,
             role,
             cover_image_url: coverImageUrl || null,
             hero_image_url: heroImageUrl || null,
             tags,
             category,
-            status,
             methods_tools: methodsTools,
             custom_fields: customFields.filter(f => f.title || f.description).length > 0
                 ? customFields.filter(f => f.title || f.description)
@@ -234,60 +228,32 @@ export function ProjectMetadataForm({
                     />
                 </div>
 
-                {/* Client & Role */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                            Client
-                        </label>
-                        <input
-                            type="text"
-                            value={client}
-                            onChange={(e) => setClient(e.target.value)}
-                            placeholder="Client name"
-                            className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                            Role
-                        </label>
-                        <input
-                            type="text"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            placeholder="Your role"
-                            className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
-                    </div>
+                {/* Role */}
+                <div>
+                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                        Role
+                    </label>
+                    <input
+                        type="text"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                        placeholder="Your role"
+                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
                 </div>
 
-                {/* Category & Status */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                            Category
-                        </label>
-                        <input
-                            type="text"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            placeholder="e.g. UX Research"
-                            className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                            Status
-                        </label>
-                        <input
-                            type="text"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            placeholder="e.g. Completed"
-                            className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
-                    </div>
+                {/* Category */}
+                <div>
+                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                        Category
+                    </label>
+                    <input
+                        type="text"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        placeholder="e.g. UX Research"
+                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
                 </div>
 
                 {/* Methods & Tools */}
