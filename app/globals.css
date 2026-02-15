@@ -487,6 +487,10 @@ html {
 }
 
 /* Caption/Source text mark styling */
+.project-content p:has(.caption-text) {
+  line-height: 1.5;
+}
+
 .project-content .caption-text {
   font-size: 0.8125rem;
   color: var(--muted-foreground);
@@ -1163,6 +1167,10 @@ html {
 }
 
 /* Caption/Source text mark styling in editor */
+.ProseMirror p:has(.caption-text) {
+  line-height: 1.5;
+}
+
 .ProseMirror .caption-text {
   font-size: 0.8125rem;
   color: var(--muted-foreground);
