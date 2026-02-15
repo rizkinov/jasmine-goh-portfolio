@@ -141,7 +141,7 @@ export default function AdminPage() {
 
             if (!response.ok) {
                 const error = await response.json();
-                console.error('Error updating project:', error);
+                console.error('Error updating project:', error?.error || JSON.stringify(error));
                 setSaveStatus('error');
                 setTimeout(() => setSaveStatus('idle'), 3000);
                 return;

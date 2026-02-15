@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { Project, CreateProjectInput } from '@/types/database';
 import type { MediaItem } from '@/lib/media';
 import { MediaLibrary } from './MediaLibrary';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 interface ProjectMetadataFormProps {
     project?: Project | null;
@@ -422,7 +423,7 @@ const MONTHS = [
 // Month/Year picker sub-component
 // value is stored as "YYYY-MM" string
 function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-    const [month, year] = value ? value.split('-') : ['', ''];
+    const [year, month] = value ? value.split('-') : ['', ''];
 
     const handleChange = (newMonth: string, newYear: string) => {
         if (newMonth && newYear) {
@@ -436,27 +437,27 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
     const years = Array.from({ length: currentYear - 2017 }, (_, i) => String(2018 + i));
 
     return (
-        <div className="flex gap-2">
-            <select
-                value={month}
-                onChange={(e) => handleChange(e.target.value, year)}
-                className="flex-1 px-3 py-2.5 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
-            >
-                <option value="">Month</option>
-                {MONTHS.map((m, i) => (
-                    <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
-                ))}
-            </select>
-            <select
-                value={year}
-                onChange={(e) => handleChange(month, e.target.value)}
-                className="w-24 px-3 py-2.5 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
-            >
-                <option value="">Year</option>
-                {years.map((y) => (
-                    <option key={y} value={y}>{y}</option>
-                ))}
-            </select>
+        <div className="flex gap-2 items-center">
+            <Select value={month || undefined} onValueChange={(val) => handleChange(val as string, year)}>
+                <SelectTrigger className="flex-1 bg-muted border-border rounded-lg text-sm h-[42px]">
+                    {month ? <SelectValue /> : <span className="text-muted-foreground">Month</span>}
+                </SelectTrigger>
+                <SelectContent>
+                    {MONTHS.map((m, i) => (
+                        <SelectItem key={m} value={String(i + 1).padStart(2, '0')}>{m}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <Select value={year || undefined} onValueChange={(val) => handleChange(month, val as string)}>
+                <SelectTrigger className="w-28 bg-muted border-border rounded-lg text-sm h-[42px]">
+                    {year ? <SelectValue /> : <span className="text-muted-foreground">Year</span>}
+                </SelectTrigger>
+                <SelectContent>
+                    {years.map((y) => (
+                        <SelectItem key={y} value={y}>{y}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
             {value && (
                 <button
                     type="button"
