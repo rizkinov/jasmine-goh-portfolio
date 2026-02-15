@@ -439,7 +439,7 @@ export default function AdminPage() {
                                                     ? 'text-primary-foreground/70'
                                                     : 'text-muted-foreground'
                                                     }`}>
-                                                    {project.client}
+                                                    {project.short_description}
                                                 </p>
                                             </div>
                                         </div>
@@ -519,14 +519,9 @@ export default function AdminPage() {
                                     </span>
                                     <div className="h-px w-12 bg-primary/40" />
                                 </div>
-                                <h2 className="text-3xl font-serif tracking-tight mb-3">
+                                <h2 className="text-3xl font-serif tracking-tight">
                                     {selectedProject.title}
                                 </h2>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                    <span className="font-medium">{selectedProject.client}</span>
-                                    <span className="text-primary/40">/</span>
-                                    <span>{selectedProject.role}</span>
-                                </div>
                             </div>
 
                             {/* Tabs */}

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { Project, CreateProjectInput, CustomField } from '@/types/database';
 import type { MediaItem } from '@/lib/media';
 import { MediaLibrary } from './MediaLibrary';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+
 
 interface ProjectMetadataFormProps {
     project?: Project | null;
@@ -28,15 +28,10 @@ export function ProjectMetadataForm({
     const [title, setTitle] = useState(project?.title || '');
     const [slug, setSlug] = useState(project?.slug || '');
     const [shortDescription, setShortDescription] = useState(project?.short_description || '');
-    const [role, setRole] = useState(project?.role || '');
     const [coverImageUrl, setCoverImageUrl] = useState(project?.cover_image_url || '');
     const [heroImageUrl, setHeroImageUrl] = useState(project?.hero_image_url || '');
     const [tags, setTags] = useState<string[]>(project?.tags || []);
     const [tagInput, setTagInput] = useState('');
-    const [category, setCategory] = useState(project?.category || '');
-    const [methodsTools, setMethodsTools] = useState(project?.methods_tools || '');
-    const [dateFrom, setDateFrom] = useState(project?.date_from || '');
-    const [dateTo, setDateTo] = useState(project?.date_to || '');
     const [customFields, setCustomFields] = useState<CustomField[]>(project?.custom_fields || []);
 
     // Media library state
@@ -51,15 +46,10 @@ export function ProjectMetadataForm({
         setTitle(project?.title || '');
         setSlug(project?.slug || '');
         setShortDescription(project?.short_description || '');
-        setRole(project?.role || '');
         setCoverImageUrl(project?.cover_image_url || '');
         setHeroImageUrl(project?.hero_image_url || '');
         setTags(project?.tags || []);
         setTagInput('');
-        setCategory(project?.category || '');
-        setMethodsTools(project?.methods_tools || '');
-        setDateFrom(project?.date_from || '');
-        setDateTo(project?.date_to || '');
         setShowDeleteConfirm(false);
     }, [project]);
 
@@ -113,17 +103,12 @@ export function ProjectMetadataForm({
             title,
             slug,
             short_description: shortDescription,
-            role,
             cover_image_url: coverImageUrl || null,
             hero_image_url: heroImageUrl || null,
             tags,
-            category,
-            methods_tools: methodsTools,
             custom_fields: customFields.filter(f => f.title || f.description).length > 0
                 ? customFields.filter(f => f.title || f.description)
                 : null,
-            date_from: dateFrom,
-            date_to: dateTo,
         });
     };
 
@@ -228,52 +213,10 @@ export function ProjectMetadataForm({
                     />
                 </div>
 
-                {/* Role */}
-                <div>
-                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Role
-                    </label>
-                    <input
-                        type="text"
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        placeholder="Your role"
-                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                </div>
-
-                {/* Category */}
-                <div>
-                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Category
-                    </label>
-                    <input
-                        type="text"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        placeholder="e.g. UX Research"
-                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                </div>
-
-                {/* Methods & Tools */}
-                <div>
-                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Methods & Tools
-                    </label>
-                    <input
-                        type="text"
-                        value={methodsTools}
-                        onChange={(e) => setMethodsTools(e.target.value)}
-                        placeholder="e.g. Competitive Analysis, User Research, Adobe XD"
-                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                </div>
-
                 {/* Custom Fields */}
                 <div>
                     <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Custom Fields <span className="text-muted-foreground font-normal normal-case tracking-normal">(max 3)</span>
+                        Custom Fields <span className="text-muted-foreground font-normal normal-case tracking-normal">(max 5)</span>
                     </label>
                     <div className="space-y-3">
                         {customFields.map((field, index) => (
@@ -314,7 +257,7 @@ export function ProjectMetadataForm({
                                 </button>
                             </div>
                         ))}
-                        {customFields.length < 3 && (
+                        {customFields.length < 5 && (
                             <button
                                 type="button"
                                 onClick={() => setCustomFields([...customFields, { title: '', description: '' }])}
@@ -323,52 +266,6 @@ export function ProjectMetadataForm({
                                 + Add custom field
                             </button>
                         )}
-                    </div>
-                </div>
-
-                {/* Timeline */}
-                <div>
-                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Timeline
-                    </label>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <p className="text-xs text-muted-foreground mb-1.5">From</p>
-                            <MonthYearPicker value={dateFrom} onChange={setDateFrom} />
-                        </div>
-                        <div>
-                            <p className="text-xs text-muted-foreground mb-1.5">To (optional)</p>
-                            {dateTo === 'present' ? (
-                                <div className="flex gap-2 items-center">
-                                    <div className="flex-1 px-4 py-3 bg-muted border border-border rounded-xl text-base text-primary font-medium">
-                                        In Progress
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setDateTo('')}
-                                        className="px-2 text-muted-foreground hover:text-destructive transition-colors"
-                                        title="Clear"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="flex gap-2 items-center">
-                                    <div className="flex-1">
-                                        <MonthYearPicker value={dateTo} onChange={setDateTo} />
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setDateTo('present')}
-                                        className="px-3 py-3 text-xs font-medium tracking-wide bg-muted border border-border rounded-xl text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors whitespace-nowrap"
-                                    >
-                                        In Progress
-                                    </button>
-                                </div>
-                            )}
-                        </div>
                     </div>
                 </div>
 
@@ -467,84 +364,6 @@ export function ProjectMetadataForm({
                 mode="select"
             />
         </>
-    );
-}
-
-const MONTHS = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-];
-
-// Month/Year picker sub-component
-// value is stored as "YYYY-MM" string
-function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-    const [parsedYear, parsedMonth] = value ? value.split('-') : ['', ''];
-    const [month, setMonth] = useState(parsedMonth);
-    const [year, setYear] = useState(parsedYear);
-
-    // Sync local state when external value changes (e.g. clear button)
-    useEffect(() => {
-        const [y, m] = value ? value.split('-') : ['', ''];
-        setMonth(m);
-        setYear(y);
-    }, [value]);
-
-    const handleMonthChange = (newMonth: string | null) => {
-        const m = newMonth || '';
-        setMonth(m);
-        if (m && year) onChange(`${year}-${m}`);
-    };
-
-    const handleYearChange = (newYear: string | null) => {
-        const y = newYear || '';
-        setYear(y);
-        if (month && y) onChange(`${y}-${month}`);
-    };
-
-    const handleClear = () => {
-        setMonth('');
-        setYear('');
-        onChange('');
-    };
-
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: currentYear - 2017 }, (_, i) => String(2018 + i));
-
-    return (
-        <div className="flex gap-2 items-center">
-            <Select value={month || null} onValueChange={handleMonthChange}>
-                <SelectTrigger className="flex-1 bg-muted border-border rounded-lg text-sm h-[42px]">
-                    {month ? <span>{MONTHS[parseInt(month, 10) - 1]}</span> : <span className="text-muted-foreground">Month</span>}
-                </SelectTrigger>
-                <SelectContent>
-                    {MONTHS.map((m, i) => (
-                        <SelectItem key={m} value={String(i + 1).padStart(2, '0')}>{m}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <Select value={year || null} onValueChange={handleYearChange}>
-                <SelectTrigger className="w-28 bg-muted border-border rounded-lg text-sm h-[42px]">
-                    {year ? <SelectValue /> : <span className="text-muted-foreground">Year</span>}
-                </SelectTrigger>
-                <SelectContent>
-                    {years.map((y) => (
-                        <SelectItem key={y} value={y}>{y}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            {(month || year) && (
-                <button
-                    type="button"
-                    onClick={handleClear}
-                    className="px-2 text-muted-foreground hover:text-destructive transition-colors"
-                    title="Clear"
-                >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            )}
-        </div>
     );
 }
 

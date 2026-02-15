@@ -12,25 +12,6 @@ interface ProjectContentProps {
     otherProjects?: Project[];
 }
 
-const MONTH_NAMES = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-];
-
-function formatProjectDate(dateFrom: string, dateTo: string): string {
-    const format = (yyyyMm: string) => {
-        const [year, month] = yyyyMm.split('-');
-        return `${MONTH_NAMES[parseInt(month, 10) - 1]} ${year}`;
-    };
-    if (dateTo === 'present') {
-        return `${format(dateFrom)} - Present`;
-    }
-    if (dateTo) {
-        return `${format(dateFrom)} - ${format(dateTo)}`;
-    }
-    return format(dateFrom);
-}
-
 // Process HTML to wrap tables in scrollable containers for mobile responsiveness
 const processContent = (html: string) => {
     return html
@@ -241,58 +222,6 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                         {project.short_description}
                     </motion.p>
 
-                    {/* Meta info with blur — only render if at least one field is populated */}
-                    {(project.client || project.role || project.category || project.methods_tools || (project.custom_fields && project.custom_fields.length > 0) || project.date_from || project.status) && (
-                    <motion.div
-                        variants={blurFadeUpVariants}
-                        className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12 pt-10 border-t border-border/50"
-                    >
-                        {project.client && (
-                            <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Client</p>
-                                <p className="font-serif text-lg">{project.client}</p>
-                            </div>
-                        )}
-                        {project.role && (
-                            <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Role</p>
-                                <p className="font-serif text-lg">{project.role}</p>
-                            </div>
-                        )}
-                        {project.category && (
-                            <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Category</p>
-                                <p className="font-serif text-lg">{project.category}</p>
-                            </div>
-                        )}
-                        {project.methods_tools && (
-                            <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Methods & Tools</p>
-                                <p className="font-serif text-lg">{project.methods_tools}</p>
-                            </div>
-                        )}
-                        {project.custom_fields?.map((field, i) => (
-                            field.title && field.description ? (
-                                <div key={i}>
-                                    <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">{field.title}</p>
-                                    <p className="font-serif text-lg">{field.description}</p>
-                                </div>
-                            ) : null
-                        ))}
-                        {project.date_from && (
-                            <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Timeline</p>
-                                <p className="font-serif text-lg">{formatProjectDate(project.date_from, project.date_to)}</p>
-                            </div>
-                        )}
-                        {project.status && (
-                            <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Status</p>
-                                <p className="font-serif text-lg">{project.status}</p>
-                            </div>
-                        )}
-                    </motion.div>
-                    )}
                 </header>
 
                 {/* Hero Image with blur reveal - uses hero_image_url if set, otherwise falls back to cover_image_url */}
@@ -309,6 +238,23 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
                             priority
                         />
+                    </motion.div>
+                )}
+
+                {/* Custom fields below hero */}
+                {project.custom_fields && project.custom_fields.some(f => f.title && f.description) && (
+                    <motion.div
+                        variants={blurFadeUpVariants}
+                        className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-20 max-w-5xl mx-auto pt-10 border-t border-border/50"
+                    >
+                        {project.custom_fields.map((field, i) => (
+                            field.title && field.description ? (
+                                <div key={i}>
+                                    <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">{field.title}</p>
+                                    <p className="font-serif text-lg">{field.description}</p>
+                                </div>
+                            ) : null
+                        ))}
                     </motion.div>
                 )}
 
