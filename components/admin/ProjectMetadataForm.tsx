@@ -326,10 +326,10 @@ export function ProjectMetadataForm({
                     </div>
                 </div>
 
-                {/* Date */}
+                {/* Timeline */}
                 <div>
                     <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Date
+                        Timeline
                     </label>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -338,7 +338,36 @@ export function ProjectMetadataForm({
                         </div>
                         <div>
                             <p className="text-xs text-muted-foreground mb-1.5">To (optional)</p>
-                            <MonthYearPicker value={dateTo} onChange={setDateTo} />
+                            {dateTo === 'present' ? (
+                                <div className="flex gap-2 items-center">
+                                    <div className="flex-1 px-4 py-3 bg-muted border border-border rounded-xl text-base text-primary font-medium">
+                                        In Progress
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setDateTo('')}
+                                        className="px-2 text-muted-foreground hover:text-destructive transition-colors"
+                                        title="Clear"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex gap-2 items-center">
+                                    <div className="flex-1">
+                                        <MonthYearPicker value={dateTo} onChange={setDateTo} />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setDateTo('present')}
+                                        className="px-3 py-3 text-xs font-medium tracking-wide bg-muted border border-border rounded-xl text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors whitespace-nowrap"
+                                    >
+                                        In Progress
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

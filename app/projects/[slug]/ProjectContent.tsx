@@ -22,6 +22,9 @@ function formatProjectDate(dateFrom: string, dateTo: string): string {
         const [year, month] = yyyyMm.split('-');
         return `${MONTH_NAMES[parseInt(month, 10) - 1]} ${year}`;
     };
+    if (dateTo === 'present') {
+        return `${format(dateFrom)} - Present`;
+    }
     if (dateTo) {
         return `${format(dateFrom)} - ${format(dateTo)}`;
     }
@@ -278,7 +281,7 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                         ))}
                         {project.date_from && (
                             <div>
-                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Date</p>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Timeline</p>
                                 <p className="font-serif text-lg">{formatProjectDate(project.date_from, project.date_to)}</p>
                             </div>
                         )}
