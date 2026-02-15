@@ -104,8 +104,8 @@ export function ColumnContainer({ column, sectionId }: ColumnContainerProps) {
             case 'table':
                 return (
                     <TableBlockEditor
-                        content={block.content_html}
-                        onChange={(html) => handleUpdateBlock(block.id, { content_html: html } as Partial<ContentBlock>)}
+                        block={block}
+                        onUpdate={(updates) => handleUpdateBlock(block.id, updates as Partial<ContentBlock>)}
                     />
                 );
             case 'code':

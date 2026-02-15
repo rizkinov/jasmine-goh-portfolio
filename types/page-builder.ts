@@ -58,6 +58,7 @@ export interface TableBlock {
   id: string;
   type: 'table';
   content_html: string;
+  headerOrientation?: 'row' | 'column';
 }
 
 export interface CodeBlock {

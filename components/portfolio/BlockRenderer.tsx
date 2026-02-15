@@ -98,13 +98,15 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
       return <div style={{ height: `${block.height}px` }} />;
     case 'divider':
       return <hr className="border-t border-border my-6" />;
-    case 'table':
+    case 'table': {
+      const isColHeader = block.headerOrientation === 'column';
       return (
         <div
-          className="project-content"
+          className={`project-content${isColHeader ? ' table-header-col' : ''}`}
           dangerouslySetInnerHTML={{ __html: processTableHtml(block.content_html) }}
         />
       );
+    }
     case 'code':
       return (
         <div

@@ -657,6 +657,36 @@ html {
   background: oklch(0.68 0.14 40 / 0.05);
 }
 
+/* Column Header Tables - first column styled as header */
+.project-content.table-header-col th {
+  font-size: inherit;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  background: transparent;
+  color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border);
+}
+
+.project-content.table-header-col th:first-child,
+.project-content.table-header-col td:first-child {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--muted);
+  color: var(--foreground);
+  border-right: 2px solid var(--border);
+}
+
+.project-content.table-header-col th:first-child {
+  border-bottom: 2px solid var(--border);
+}
+
+.project-content.table-header-col tr:hover td:first-child {
+  background: var(--muted);
+}
+
 /* Table scroll wrapper for responsive tables */
 .project-content .table-scroll-wrapper {
   width: 100%;
@@ -699,6 +729,11 @@ html {
   .project-content th {
     font-size: 0.6875rem;
   }
+
+  .project-content.table-header-col td:first-child {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.6875rem;
+  }
 }
 
 /* Mobile: Smaller text */
@@ -711,6 +746,12 @@ html {
   }
 
   .project-content th {
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+  }
+
+  .project-content.table-header-col td:first-child {
+    padding: 0.5rem 0.625rem;
     font-size: 0.625rem;
     letter-spacing: 0.06em;
   }
@@ -968,6 +1009,36 @@ html {
   background: oklch(0.68 0.14 40 / 0.05);
 }
 
+/* Column Header Tables in Editor - first column styled as header */
+.table-header-col .ProseMirror table th {
+  font-size: inherit !important;
+  font-weight: normal !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  background: transparent !important;
+  color: var(--muted-foreground) !important;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-header-col .ProseMirror table th:first-child,
+.table-header-col .ProseMirror table td:first-child {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  background: var(--muted) !important;
+  color: var(--foreground) !important;
+  border-right: 2px solid var(--border);
+}
+
+.table-header-col .ProseMirror table th:first-child {
+  border-bottom: 2px solid var(--border);
+}
+
+.table-header-col .ProseMirror table tr:hover td:first-child {
+  background: var(--muted) !important;
+}
+
 /* Equal column width tables */
 .ProseMirror table.table-equal-cols {
   table-layout: fixed;
@@ -998,6 +1069,11 @@ html {
   .ProseMirror table th {
     font-size: 0.6875rem;
   }
+
+  .table-header-col .ProseMirror table td:first-child {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.6875rem !important;
+  }
 }
 
 /* Mobile: Smaller text */
@@ -1012,6 +1088,12 @@ html {
   .ProseMirror table th {
     font-size: 0.625rem;
     letter-spacing: 0.06em;
+  }
+
+  .table-header-col .ProseMirror table td:first-child {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.625rem !important;
+    letter-spacing: 0.06em !important;
   }
 }
 

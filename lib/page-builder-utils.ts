@@ -88,7 +88,7 @@ export function createDividerBlock(): DividerBlock {
 }
 
 export function createTableBlock(content_html = '<table><tr><th>Header 1</th><th>Header 2</th></tr><tr><td>Cell 1</td><td>Cell 2</td></tr></table>'): TableBlock {
-  return { id: generateId(), type: 'table', content_html };
+  return { id: generateId(), type: 'table', content_html, headerOrientation: 'row' };
 }
 
 export function createCodeBlock(content_html = '<pre><code></code></pre>'): CodeBlock {
