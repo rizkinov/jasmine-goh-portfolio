@@ -25,9 +25,10 @@ interface TextBlockEditorProps {
     content: string;
     onChange: (html: string) => void;
     placeholder?: string;
+    className?: string;
 }
 
-export function TextBlockEditor({ content, onChange, placeholder = 'Type something...' }: TextBlockEditorProps) {
+export function TextBlockEditor({ content, onChange, placeholder = 'Type something...', className }: TextBlockEditorProps) {
     const [isFocused, setIsFocused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -158,7 +159,7 @@ export function TextBlockEditor({ content, onChange, placeholder = 'Type somethi
     }, [editor, isFocused]);
 
     return (
-        <div ref={containerRef} className="group text-block-container" onFocus={handleContainerFocus} onBlur={handleContainerBlur}>
+        <div ref={containerRef} className={`group text-block-container ${className || ''}`} onFocus={handleContainerFocus} onBlur={handleContainerBlur}>
             {renderToolbar()}
             <div className="project-content">
                 <EditorContent editor={editor} />

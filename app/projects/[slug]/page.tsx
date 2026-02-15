@@ -1,4 +1,5 @@
 import { getProjectBySlug, getProjects } from '@/lib/supabase';
+import { stripHtml } from '@/lib/utils';
 import { Navbar, Footer } from '@/components/portfolio';
 import { ProjectContent } from './ProjectContent';
 import { notFound } from 'next/navigation';
@@ -33,10 +34,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
     return {
         title: `${project.title} | Jasmine Goh`,
-        description: project.short_description,
+        description: stripHtml(project.short_description),
         openGraph: {
             title: project.title,
-            description: project.short_description,
+            description: stripHtml(project.short_description),
             type: 'article',
             images: project.cover_image_url ? [project.cover_image_url] : [],
         },

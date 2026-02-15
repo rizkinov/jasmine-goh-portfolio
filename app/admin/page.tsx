@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { AdminLogin, PageBuilder, ProjectMetadataForm } from '@/components/admin';
@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 import type { Project, CreateProjectInput } from '@/types/database';
 import type { PageContent } from '@/types/page-builder';
 import { migrateHtmlToBlocks } from '@/lib/content-migration';
+import { stripHtml } from '@/lib/utils';
 
 type ActiveTab = 'metadata' | 'content';
 
@@ -20,6 +21,9 @@ export default function AdminPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [activeTab, setActiveTab] = useState<ActiveTab>('content');
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const metadataFormRef = useRef<HTMLFormElement>(null);
+    const pageBuilderSaveRef = useRef<(() => void) | null>(null);
 
     // Blur animation variants
     const blurFadeVariants = {
@@ -247,6 +251,15 @@ export default function AdminPage() {
         return null;
     }, []);
 
+    // Unified save handler
+    const handleSave = () => {
+        if (activeTab === 'metadata') {
+            metadataFormRef.current?.requestSubmit();
+        } else {
+            pageBuilderSaveRef.current?.();
+        }
+    };
+
     // Handle starting new project creation
     const handleNewProject = () => {
         setSelectedProject(null);
@@ -254,16 +267,12 @@ export default function AdminPage() {
         setActiveTab('metadata');
     };
 
-    // Handle canceling new project creation
-    const handleCancelCreate = () => {
-        setIsCreating(false);
-    };
-
     // Handle selecting a project
     const handleSelectProject = (project: Project) => {
         setIsCreating(false);
         setSelectedProject(project);
         setActiveTab('content');
+        setShowDeleteConfirm(false);
     };
 
     // Show loading state while checking auth
@@ -439,7 +448,7 @@ export default function AdminPage() {
                                                     ? 'text-primary-foreground/70'
                                                     : 'text-muted-foreground'
                                                     }`}>
-                                                    {project.short_description}
+                                                    {stripHtml(project.short_description)}
                                                 </p>
                                             </div>
                                         </div>
@@ -483,23 +492,41 @@ export default function AdminPage() {
                             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                             transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
                         >
-                            <div className="mb-10">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <span className="text-xs font-medium tracking-[0.25em] uppercase text-primary">
-                                        New Project
-                                    </span>
-                                    <div className="h-px w-12 bg-primary/40" />
+                            <div className="flex items-center justify-between mb-10">
+                                <div>
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <span className="text-xs font-medium tracking-[0.25em] uppercase text-primary">
+                                            New Project
+                                        </span>
+                                        <div className="h-px w-12 bg-primary/40" />
+                                    </div>
+                                    <h2 className="text-3xl font-serif tracking-tight">
+                                        Create a new project
+                                    </h2>
                                 </div>
-                                <h2 className="text-3xl font-serif tracking-tight">
-                                    Create a new project
-                                </h2>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => metadataFormRef.current?.requestSubmit()}
+                                        disabled={saveStatus === 'saving'}
+                                        className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                                    >
+                                        {saveStatus === 'saving' ? 'Creating...' : 'Create Project'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCreating(false)}
+                                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="max-w-2xl">
                                 <ProjectMetadataForm
                                     onSave={handleCreateProject}
-                                    onCancel={handleCancelCreate}
-                                    isSaving={saveStatus === 'saving'}
+                                    formRef={metadataFormRef}
                                 />
                             </div>
                         </motion.div>
@@ -524,40 +551,91 @@ export default function AdminPage() {
                                 </h2>
                             </div>
 
-                            {/* Tabs */}
-                            <div className="flex items-center gap-1 mb-8 border-b border-border">
-                                <button
-                                    onClick={() => setActiveTab('content')}
-                                    className={`px-5 py-3 text-sm font-medium transition-colors relative ${
-                                        activeTab === 'content'
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                                >
-                                    Content
-                                    {activeTab === 'content' && (
-                                        <motion.div
-                                            layoutId="activeTab"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                                        />
+                            {/* Tabs + Actions */}
+                            <div className="flex items-center justify-between mb-8 border-b border-border">
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => setActiveTab('content')}
+                                        className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                                            activeTab === 'content'
+                                                ? 'text-primary'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        Content
+                                        {activeTab === 'content' && (
+                                            <motion.div
+                                                layoutId="activeTab"
+                                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                                            />
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('metadata')}
+                                        className={`px-5 py-3 text-sm font-medium transition-colors relative ${
+                                            activeTab === 'metadata'
+                                                ? 'text-primary'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        Project Details
+                                        {activeTab === 'metadata' && (
+                                            <motion.div
+                                                layoutId="activeTab"
+                                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                                            />
+                                        )}
+                                    </button>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex items-center gap-2 pb-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleSave}
+                                        disabled={saveStatus === 'saving'}
+                                        className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                                    >
+                                        {saveStatus === 'saving' ? 'Saving...' : 'Save'}
+                                    </button>
+                                    <Link
+                                        href={`/projects/${selectedProject.slug}`}
+                                        target="_blank"
+                                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors inline-flex items-center gap-1.5"
+                                    >
+                                        Preview
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M7 17L17 7" /><path d="M7 7h10v10" />
+                                        </svg>
+                                    </Link>
+                                    {showDeleteConfirm ? (
+                                        <>
+                                            <span className="text-sm text-muted-foreground ml-2">Delete?</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => { handleDeleteProject(); setShowDeleteConfirm(false); }}
+                                                className="px-3 py-2 text-sm font-medium text-destructive-foreground bg-destructive rounded-lg hover:bg-destructive/90 transition-colors"
+                                            >
+                                                Yes
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowDeleteConfirm(false)}
+                                                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                            >
+                                                No
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowDeleteConfirm(true)}
+                                            className="px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 border border-border rounded-lg transition-colors"
+                                        >
+                                            Delete
+                                        </button>
                                     )}
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('metadata')}
-                                    className={`px-5 py-3 text-sm font-medium transition-colors relative ${
-                                        activeTab === 'metadata'
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                                >
-                                    Project Details
-                                    {activeTab === 'metadata' && (
-                                        <motion.div
-                                            layoutId="activeTab"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                                        />
-                                    )}
-                                </button>
+                                </div>
                             </div>
 
                             {/* Tab Content */}
@@ -566,43 +644,16 @@ export default function AdminPage() {
                                     <ProjectMetadataForm
                                         project={selectedProject}
                                         onSave={handleUpdateMetadata}
-                                        onDelete={handleDeleteProject}
-                                        isSaving={saveStatus === 'saving'}
+                                        formRef={metadataFormRef}
                                     />
                                 </div>
                             ) : (
-                                <div>
-                                    <PageBuilder
-                                        key={selectedProject.id}
-                                        initialContent={getPageBuilderContent(selectedProject)}
-                                        onSave={handleSaveBlocks}
-                                    />
-
-                                    {/* Preview Link */}
-                                    <div className="mt-8 pt-8 border-t border-border/50">
-                                        <Link
-                                            href={`/projects/${selectedProject.slug}`}
-                                            target="_blank"
-                                            className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium tracking-wide"
-                                        >
-                                            Preview project
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="14"
-                                                height="14"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            >
-                                                <path d="M7 17L17 7" />
-                                                <path d="M7 7h10v10" />
-                                            </svg>
-                                        </Link>
-                                    </div>
-                                </div>
+                                <PageBuilder
+                                    key={selectedProject.id}
+                                    initialContent={getPageBuilderContent(selectedProject)}
+                                    onSave={handleSaveBlocks}
+                                    saveRef={pageBuilderSaveRef}
+                                />
                             )}
                         </motion.div>
                     ) : (

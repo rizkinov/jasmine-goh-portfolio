@@ -33,9 +33,10 @@ import type { MediaItem } from '@/lib/media';
 interface PageBuilderProps {
     initialContent?: PageContent | null;
     onSave?: (content: PageContent) => Promise<void>;
+    saveRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
+export function PageBuilder({ initialContent, onSave, saveRef }: PageBuilderProps) {
     const [pageContent, setPageContent] = useState<PageContent>(
         initialContent ?? createEmptyPageContent()
     );
@@ -495,6 +496,12 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
         }
     }, [onSave, pageContent]);
 
+    // Expose save to parent via ref
+    useEffect(() => {
+        if (saveRef) saveRef.current = handleSave;
+        return () => { if (saveRef) saveRef.current = null; };
+    }, [saveRef, handleSave]);
+
     // ---- Context value ----
 
     const contextValue: PageBuilderContextValue = {
@@ -523,7 +530,7 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                     <div className="flex items-center gap-2">
                         <button
                             type="button"
-                            onClick={() => addSection('100')}
+                            onClick={() => addSection('100', 0)}
                             className="px-3 py-1.5 text-xs font-medium border border-border rounded-md hover:bg-muted transition-colors"
                         >
                             + Add Section
@@ -552,14 +559,6 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                             </svg>
                         </button>
                     </div>
-                    <button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="px-4 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
-                    >
-                        {isSaving ? 'Saving...' : 'Save Content'}
-                    </button>
                 </div>
 
                 {/* Sections */}

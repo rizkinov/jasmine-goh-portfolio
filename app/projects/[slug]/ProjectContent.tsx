@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
 import { BlockRenderer } from '@/components/portfolio/BlockRenderer';
+import { stripHtml } from '@/lib/utils';
 import type { Project } from '@/types/database';
 
 interface ProjectContentProps {
@@ -214,14 +215,6 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                         className="decorative-line w-24 mb-8 origin-left"
                     />
 
-                    {/* Description with blur */}
-                    <motion.p
-                        variants={blurFadeUpVariants}
-                        className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-3xl text-refined"
-                    >
-                        {project.short_description}
-                    </motion.p>
-
                 </header>
 
                 {/* Hero Image with blur reveal - uses hero_image_url if set, otherwise falls back to cover_image_url */}
@@ -241,20 +234,35 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                     </motion.div>
                 )}
 
-                {/* Custom fields below hero */}
-                {project.custom_fields && project.custom_fields.some(f => f.title && f.description) && (
+                {/* Overview + Custom Fields */}
+                {project.short_description && stripHtml(project.short_description) && (
                     <motion.div
                         variants={blurFadeUpVariants}
-                        className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-20 max-w-5xl mx-auto pt-10 border-t border-border/50"
+                        className={`mb-20 max-w-5xl mx-auto pt-10 border-t border-border/50 grid grid-cols-1 ${
+                            project.custom_fields?.some(f => f.title && f.description)
+                                ? 'md:grid-cols-4 gap-12'
+                                : ''
+                        }`}
                     >
-                        {project.custom_fields.map((field, i) => (
-                            field.title && field.description ? (
-                                <div key={i}>
-                                    <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">{field.title}</p>
-                                    <p className="font-serif text-lg">{field.description}</p>
-                                </div>
-                            ) : null
-                        ))}
+                        <div className={project.custom_fields?.some(f => f.title && f.description) ? 'md:col-span-3' : ''}>
+                            <h2 className="text-[2.25rem] md:text-[2.5rem] font-serif font-normal tracking-[-0.02em] leading-[1.15] text-foreground mt-0 mb-5">Overview</h2>
+                            <div
+                                className="text-lg text-muted-foreground leading-relaxed text-refined project-content"
+                                dangerouslySetInnerHTML={{ __html: project.short_description }}
+                            />
+                        </div>
+                        {project.custom_fields?.some(f => f.title && f.description) && (
+                            <div className="md:col-span-1 space-y-6">
+                                {project.custom_fields.map((field, i) => (
+                                    field.title && field.description ? (
+                                        <div key={i}>
+                                            <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">{field.title}</p>
+                                            <p className="font-serif text-lg">{field.description}</p>
+                                        </div>
+                                    ) : null
+                                ))}
+                            </div>
+                        )}
                     </motion.div>
                 )}
 

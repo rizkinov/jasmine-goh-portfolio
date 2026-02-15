@@ -5,22 +5,19 @@ import Image from 'next/image';
 import type { Project, CreateProjectInput, CustomField } from '@/types/database';
 import type { MediaItem } from '@/lib/media';
 import { MediaLibrary } from './MediaLibrary';
+import { TextBlockEditor } from './page-builder/TextBlockEditor';
 
 
 interface ProjectMetadataFormProps {
     project?: Project | null;
     onSave: (data: CreateProjectInput) => Promise<void>;
-    onDelete?: () => void;
-    onCancel?: () => void;
-    isSaving?: boolean;
+    formRef?: React.RefObject<HTMLFormElement | null>;
 }
 
 export function ProjectMetadataForm({
     project,
     onSave,
-    onDelete,
-    onCancel,
-    isSaving = false,
+    formRef,
 }: ProjectMetadataFormProps) {
     const isNewProject = !project;
 
@@ -38,9 +35,6 @@ export function ProjectMetadataForm({
     const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [imageSelectTarget, setImageSelectTarget] = useState<'cover' | 'hero' | null>(null);
 
-    // Delete confirmation state
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
     // Reset form when project changes
     useEffect(() => {
         setTitle(project?.title || '');
@@ -50,7 +44,6 @@ export function ProjectMetadataForm({
         setHeroImageUrl(project?.hero_image_url || '');
         setTags(project?.tags || []);
         setTagInput('');
-        setShowDeleteConfirm(false);
     }, [project]);
 
     // Auto-generate slug from title (only for new projects)
@@ -114,7 +107,7 @@ export function ProjectMetadataForm({
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                 {/* Tags */}
                 <div>
                     <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
@@ -198,18 +191,16 @@ export function ProjectMetadataForm({
                     </p>
                 </div>
 
-                {/* Short Description */}
+                {/* Overview */}
                 <div>
                     <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
-                        Short Description *
+                        Overview *
                     </label>
-                    <textarea
-                        value={shortDescription}
-                        onChange={(e) => setShortDescription(e.target.value)}
-                        required
-                        rows={3}
-                        placeholder="Brief description for cards and previews"
-                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    <TextBlockEditor
+                        content={shortDescription}
+                        onChange={setShortDescription}
+                        placeholder="Project overview"
+                        className="bg-muted border border-border rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-primary/50"
                     />
                 </div>
 
@@ -301,56 +292,8 @@ export function ProjectMetadataForm({
                     />
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    <button
-                        type="submit"
-                        disabled={isSaving}
-                        className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                    >
-                        {isSaving ? 'Saving...' : isNewProject ? 'Create Project' : 'Save Changes'}
-                    </button>
-                    {onCancel && (
-                        <button
-                            type="button"
-                            onClick={onCancel}
-                            className="px-6 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Cancel
-                        </button>
-                    )}
-                    {!isNewProject && onDelete && (
-                        <div className="ml-auto">
-                            {showDeleteConfirm ? (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">Delete this project?</span>
-                                    <button
-                                        type="button"
-                                        onClick={onDelete}
-                                        className="px-4 py-2 text-sm text-destructive-foreground bg-destructive rounded-lg hover:bg-destructive/90 transition-colors"
-                                    >
-                                        Yes, Delete
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowDeleteConfirm(false)}
-                                        className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => setShowDeleteConfirm(true)}
-                                    className="px-4 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                                >
-                                    Delete Project
-                                </button>
-                            )}
-                        </div>
-                    )}
-                </div>
+                {/* Hidden submit for programmatic form submission */}
+                <button type="submit" className="hidden" />
             </form>
 
             {/* Media Library Modal */}

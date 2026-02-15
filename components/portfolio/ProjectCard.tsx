@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAnimationPreferences } from '@/lib/useAnimationPreferences';
+import { stripHtml } from '@/lib/utils';
 import type { Project } from '@/types/database';
 
 interface ProjectCardProps {
@@ -184,7 +185,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
 
                         {/* Description */}
                         <p className="text-muted-foreground text-refined leading-relaxed line-clamp-2">
-                            {project.short_description}
+                            {stripHtml(project.short_description)}
                         </p>
                     </motion.div>
 
