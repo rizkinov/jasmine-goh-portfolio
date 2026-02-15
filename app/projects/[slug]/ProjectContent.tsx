@@ -12,6 +12,22 @@ interface ProjectContentProps {
     otherProjects?: Project[];
 }
 
+const MONTH_NAMES = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+function formatProjectDate(dateFrom: string, dateTo: string): string {
+    const format = (yyyyMm: string) => {
+        const [year, month] = yyyyMm.split('-');
+        return `${MONTH_NAMES[parseInt(month, 10) - 1]} ${year}`;
+    };
+    if (dateTo) {
+        return `${format(dateFrom)} - ${format(dateTo)}`;
+    }
+    return format(dateFrom);
+}
+
 // Process HTML to wrap tables in scrollable containers for mobile responsiveness
 const processContent = (html: string) => {
     return html
@@ -225,7 +241,7 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                     {/* Meta info with blur */}
                     <motion.div
                         variants={blurFadeUpVariants}
-                        className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 pt-10 border-t border-border/50"
+                        className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12 pt-10 border-t border-border/50"
                     >
                         <div>
                             <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Client</p>
@@ -239,6 +255,18 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                             <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Category</p>
                             <p className="font-serif text-lg">{project.category || project.tags[0] || 'Design'}</p>
                         </div>
+                        {project.methods_tools && (
+                            <div>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Methods & Tools</p>
+                                <p className="font-serif text-lg">{project.methods_tools}</p>
+                            </div>
+                        )}
+                        {project.date_from && (
+                            <div>
+                                <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Date</p>
+                                <p className="font-serif text-lg">{formatProjectDate(project.date_from, project.date_to)}</p>
+                            </div>
+                        )}
                         <div>
                             <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Status</p>
                             <p className="font-serif text-lg">{project.status || 'Completed'}</p>

@@ -35,6 +35,9 @@ export function ProjectMetadataForm({
     const [tagInput, setTagInput] = useState('');
     const [category, setCategory] = useState(project?.category || '');
     const [status, setStatus] = useState(project?.status || 'Completed');
+    const [methodsTools, setMethodsTools] = useState(project?.methods_tools || '');
+    const [dateFrom, setDateFrom] = useState(project?.date_from || '');
+    const [dateTo, setDateTo] = useState(project?.date_to || '');
 
     // Media library state
     const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -56,6 +59,9 @@ export function ProjectMetadataForm({
         setTagInput('');
         setCategory(project?.category || '');
         setStatus(project?.status || 'Completed');
+        setMethodsTools(project?.methods_tools || '');
+        setDateFrom(project?.date_from || '');
+        setDateTo(project?.date_to || '');
         setShowDeleteConfirm(false);
     }, [project]);
 
@@ -116,6 +122,9 @@ export function ProjectMetadataForm({
             tags,
             category,
             status,
+            methods_tools: methodsTools,
+            date_from: dateFrom,
+            date_to: dateTo,
         });
     };
 
@@ -278,6 +287,37 @@ export function ProjectMetadataForm({
                     </div>
                 </div>
 
+                {/* Methods & Tools */}
+                <div>
+                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                        Methods & Tools
+                    </label>
+                    <input
+                        type="text"
+                        value={methodsTools}
+                        onChange={(e) => setMethodsTools(e.target.value)}
+                        placeholder="e.g. Competitive Analysis, User Research, Adobe XD"
+                        className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                </div>
+
+                {/* Date */}
+                <div>
+                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                        Date
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <p className="text-xs text-muted-foreground mb-1.5">From</p>
+                            <MonthYearPicker value={dateFrom} onChange={setDateFrom} />
+                        </div>
+                        <div>
+                            <p className="text-xs text-muted-foreground mb-1.5">To (optional)</p>
+                            <MonthYearPicker value={dateTo} onChange={setDateTo} />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Cover Image (Thumbnail) */}
                 <div>
                     <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
@@ -373,6 +413,65 @@ export function ProjectMetadataForm({
                 mode="select"
             />
         </>
+    );
+}
+
+const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+// Month/Year picker sub-component
+// value is stored as "YYYY-MM" string
+function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+    const [month, year] = value ? value.split('-') : ['', ''];
+
+    const handleChange = (newMonth: string, newYear: string) => {
+        if (newMonth && newYear) {
+            onChange(`${newYear}-${newMonth}`);
+        } else {
+            onChange('');
+        }
+    };
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: currentYear - 2017 }, (_, i) => String(2018 + i));
+
+    return (
+        <div className="flex gap-2">
+            <select
+                value={month}
+                onChange={(e) => handleChange(e.target.value, year)}
+                className="flex-1 px-3 py-2.5 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
+            >
+                <option value="">Month</option>
+                {MONTHS.map((m, i) => (
+                    <option key={m} value={String(i + 1).padStart(2, '0')}>{m}</option>
+                ))}
+            </select>
+            <select
+                value={year}
+                onChange={(e) => handleChange(month, e.target.value)}
+                className="w-24 px-3 py-2.5 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
+            >
+                <option value="">Year</option>
+                {years.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                ))}
+            </select>
+            {value && (
+                <button
+                    type="button"
+                    onClick={() => onChange('')}
+                    className="px-2 text-muted-foreground hover:text-destructive transition-colors"
+                    title="Clear"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            )}
+        </div>
     );
 }
 

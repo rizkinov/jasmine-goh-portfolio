@@ -34,6 +34,9 @@ export interface Project {
   tags: string[];
   category: string;
   status: string;
+  methods_tools: string;
+  date_from: string;
+  date_to: string;
   created_at: string;
   updated_at: string;
 }
@@ -52,6 +55,9 @@ export interface CreateProjectInput {
   tags?: string[];
   category?: string;
   status?: string;
+  methods_tools?: string;
+  date_from?: string;
+  date_to?: string;
 }
 
 // Type for updating a project
@@ -68,6 +74,9 @@ export interface UpdateProjectInput {
   tags?: string[];
   category?: string;
   status?: string;
+  methods_tools?: string;
+  date_from?: string;
+  date_to?: string;
 }
 
 // Type for creating/updating profile
