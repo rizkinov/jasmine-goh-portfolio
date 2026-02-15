@@ -269,7 +269,10 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                 {/* Content with blur */}
                 <motion.div
                     variants={blurFadeUpVariants}
-                    className="max-w-5xl mx-auto"
+                    className={project.content_blocks
+                        ? '-mx-6 md:-mx-12 lg:-mx-24'
+                        : 'max-w-5xl mx-auto'
+                    }
                 >
                     {project.content_blocks ? (
                         <BlockRenderer content={project.content_blocks} />

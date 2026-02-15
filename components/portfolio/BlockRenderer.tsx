@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import type { PageContent, Section, Column, ContentBlock, ImageBlock, VideoBlock } from '@/types/page-builder';
+import { getSectionBgValue, sectionHasBackground } from '@/lib/page-builder-utils';
 
 interface BlockRendererProps {
   content: PageContent;
@@ -25,11 +26,44 @@ export function BlockRenderer({ content }: BlockRendererProps) {
 }
 
 function SectionRenderer({ section }: { section: Section }) {
-  return (
+  const bgValue = getSectionBgValue(section.style);
+  const hasBg = sectionHasBackground(section.style);
+  const isDark = section.style?.colorMode === 'dark';
+  const hasStyle = hasBg || isDark;
+
+  const columns = (
     <div className="flex flex-wrap md:flex-nowrap gap-6">
       {section.columns.map((column) => (
         <ColumnRenderer key={column.id} column={column} />
       ))}
+    </div>
+  );
+
+  // Styled section — full-width background with contained content
+  if (hasStyle) {
+    return (
+      <div
+        className="px-6 md:px-12 lg:px-24"
+        style={bgValue ? { backgroundColor: bgValue } : undefined}
+      >
+        <div
+          className={isDark ? 'dark' : ''}
+          style={!bgValue && isDark ? { backgroundColor: 'var(--background)' } : undefined}
+        >
+          <div className="max-w-5xl mx-auto">
+            {columns}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No style — contained within parent padding
+  return (
+    <div className="px-6 md:px-12 lg:px-24">
+      <div className="max-w-5xl mx-auto">
+        {columns}
+      </div>
     </div>
   );
 }

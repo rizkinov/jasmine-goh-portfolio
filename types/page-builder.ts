@@ -69,10 +69,20 @@ export interface Column {
   blocks: ContentBlock[];
 }
 
+// Section background color presets (maps to CSS custom properties)
+export type SectionBgPreset = 'none' | 'muted' | 'primary' | 'secondary' | 'accent' | 'foreground';
+
+export interface SectionStyle {
+  bgPreset?: SectionBgPreset;
+  bgCustom?: string;
+  colorMode?: 'light' | 'dark';
+}
+
 export interface Section {
   id: string;
   layout: ColumnLayout;
   columns: Column[];
+  style?: SectionStyle;
 }
 
 export interface PageContent {

@@ -2,6 +2,7 @@ import type {
   ColumnLayout,
   Column,
   Section,
+  SectionStyle,
   ContentBlock,
   TextBlock,
   ImageBlock,
@@ -158,10 +159,27 @@ export function cloneSection(section: Section): Section {
   return {
     ...section,
     id: generateId(),
+    style: section.style ? { ...section.style } : undefined,
     columns: section.columns.map(col => ({
       ...col,
       id: generateId(),
       blocks: col.blocks.map(block => ({ ...block, id: generateId() })),
     })),
   };
+}
+
+// ---- Section Style Helpers ----
+
+export function getSectionBgValue(style?: SectionStyle): string | undefined {
+  if (!style) return undefined;
+  if (style.bgCustom) return style.bgCustom;
+  if (style.bgPreset && style.bgPreset !== 'none') return `var(--${style.bgPreset})`;
+  return undefined;
+}
+
+export function sectionHasBackground(style?: SectionStyle): boolean {
+  if (!style) return false;
+  if (style.bgCustom) return true;
+  if (style.bgPreset && style.bgPreset !== 'none') return true;
+  return false;
 }

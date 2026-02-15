@@ -16,7 +16,7 @@ import {
 } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import type { PageContent, Section, ContentBlock, ColumnLayout, BlockType } from '@/types/page-builder';
+import type { PageContent, Section, SectionStyle, ContentBlock, ColumnLayout, BlockType } from '@/types/page-builder';
 import {
     createSection,
     createBlock,
@@ -168,6 +168,16 @@ export function PageBuilder({ initialContent, onSave, saveRef }: PageBuilderProp
                 s.id === sectionId
                     ? { ...s, layout, columns: redistributeColumns(s.columns, layout) }
                     : s
+            ),
+        }));
+    }, [recordSnapshot]);
+
+    const updateSectionStyle = useCallback((sectionId: string, style: SectionStyle) => {
+        recordSnapshot();
+        setPageContent(prev => ({
+            ...prev,
+            sections: prev.sections.map(s =>
+                s.id === sectionId ? { ...s, style } : s
             ),
         }));
     }, [recordSnapshot]);
@@ -512,6 +522,7 @@ export function PageBuilder({ initialContent, onSave, saveRef }: PageBuilderProp
         moveSectionUp,
         moveSectionDown,
         updateSectionLayout,
+        updateSectionStyle,
         addBlock,
         removeBlock,
         updateBlock,

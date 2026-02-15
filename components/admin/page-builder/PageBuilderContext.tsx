@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import type { PageContent, Section, ContentBlock, ColumnLayout, BlockType } from '@/types/page-builder';
+import type { PageContent, Section, SectionStyle, ContentBlock, ColumnLayout, BlockType } from '@/types/page-builder';
 
 export interface PageBuilderContextValue {
     pageContent: PageContent;
@@ -12,6 +12,7 @@ export interface PageBuilderContextValue {
     moveSectionUp: (sectionId: string) => void;
     moveSectionDown: (sectionId: string) => void;
     updateSectionLayout: (sectionId: string, layout: ColumnLayout) => void;
+    updateSectionStyle: (sectionId: string, style: SectionStyle) => void;
     // Block operations
     addBlock: (sectionId: string, columnId: string, type: BlockType) => void;
     removeBlock: (sectionId: string, columnId: string, blockId: string) => void;

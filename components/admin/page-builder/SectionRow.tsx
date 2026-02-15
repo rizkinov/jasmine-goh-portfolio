@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Section } from '@/types/page-builder';
+import { getSectionBgValue, sectionHasBackground } from '@/lib/page-builder-utils';
 import { ColumnContainer } from './ColumnContainer';
 import { LayoutPicker } from './LayoutPicker';
+import { SectionStylePicker } from './SectionStylePicker';
 import { usePageBuilder } from './PageBuilderContext';
 
 interface SectionRowProps {
@@ -16,7 +18,8 @@ interface SectionRowProps {
 
 export function SectionRow({ section, index, totalSections }: SectionRowProps) {
     const [isHovered, setIsHovered] = useState(false);
-    const { addSection, removeSection, duplicateSection, moveSectionUp, moveSectionDown, updateSectionLayout } = usePageBuilder();
+    const [toolbarLocked, setToolbarLocked] = useState(false);
+    const { addSection, removeSection, duplicateSection, moveSectionUp, moveSectionDown, updateSectionLayout, updateSectionStyle } = usePageBuilder();
 
     const {
         attributes,
@@ -33,7 +36,11 @@ export function SectionRow({ section, index, totalSections }: SectionRowProps) {
         },
     });
 
-    const style = {
+    const bgValue = getSectionBgValue(section.style);
+    const hasBg = sectionHasBackground(section.style);
+    const isDarkMode = section.style?.colorMode === 'dark';
+
+    const dndStyle = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.4 : 1,
@@ -42,10 +49,10 @@ export function SectionRow({ section, index, totalSections }: SectionRowProps) {
     return (
         <div
             ref={setNodeRef}
-            style={style}
-            className={`section-row relative group/section ${isDragging ? 'z-50' : ''}`}
+            style={dndStyle}
+            className={`section-row relative group/section ${isDragging ? 'z-50' : ''} ${hasBg || isDarkMode ? 'section-has-style' : ''}`}
             onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseLeave={() => { if (!toolbarLocked) setIsHovered(false); }}
         >
             {/* Left-side controls - visible on section hover */}
             {!isDragging && (
@@ -77,12 +84,19 @@ export function SectionRow({ section, index, totalSections }: SectionRowProps) {
             )}
 
             {/* Section toolbar - visible on hover */}
-            {isHovered && !isDragging && (
+            {(isHovered || toolbarLocked) && !isDragging && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-0.5 bg-background border border-border rounded-md shadow-sm px-1 py-0.5 z-20">
                     {/* Layout picker */}
                     <LayoutPicker
                         currentLayout={section.layout}
                         onChange={(layout) => updateSectionLayout(section.id, layout)}
+                    />
+
+                    {/* Style picker */}
+                    <SectionStylePicker
+                        currentStyle={section.style}
+                        onChange={(newStyle) => updateSectionStyle(section.id, newStyle)}
+                        onOpenChange={setToolbarLocked}
                     />
 
                     <div className="w-px h-3 bg-border" />
@@ -139,8 +153,16 @@ export function SectionRow({ section, index, totalSections }: SectionRowProps) {
                 </div>
             )}
 
-            {/* Columns */}
-            <div className="flex flex-nowrap gap-0">
+            {/* Background wrapper — outside .dark so CSS variables resolve to light-mode values */}
+            <div
+                className="flex flex-nowrap gap-0"
+                style={bgValue ? { backgroundColor: bgValue } : undefined}
+            >
+            {/* Dark mode wrapper — scoped here so toolbar stays in light mode */}
+            <div
+                className={`flex flex-nowrap gap-0 w-full ${isDarkMode ? 'dark' : ''}`}
+                style={!bgValue && isDarkMode ? { backgroundColor: 'var(--background)' } : undefined}
+            >
                 {section.columns.map((column) => (
                     <ColumnContainer
                         key={column.id}
@@ -148,6 +170,7 @@ export function SectionRow({ section, index, totalSections }: SectionRowProps) {
                         sectionId={section.id}
                     />
                 ))}
+            </div>
             </div>
         </div>
     );
