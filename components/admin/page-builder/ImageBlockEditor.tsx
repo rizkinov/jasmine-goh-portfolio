@@ -9,6 +9,13 @@ interface ImageBlockEditorProps {
     onSelectImage: () => void;
 }
 
+const sizeOptions: { value: ImageBlock['size']; label: string }[] = [
+    { value: 's', label: 'S' },
+    { value: 'm', label: 'M' },
+    { value: 'l', label: 'L' },
+    { value: 'xl', label: 'XL' },
+];
+
 const roundedOptions: { value: ImageBlock['rounded']; label: string; preview: string }[] = [
     { value: 'none', label: 'None', preview: '' },
     { value: 'sm', label: 'SM', preview: 'rounded-sm' },
@@ -64,7 +71,6 @@ export function ImageBlockEditor({ block, onUpdate, onSelectImage }: ImageBlockE
                         src={block.src}
                         alt={block.alt || ''}
                         style={{
-                            maxWidth: '100%',
                             height: 'auto',
                             display: 'block',
                             opacity: isHovered ? 0.7 : 1,
@@ -99,6 +105,27 @@ export function ImageBlockEditor({ block, onUpdate, onSelectImage }: ImageBlockE
 
             {/* Display Controls */}
             <div className="mt-3 flex flex-wrap items-center gap-4 text-xs">
+                {/* Size */}
+                <div className="flex items-center gap-1.5">
+                    <span className="text-muted-foreground font-medium">Size</span>
+                    <div className="flex gap-0.5 bg-muted rounded-md p-0.5">
+                        {sizeOptions.map((option) => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => onUpdate({ size: option.value })}
+                                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                                    block.size === option.value
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Rounded */}
                 <div className="flex items-center gap-1.5">
                     <span className="text-muted-foreground font-medium">Rounded</span>
