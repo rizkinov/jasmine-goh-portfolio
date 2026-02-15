@@ -406,7 +406,7 @@ html {
 .project-content ul {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-  margin-left: 1.5rem;
+  padding-left: 1.25rem;
   list-style-type: disc;
   color: var(--muted-foreground);
 }
@@ -414,15 +414,14 @@ html {
 .project-content ol {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-  margin-left: 1.5rem;
+  padding-left: 1.25rem;
   list-style-type: decimal;
   color: var(--muted-foreground);
 }
 
 .project-content li {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding-left: 0.25rem;
+  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
 }
 
 /* Strong/Bold */

@@ -9,6 +9,20 @@ interface ImageBlockEditorProps {
     onSelectImage: () => void;
 }
 
+const roundedOptions: { value: ImageBlock['rounded']; label: string; preview: string }[] = [
+    { value: 'none', label: 'None', preview: '' },
+    { value: 'sm', label: 'SM', preview: 'rounded-sm' },
+    { value: 'md', label: 'MD', preview: 'rounded-md' },
+    { value: 'lg', label: 'LG', preview: 'rounded-lg' },
+];
+
+const shadowOptions: { value: ImageBlock['shadow']; label: string }[] = [
+    { value: 'none', label: 'None' },
+    { value: 'sm', label: 'SM' },
+    { value: 'md', label: 'MD' },
+    { value: 'lg', label: 'LG' },
+];
+
 export function ImageBlockEditor({ block, onUpdate, onSelectImage }: ImageBlockEditorProps) {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -36,50 +50,97 @@ export function ImageBlockEditor({ block, onUpdate, onSelectImage }: ImageBlockE
     ].join(' ');
 
     return (
-        <div className="project-content">
-            <figure
-                className={figureClasses}
-                style={{ position: 'relative', cursor: 'pointer' }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                onClick={onSelectImage}
-            >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    src={block.src}
-                    alt={block.alt || ''}
-                    style={{
-                        maxWidth: '100%',
-                        height: 'auto',
-                        display: 'block',
-                        opacity: isHovered ? 0.7 : 1,
-                        transition: 'opacity 0.2s',
-                    }}
-                />
-                {isHovered && (
-                    <div
+        <div>
+            <div className="project-content">
+                <figure
+                    className={figureClasses}
+                    style={{ position: 'relative', cursor: 'pointer' }}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    onClick={onSelectImage}
+                >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={block.src}
+                        alt={block.alt || ''}
                         style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            padding: '0.75rem 1.5rem',
-                            background: 'rgba(0, 0, 0, 0.85)',
-                            color: 'white',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.875rem',
-                            fontWeight: 500,
-                            whiteSpace: 'nowrap',
-                            zIndex: 20,
+                            maxWidth: '100%',
+                            height: 'auto',
+                            display: 'block',
+                            opacity: isHovered ? 0.7 : 1,
+                            transition: 'opacity 0.2s',
                         }}
-                    >
-                        Click to edit
+                    />
+                    {isHovered && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                padding: '0.75rem 1.5rem',
+                                background: 'rgba(0, 0, 0, 0.85)',
+                                color: 'white',
+                                borderRadius: '0.5rem',
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                whiteSpace: 'nowrap',
+                                zIndex: 20,
+                            }}
+                        >
+                            Click to change image
+                        </div>
+                    )}
+                    {block.caption && (
+                        <figcaption>{block.caption}</figcaption>
+                    )}
+                </figure>
+            </div>
+
+            {/* Display Controls */}
+            <div className="mt-3 flex flex-wrap items-center gap-4 text-xs">
+                {/* Rounded */}
+                <div className="flex items-center gap-1.5">
+                    <span className="text-muted-foreground font-medium">Rounded</span>
+                    <div className="flex gap-0.5 bg-muted rounded-md p-0.5">
+                        {roundedOptions.map((option) => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => onUpdate({ rounded: option.value })}
+                                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                                    block.rounded === option.value
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
                     </div>
-                )}
-                {block.caption && (
-                    <figcaption>{block.caption}</figcaption>
-                )}
-            </figure>
+                </div>
+
+                {/* Shadow */}
+                <div className="flex items-center gap-1.5">
+                    <span className="text-muted-foreground font-medium">Shadow</span>
+                    <div className="flex gap-0.5 bg-muted rounded-md p-0.5">
+                        {shadowOptions.map((option) => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => onUpdate({ shadow: option.value })}
+                                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                                    block.shadow === option.value
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

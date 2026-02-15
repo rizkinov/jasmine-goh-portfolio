@@ -238,7 +238,7 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                 {project.short_description && stripHtml(project.short_description) && (
                     <motion.div
                         variants={blurFadeUpVariants}
-                        className={`mb-20 max-w-5xl mx-auto pt-10 border-t border-border/50 grid grid-cols-1 ${
+                        className={`mb-0 max-w-5xl mx-auto pt-10 border-t border-border/50 grid grid-cols-1 ${
                             project.custom_fields?.some(f => f.title && f.description)
                                 ? 'md:grid-cols-4 gap-12'
                                 : ''
