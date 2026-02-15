@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import type { Project, CreateProjectInput } from '@/types/database';
+import type { Project, CreateProjectInput, CustomField } from '@/types/database';
 import type { MediaItem } from '@/lib/media';
 import { MediaLibrary } from './MediaLibrary';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -39,6 +39,7 @@ export function ProjectMetadataForm({
     const [methodsTools, setMethodsTools] = useState(project?.methods_tools || '');
     const [dateFrom, setDateFrom] = useState(project?.date_from || '');
     const [dateTo, setDateTo] = useState(project?.date_to || '');
+    const [customFields, setCustomFields] = useState<CustomField[]>(project?.custom_fields || []);
 
     // Media library state
     const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -124,6 +125,9 @@ export function ProjectMetadataForm({
             category,
             status,
             methods_tools: methodsTools,
+            custom_fields: customFields.filter(f => f.title || f.description).length > 0
+                ? customFields.filter(f => f.title || f.description)
+                : null,
             date_from: dateFrom,
             date_to: dateTo,
         });
@@ -298,6 +302,62 @@ export function ProjectMetadataForm({
                         placeholder="e.g. Competitive Analysis, User Research, Adobe XD"
                         className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
+                </div>
+
+                {/* Custom Fields */}
+                <div>
+                    <label className="block text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">
+                        Custom Fields <span className="text-muted-foreground font-normal normal-case tracking-normal">(max 3)</span>
+                    </label>
+                    <div className="space-y-3">
+                        {customFields.map((field, index) => (
+                            <div key={index} className="flex gap-2 items-start">
+                                <div className="grid grid-cols-2 gap-2 flex-1">
+                                    <input
+                                        type="text"
+                                        value={field.title}
+                                        onChange={(e) => {
+                                            const updated = [...customFields];
+                                            updated[index] = { ...updated[index], title: e.target.value };
+                                            setCustomFields(updated);
+                                        }}
+                                        placeholder="Title"
+                                        className="px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={field.description}
+                                        onChange={(e) => {
+                                            const updated = [...customFields];
+                                            updated[index] = { ...updated[index], description: e.target.value };
+                                            setCustomFields(updated);
+                                        }}
+                                        placeholder="Description"
+                                        className="px-4 py-3 bg-muted border border-border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setCustomFields(customFields.filter((_, i) => i !== index))}
+                                    className="mt-3 px-2 text-muted-foreground hover:text-destructive transition-colors"
+                                    title="Remove"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        ))}
+                        {customFields.length < 3 && (
+                            <button
+                                type="button"
+                                onClick={() => setCustomFields([...customFields, { title: '', description: '' }])}
+                                className="text-sm text-primary hover:text-primary/80 transition-colors"
+                            >
+                                + Add custom field
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Date */}

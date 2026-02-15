@@ -10,6 +10,11 @@ export interface Experience {
   date: string;
 }
 
+export interface CustomField {
+  title: string;
+  description: string;
+}
+
 export interface Profile {
   id: string;
   name: string;
@@ -35,6 +40,7 @@ export interface Project {
   category: string;
   status: string;
   methods_tools: string;
+  custom_fields: CustomField[] | null;
   date_from: string;
   date_to: string;
   created_at: string;
@@ -56,6 +62,7 @@ export interface CreateProjectInput {
   category?: string;
   status?: string;
   methods_tools?: string;
+  custom_fields?: CustomField[] | null;
   date_from?: string;
   date_to?: string;
 }
@@ -75,6 +82,7 @@ export interface UpdateProjectInput {
   category?: string;
   status?: string;
   methods_tools?: string;
+  custom_fields?: CustomField[] | null;
   date_from?: string;
   date_to?: string;
 }

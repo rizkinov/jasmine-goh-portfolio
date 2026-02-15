@@ -239,7 +239,7 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                     </motion.p>
 
                     {/* Meta info with blur — only render if at least one field is populated */}
-                    {(project.client || project.role || project.category || project.methods_tools || project.date_from || project.status) && (
+                    {(project.client || project.role || project.category || project.methods_tools || (project.custom_fields && project.custom_fields.length > 0) || project.date_from || project.status) && (
                     <motion.div
                         variants={blurFadeUpVariants}
                         className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12 pt-10 border-t border-border/50"
@@ -268,6 +268,14 @@ export function ProjectContent({ project, otherProjects = [] }: ProjectContentPr
                                 <p className="font-serif text-lg">{project.methods_tools}</p>
                             </div>
                         )}
+                        {project.custom_fields?.map((field, i) => (
+                            field.title && field.description ? (
+                                <div key={i}>
+                                    <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">{field.title}</p>
+                                    <p className="font-serif text-lg">{field.description}</p>
+                                </div>
+                            ) : null
+                        ))}
                         {project.date_from && (
                             <div>
                                 <p className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-2">Date</p>
