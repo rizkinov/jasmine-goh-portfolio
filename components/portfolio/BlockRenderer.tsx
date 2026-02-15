@@ -26,7 +26,7 @@ export function BlockRenderer({ content }: BlockRendererProps) {
 
 function SectionRenderer({ section }: { section: Section }) {
   return (
-    <div className="flex flex-wrap md:flex-nowrap gap-0">
+    <div className="flex flex-wrap md:flex-nowrap gap-6">
       {section.columns.map((column) => (
         <ColumnRenderer key={column.id} column={column} />
       ))}
@@ -38,7 +38,7 @@ function ColumnRenderer({ column }: { column: Column }) {
   return (
     <div
       className="w-full md:min-w-0"
-      style={{ flex: `0 0 ${column.widthPercent}%` }}
+      style={{ flex: `${column.widthPercent} 1 0%` }}
     >
       {column.blocks.map((block) => (
         <ContentBlockRenderer key={block.id} block={block} />

@@ -14,6 +14,7 @@ import {
     type CollisionDetection,
     DragOverlay,
 } from '@dnd-kit/core';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import type { PageContent, Section, ContentBlock, ColumnLayout, BlockType } from '@/types/page-builder';
 import {
@@ -566,6 +567,7 @@ export function PageBuilder({ initialContent, onSave }: PageBuilderProps) {
                     <DndContext
                         sensors={sensors}
                         collisionDetection={collisionDetection}
+                        modifiers={[snapCenterToCursor]}
                         autoScroll={{ acceleration: 25, threshold: { x: 0.2, y: 0.25 } }}
                         onDragStart={handleDragStart}
                         onDragOver={handleDragOver}

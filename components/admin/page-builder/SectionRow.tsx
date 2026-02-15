@@ -16,7 +16,7 @@ interface SectionRowProps {
 
 export function SectionRow({ section, index, totalSections }: SectionRowProps) {
     const [isHovered, setIsHovered] = useState(false);
-    const { removeSection, duplicateSection, moveSectionUp, moveSectionDown, updateSectionLayout } = usePageBuilder();
+    const { addSection, removeSection, duplicateSection, moveSectionUp, moveSectionDown, updateSectionLayout } = usePageBuilder();
 
     const {
         attributes,
@@ -47,19 +47,33 @@ export function SectionRow({ section, index, totalSections }: SectionRowProps) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Left-side drag handle - visible on section hover */}
+            {/* Left-side controls - visible on section hover */}
             {!isDragging && (
-                <button
-                    type="button"
-                    className="absolute -left-8 top-1/2 -translate-y-1/2 p-1 rounded text-transparent group-hover/section:text-muted-foreground hover:!bg-muted cursor-grab active:cursor-grabbing transition-colors z-20"
-                    {...attributes}
-                    {...listeners}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
-                        <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
-                    </svg>
-                </button>
+                <div className="absolute -left-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1 text-transparent group-hover/section:text-muted-foreground z-20">
+                    {/* Drag handle */}
+                    <button
+                        type="button"
+                        className="p-1 rounded hover:!bg-muted cursor-grab active:cursor-grabbing transition-colors"
+                        {...attributes}
+                        {...listeners}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+                            <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                        </svg>
+                    </button>
+                    {/* Add section below */}
+                    <button
+                        type="button"
+                        onClick={() => addSection('100', index + 1)}
+                        className="p-0.5 rounded hover:!bg-muted hover:!text-foreground transition-colors"
+                        title="Add section below"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14"/><path d="M12 5v14"/>
+                        </svg>
+                    </button>
+                </div>
             )}
 
             {/* Section toolbar - visible on hover */}
