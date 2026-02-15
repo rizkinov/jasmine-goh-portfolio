@@ -99,6 +99,8 @@ export function ColumnContainer({ column, sectionId }: ColumnContainerProps) {
                         onUpdate={(updates) => handleUpdateBlock(block.id, updates as Partial<ContentBlock>)}
                     />
                 );
+            case 'divider':
+                return <hr className="border-t border-border my-2" />;
             case 'table':
                 return (
                     <TableBlockEditor

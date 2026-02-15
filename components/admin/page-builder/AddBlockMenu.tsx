@@ -12,6 +12,7 @@ const BLOCK_OPTIONS: { type: BlockType; label: string; icon: string }[] = [
     { type: 'image', label: 'Image', icon: '🖼' },
     { type: 'video', label: 'Video', icon: '▶' },
     { type: 'spacer', label: 'Spacer', icon: '↕' },
+    { type: 'divider', label: 'Divider', icon: '—' },
     { type: 'table', label: 'Table', icon: '⊞' },
     { type: 'code', label: 'Code', icon: '</>' },
 ];

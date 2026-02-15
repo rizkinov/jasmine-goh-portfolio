@@ -96,6 +96,8 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
       return <VideoBlockRenderer block={block} />;
     case 'spacer':
       return <div style={{ height: `${block.height}px` }} />;
+    case 'divider':
+      return <hr className="border-t border-border my-6" />;
     case 'table':
       return (
         <div

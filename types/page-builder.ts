@@ -10,7 +10,7 @@ export type ColumnLayout =
   | '25-25-25-25';
 
 // Block types
-export type BlockType = 'text' | 'image' | 'video' | 'spacer' | 'table' | 'code';
+export type BlockType = 'text' | 'image' | 'video' | 'spacer' | 'divider' | 'table' | 'code';
 
 export interface TextBlock {
   id: string;
@@ -49,6 +49,11 @@ export interface SpacerBlock {
   height: number;
 }
 
+export interface DividerBlock {
+  id: string;
+  type: 'divider';
+}
+
 export interface TableBlock {
   id: string;
   type: 'table';
@@ -61,7 +66,7 @@ export interface CodeBlock {
   content_html: string;
 }
 
-export type ContentBlock = TextBlock | ImageBlock | VideoBlock | SpacerBlock | TableBlock | CodeBlock;
+export type ContentBlock = TextBlock | ImageBlock | VideoBlock | SpacerBlock | DividerBlock | TableBlock | CodeBlock;
 
 export interface Column {
   id: string;

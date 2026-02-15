@@ -8,6 +8,7 @@ import type {
   ImageBlock,
   VideoBlock,
   SpacerBlock,
+  DividerBlock,
   TableBlock,
   CodeBlock,
   PageContent,
@@ -82,6 +83,10 @@ export function createSpacerBlock(height = 48): SpacerBlock {
   return { id: generateId(), type: 'spacer', height };
 }
 
+export function createDividerBlock(): DividerBlock {
+  return { id: generateId(), type: 'divider' };
+}
+
 export function createTableBlock(content_html = '<table><tr><th>Header 1</th><th>Header 2</th></tr><tr><td>Cell 1</td><td>Cell 2</td></tr></table>'): TableBlock {
   return { id: generateId(), type: 'table', content_html };
 }
@@ -96,6 +101,7 @@ export function createBlock(type: BlockType): ContentBlock {
     case 'image': return createImageBlock();
     case 'video': return createVideoBlock();
     case 'spacer': return createSpacerBlock();
+    case 'divider': return createDividerBlock();
     case 'table': return createTableBlock();
     case 'code': return createCodeBlock();
   }

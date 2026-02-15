@@ -642,6 +642,7 @@ html {
   font-family: var(--font-sans), system-ui, sans-serif;
   color: var(--muted-foreground);
   border-bottom: 1px solid var(--border);
+  vertical-align: top;
 }
 
 .project-content tr:last-child td {
