@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import jwt from 'jsonwebtoken';
 import { updateProject, getProjects, getProjectBySlug, createProject, deleteProject } from '@/lib/supabase';
 
@@ -103,6 +104,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        revalidatePath(`/projects/${newProject.slug}`);
+        revalidatePath('/');
+
         return NextResponse.json(newProject, { status: 201 });
     } catch (error) {
         console.error('Error creating project:', error);
@@ -141,6 +145,9 @@ export async function PUT(request: NextRequest) {
                 { status: 500 }
             );
         }
+
+        revalidatePath(`/projects/${updatedProject.slug}`);
+        revalidatePath('/');
 
         return NextResponse.json(updatedProject);
     } catch (error) {
@@ -181,6 +188,8 @@ export async function DELETE(request: NextRequest) {
                 { status: 500 }
             );
         }
+
+        revalidatePath('/');
 
         return NextResponse.json({ success: true });
     } catch (error) {
