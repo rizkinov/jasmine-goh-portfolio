@@ -683,6 +683,17 @@ html {
   border-bottom: 2px solid var(--border);
 }
 
+.project-content.table-header-col tr:hover th,
+.project-content.table-header-col tr:hover td {
+  background: oklch(0.55 0.12 35 / 0.03);
+}
+
+.dark .project-content.table-header-col tr:hover th,
+.dark .project-content.table-header-col tr:hover td {
+  background: oklch(0.68 0.14 40 / 0.05);
+}
+
+.project-content.table-header-col tr:hover th:first-child,
 .project-content.table-header-col tr:hover td:first-child {
   background: var(--muted);
 }
@@ -1035,6 +1046,17 @@ html {
   border-bottom: 2px solid var(--border);
 }
 
+.table-header-col .ProseMirror table tr:hover th,
+.table-header-col .ProseMirror table tr:hover td {
+  background: oklch(0.55 0.12 35 / 0.03) !important;
+}
+
+.dark .table-header-col .ProseMirror table tr:hover th,
+.dark .table-header-col .ProseMirror table tr:hover td {
+  background: oklch(0.68 0.14 40 / 0.05) !important;
+}
+
+.table-header-col .ProseMirror table tr:hover th:first-child,
 .table-header-col .ProseMirror table tr:hover td:first-child {
   background: var(--muted) !important;
 }
