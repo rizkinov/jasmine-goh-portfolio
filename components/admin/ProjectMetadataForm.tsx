@@ -423,14 +423,33 @@ const MONTHS = [
 // Month/Year picker sub-component
 // value is stored as "YYYY-MM" string
 function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-    const [year, month] = value ? value.split('-') : ['', ''];
+    const [parsedYear, parsedMonth] = value ? value.split('-') : ['', ''];
+    const [month, setMonth] = useState(parsedMonth);
+    const [year, setYear] = useState(parsedYear);
 
-    const handleChange = (newMonth: string, newYear: string) => {
-        if (newMonth && newYear) {
-            onChange(`${newYear}-${newMonth}`);
-        } else {
-            onChange('');
-        }
+    // Sync local state when external value changes (e.g. clear button)
+    useEffect(() => {
+        const [y, m] = value ? value.split('-') : ['', ''];
+        setMonth(m);
+        setYear(y);
+    }, [value]);
+
+    const handleMonthChange = (newMonth: string | null) => {
+        const m = newMonth || '';
+        setMonth(m);
+        if (m && year) onChange(`${year}-${m}`);
+    };
+
+    const handleYearChange = (newYear: string | null) => {
+        const y = newYear || '';
+        setYear(y);
+        if (month && y) onChange(`${y}-${month}`);
+    };
+
+    const handleClear = () => {
+        setMonth('');
+        setYear('');
+        onChange('');
     };
 
     const currentYear = new Date().getFullYear();
@@ -438,7 +457,7 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
 
     return (
         <div className="flex gap-2 items-center">
-            <Select value={month || undefined} onValueChange={(val) => handleChange(val as string, year)}>
+            <Select value={month || undefined} onValueChange={handleMonthChange}>
                 <SelectTrigger className="flex-1 bg-muted border-border rounded-lg text-sm h-[42px]">
                     {month ? <SelectValue /> : <span className="text-muted-foreground">Month</span>}
                 </SelectTrigger>
@@ -448,7 +467,7 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
                     ))}
                 </SelectContent>
             </Select>
-            <Select value={year || undefined} onValueChange={(val) => handleChange(month, val as string)}>
+            <Select value={year || undefined} onValueChange={handleYearChange}>
                 <SelectTrigger className="w-28 bg-muted border-border rounded-lg text-sm h-[42px]">
                     {year ? <SelectValue /> : <span className="text-muted-foreground">Year</span>}
                 </SelectTrigger>
@@ -458,10 +477,10 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
                     ))}
                 </SelectContent>
             </Select>
-            {value && (
+            {(month || year) && (
                 <button
                     type="button"
-                    onClick={() => onChange('')}
+                    onClick={handleClear}
                     className="px-2 text-muted-foreground hover:text-destructive transition-colors"
                     title="Clear"
                 >
