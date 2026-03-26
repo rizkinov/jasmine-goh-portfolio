@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { title, slug, short_description, cover_image_url, hero_image_url, content_html, content_blocks, tags, custom_fields } = body;
+        const { title, slug, short_description, cover_image_url, hero_image_url, content_html, content_blocks, tags, custom_fields, client, role, category, status, methods_tools, date_from, date_to } = body;
 
         // Validation
         if (!title || !slug || !short_description) {
@@ -94,6 +94,13 @@ export async function POST(request: NextRequest) {
             content_blocks: content_blocks || null,
             tags: tags || [],
             custom_fields: custom_fields || null,
+            ...(client && { client }),
+            ...(role && { role }),
+            ...(category && { category }),
+            ...(status && { status }),
+            ...(methods_tools && { methods_tools }),
+            ...(date_from && { date_from }),
+            ...(date_to && { date_to }),
         });
 
         if (!newProject) {

@@ -168,6 +168,77 @@ export default function AdminPage() {
         }
     };
 
+    // Handle copying a project
+    const handleCopyProject = async () => {
+        if (!selectedProject) return;
+
+        setSaveStatus('saving');
+
+        const { title, slug, short_description, cover_image_url, hero_image_url, content_html, content_blocks, tags, custom_fields, client, role, category, status, methods_tools, date_from, date_to } = selectedProject;
+
+        const baseSlug = `${slug}-copy`;
+        let copySlug = baseSlug;
+        let copyTitle = `${title} (Copy)`;
+        let attempt = 0;
+
+        while (true) {
+            try {
+                const response = await fetch('/api/admin/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: copyTitle,
+                        slug: copySlug,
+                        short_description,
+                        cover_image_url,
+                        hero_image_url,
+                        content_html,
+                        content_blocks,
+                        tags,
+                        custom_fields,
+                        client,
+                        role,
+                        category,
+                        status,
+                        methods_tools,
+                        date_from,
+                        date_to,
+                    }),
+                });
+
+                if (response.status === 409) {
+                    // Slug conflict — try next suffix
+                    attempt++;
+                    copySlug = `${baseSlug}-${attempt + 1}`;
+                    copyTitle = `${title} (Copy ${attempt + 1})`;
+                    continue;
+                }
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('Error copying project:', error);
+                    setSaveStatus('error');
+                    setTimeout(() => setSaveStatus('idle'), 3000);
+                    return;
+                }
+
+                const newProject = await response.json();
+                setProjects(prev => [newProject, ...prev]);
+                setSelectedProject(newProject);
+                setActiveTab('metadata');
+
+                setSaveStatus('saved');
+                setTimeout(() => setSaveStatus('idle'), 2000);
+                return;
+            } catch (error) {
+                console.error('Error copying project:', error);
+                setSaveStatus('error');
+                setTimeout(() => setSaveStatus('idle'), 3000);
+                return;
+            }
+        }
+    };
+
     // Handle deleting a project
     const handleDeleteProject = async () => {
         if (!selectedProject) return;
@@ -608,6 +679,17 @@ export default function AdminPage() {
                                             <path d="M7 17L17 7" /><path d="M7 7h10v10" />
                                         </svg>
                                     </Link>
+                                    <button
+                                        type="button"
+                                        onClick={handleCopyProject}
+                                        disabled={saveStatus === 'saving'}
+                                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
+                                    >
+                                        Copy
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                                        </svg>
+                                    </button>
                                     {showDeleteConfirm ? (
                                         <>
                                             <span className="text-sm text-muted-foreground ml-2">Delete?</span>
